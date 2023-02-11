@@ -1,0 +1,27 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+ .aig-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-auto-rows: minmax(min-content, max-content);
+    grid-row-gap: .5em;
+    grid-column-gap: 1em;
+}
+.aig-container-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+.aig-container .card .add_as_media {
+    font-variant: all-small-caps;
+    text-align: center;
+    margin: 8px 0 0 0;
+    width: 100%;
+}
+.aig-container .card .title .dashicons-yes {
+    visibility: hidden;
+}
+.aig-container .card .title .dashicons-yes.is-active {
+    visibility: visible;
+}

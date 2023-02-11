@@ -1,0 +1,14 @@
+{
+    "name": "pierre/artist-image-generator",
+    "description": "Artist is a Wordpress plugin to create AI generated royality-free images from scratch.",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "Pierre V.",
+            "email": "contact@pierrevieville.fr"
+        }
+    ],
+    "require": {
+        "orhanerday/open-ai": "^3.5"
+    }
+}
