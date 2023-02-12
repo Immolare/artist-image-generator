@@ -52,6 +52,8 @@
             <a href="https://github.com/Immolare/<?= $this->plugin_name; ?>" title="Visit Github" target="_blank">
                 <?= $this->plugin_full_name; ?>'s Github page
             </a>.
+        </p>
+        <p>
             Thanks a lot for using my plugin !
         </p>
     </div>

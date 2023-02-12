@@ -167,6 +167,10 @@ class Artist_Image_Generator {
         $this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init' );
         $this->loader->add_action( 'wp_ajax_nopriv_add_to_media', $plugin_admin, 'add_to_media' );
         $this->loader->add_action( 'wp_ajax_add_to_media', $plugin_admin, 'add_to_media' );
+        # Add meta links to plugin page
+        $this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'plugin_row_meta', 10, 2 );
+        # Add link to plugin settings
+        $this->loader->add_filter( 'plugin_action_links', $plugin_admin, 'plugin_action_links', 10, 2 );
 	}
 
 	/**

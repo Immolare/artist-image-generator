@@ -29,3 +29,9 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+# Remove options with the prefix "artist_image_generator_"
+foreach ( wp_load_alloptions() as $option => $value ) {
+    if ( strpos( $option, 'artist_image_generator_' ) === 0 ) {
+        delete_option( $option );
+    }
+}

@@ -26,6 +26,7 @@ class Artist_Image_Generator_Admin {
     const QUERY_SETUP = 'setup';
     const QUERY_FIELD_ACTION = 'action';
     const ACTION_GENERATE = 'generate';
+    const ACTION_VARIATE = 'variate';
     const ACTION_SETTINGS = 'settings';
     const ACTION_ABOUT = 'about';
     
@@ -53,19 +54,50 @@ class Artist_Image_Generator_Admin {
     private $admin_display_main_template = "admin/partials/main.php";
     private $admin_display_about_template = "admin/partials/_about.php";
     private $admin_display_generate_template = "admin/partials/_generate.php";
+    private $admin_display_variate_template = "admin/partials/_variate.php";
     private $admin_display_settings_template = "admin/partials/_settings.php";
     
     private $admin_actions_array = [
         self::ACTION_GENERATE,
+        self::ACTION_VARIATE,
         self::ACTION_SETTINGS, 
         self::ACTION_ABOUT
     ];
     /* 
     * Retrieve this value with:
     * $options = get_option( $this->prefix.'_option_name' ); // Array of All Options
-    * $openai_api_key_0 = $options['openai_api_key_0']; // OPENAI_API_KEY
+    * $openai_api_key_0 = $options[$this->prefix.'_openai_api_key_0']; // OPENAI_API_KEY
     */
     private $options;
+
+    private function generate($prompt_input, $n_input, $size_input) {
+        $n = $n_input > 0 && $n_input <= 10 ? (int)$n_input : 1;
+        $open_ai = new OpenAi($this->options[$this->prefix.'_openai_api_key_0']);
+        $result = $open_ai->image([
+            "prompt" => $prompt_input,
+            "n" => $n,
+            "size" => $size_input,
+            //"response_format" => "b64_json"
+        ]);
+        
+        return json_decode($result, true);
+    }
+
+    private function variate($image_file, $n_input, $size_input) {
+        $n = $n_input > 0 && $n_input <= 10 ? (int)$n_input : 1;
+        $open_ai = new OpenAi($this->options[$this->prefix.'_openai_api_key_0']);
+        $tmp_file = $image_file['tmp_name'];
+        $file_name = basename($image_file['name']);
+        $image = curl_file_create($tmp_file, $image_file['type'], $file_name);
+
+        $result = $open_ai->createImageVariation([
+            "image" => $image,
+            "n" => $n,
+            "size" => $size_input,
+        ]);
+
+        return json_decode($result, true);
+    }
 
 	/**
 	 * Initialize the class and set its properties.
@@ -75,10 +107,8 @@ class Artist_Image_Generator_Admin {
 	 * @param      string    $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
-
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
 	}
 
 	/**
@@ -116,6 +146,32 @@ class Artist_Image_Generator_Admin {
         ) );
     }
 
+    public function plugin_row_meta( $links, $file ) {
+        # Display meta links
+        if ( strpos( $file, $this->plugin_name.'/'.$this->plugin_name.'.php' ) !== FALSE ) {
+            $meta = array(
+                'support' => '<a href="https://wordpress.org/support/plugin/'.$this->plugin_name.'" target="_blank"><span class="dashicons dashicons-sos"></span> ' . __( 'Support', $this->prefix ) . '</a>',
+                'review' => '<a href="https://wordpress.org/support/plugin/'.$this->plugin_name.'/reviews/#new-post" target="_blank"><span class="dashicons dashicons-thumbs-up"></span> ' . __( 'Review', $this->prefix ) . '</a>',
+                'github' => '<a href="https://github.com/Immolare/'.$this->plugin_name.'" target="_blank"><span class="dashicons dashicons-randomize"></span> ' . __( 'GitHub', $this->prefix ) . '</a>',
+            );
+            $links = array_merge( $links, $meta );
+        }
+        # Return plugin meta links
+        return $links;
+    }
+
+    public function plugin_action_links( $links, $file ) {
+        # Display settings link
+        if ( $file == $this->plugin_name.'/'.$this->plugin_name.'.php' && current_user_can( 'manage_options' ) ) {
+            array_unshift(
+                $links,
+                '<a href="'.$this->get_admin_tab_url(self::ACTION_SETTINGS).'">' . __( ucfirst(self::ACTION_SETTINGS), $this->prefix ) . '</a>'
+            );
+        }
+        # Return the settings link
+        return $links;
+    }
+
     /**
 	 * Register new media page for the media menu area.
 	 *
@@ -134,34 +190,60 @@ class Artist_Image_Generator_Admin {
     public function admin_page() {
 		$this->options = get_option( $this->prefix.'_option_name' );
         $is_post_request = $_SERVER['REQUEST_METHOD'] == 'POST';
+        $size_input = array_key_exists('size', $_POST) ? sanitize_text_field($_POST['size']) : $this->get_default_image_dimensions();
+        $n_input = array_key_exists('n', $_POST) ? (int)sanitize_text_field($_POST['n']) : 1;
         $is_generation = array_key_exists('generate', $_POST) && $_POST['generate'];
-        $is_setting_up = array_key_exists('openai_api_key_0', $this->options);
+        $is_variation = array_key_exists('variate', $_POST) && $_POST['variate'];
+        $is_setting_up = is_array($this->options) && array_key_exists($this->prefix.'_openai_api_key_0', $this->options);
         $error = [];
 
-        if ( $is_post_request && $is_generation && $is_setting_up) {
-            $prompt_input = array_key_exists('prompt', $_POST) ? sanitize_text_field($_POST['prompt']) : '';
+        if ( $is_post_request && $is_setting_up) {
+            if ($is_generation) {
+                $prompt_input = array_key_exists('prompt', $_POST) ? sanitize_text_field($_POST['prompt']) : null;
 
-            if (empty($prompt_input)) {
-                $error = [
-                    'msg' => __( 'The Prompt input must be filled in order to generate an image.', $this->prefix )
-                ];
-            }
-            else {
-                $size_input = array_key_exists('size', $_POST) ? sanitize_text_field($_POST['size']) : $this->get_default_image_dimensions();
-                $n_input = array_key_exists('n', $_POST) ? (int)sanitize_text_field($_POST['n']) : 1;
-
-                if (ob_get_contents()) {
-                    ob_end_clean();
+                if (empty($prompt_input)) {
+                    $error = [
+                        'msg' => __( 'The Prompt input must be filled in order to generate an image.', $this->prefix )
+                    ];
                 }
+                else {
+                    $response = $this->generate($prompt_input, $n_input, $size_input);
 
-                $open_ai = new OpenAi($this->options['openai_api_key_0']);
-                $result = $open_ai->image([
-                    "prompt" => $prompt_input,
-                    "n" => $n_input > 0 && $n_input <= 10 ? (int)$n_input : 1,
-                    "size" => $size_input,
-                    //"response_format" => "b64_json"
-                ]);
-                $images = json_decode($result, true);
+                    if (array_key_exists('error', $response)) {
+                        $error =  [ 'msg' => $response['message'] ];
+                    }
+                    else {
+                        $images = $response;
+                    }
+                }
+            }
+            elseif ($is_variation) {
+                $errorMsg = __( 'A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', $this->prefix );
+                $image_file = $_FILES && array_key_exists('image', $_FILES) ? $_FILES['image'] : null;
+                
+                if (empty($image_file)) {
+                    $error = [ 'msg' => $errorMsg ];
+                }
+                else {
+                    $image_mime_type = mime_content_type($image_file['tmp_name']);
+                    list($image_width, $image_height) = getimagesize($image_file['tmp_name']);
+                    $image_wrong_size = $image_file['size'] >= ((1024 * 1024) * 4) || $image_file['size'] == 0;
+                    // If you want to allow certain files
+                    $allowed_file_types = ['image/png'];
+                    if (!in_array($image_mime_type, $allowed_file_types) || $image_wrong_size || $image_height !== $image_width) {
+                        $error = [ 'msg' => $errorMsg ];
+                    }
+                    else {
+                        $response = $this->variate($image_file, $n_input, $size_input);
+
+                        if (array_key_exists('error', $response)) {
+                            $error =  [ 'msg' => $response['message'] ];
+                        }
+                        else {
+                            $images = $response;
+                        }
+                    }
+                }
             }
         }
 
@@ -183,7 +265,7 @@ class Artist_Image_Generator_Admin {
 		);
 
 		add_settings_field(
-			'openai_api_key_0', // id
+			$this->prefix.'_openai_api_key_0', // id
 			'OPENAI_API_KEY', // title
 			array( $this, 'openai_api_key_0_callback' ), // callback
 			$this->prefix.'-admin', // page
@@ -312,8 +394,8 @@ class Artist_Image_Generator_Admin {
 
     public function sanitize($input) {
 		$sanitary_values = array();
-		if ( isset( $input['openai_api_key_0'] ) ) {
-			$sanitary_values['openai_api_key_0'] = sanitize_text_field( $input['openai_api_key_0'] );
+		if ( isset( $input[$this->prefix.'_openai_api_key_0'] ) ) {
+			$sanitary_values[$this->prefix.'_openai_api_key_0'] = sanitize_text_field( $input[$this->prefix.'_openai_api_key_0'] );
 		}
 
 		return $sanitary_values;
@@ -323,8 +405,8 @@ class Artist_Image_Generator_Admin {
 
 	public function openai_api_key_0_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="'.$this->prefix.'_option_name[openai_api_key_0]" id="openai_api_key_0" value="%s">',
-			isset( $this->options['openai_api_key_0'] ) ? esc_attr( $this->options['openai_api_key_0']) : ''
+			'<input class="regular-text" type="text" name="'.$this->prefix.'_option_name['.$this->prefix.'_openai_api_key_0]" id="'.$this->prefix.'_openai_api_key_0" value="%s">',
+			isset( $this->options[$this->prefix.'_openai_api_key_0'] ) ? esc_attr( $this->options[$this->prefix.'_openai_api_key_0']) : ''
 		);
 	}
 }
