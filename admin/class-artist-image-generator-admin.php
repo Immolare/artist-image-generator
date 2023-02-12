@@ -218,7 +218,7 @@ class Artist_Image_Generator_Admin {
             }
             elseif ($is_variation) {
                 $errorMsg = __( 'A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', $this->prefix );
-                $image_file = isset($_FILES) && array_key_exists('image', $_FILES) ? $_FILES['image'] : null;
+                $image_file = $_FILES['image']['size'] > 0 ? $_FILES['image'] : null;
 
                 if (empty($image_file)) {
                     $error = [ 'msg' => $errorMsg ];
