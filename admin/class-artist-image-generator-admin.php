@@ -190,6 +190,7 @@ class Artist_Image_Generator_Admin {
     public function admin_page() {
 		$this->options = get_option( $this->prefix.'_option_name' );
         $is_post_request = $_SERVER['REQUEST_METHOD'] == 'POST';
+        $prompt_input = array_key_exists('prompt', $_POST) ? sanitize_text_field($_POST['prompt']) : null;
         $size_input = array_key_exists('size', $_POST) ? sanitize_text_field($_POST['size']) : $this->get_default_image_dimensions();
         $n_input = array_key_exists('n', $_POST) ? (int)sanitize_text_field($_POST['n']) : 1;
         $is_generation = array_key_exists('generate', $_POST) && $_POST['generate'];
@@ -199,8 +200,6 @@ class Artist_Image_Generator_Admin {
 
         if ( $is_post_request && $is_setting_up) {
             if ($is_generation) {
-                $prompt_input = array_key_exists('prompt', $_POST) ? sanitize_text_field($_POST['prompt']) : null;
-
                 if (empty($prompt_input)) {
                     $error = [
                         'msg' => __( 'The Prompt input must be filled in order to generate an image.', $this->prefix )
@@ -220,7 +219,6 @@ class Artist_Image_Generator_Admin {
             elseif ($is_variation) {
                 $errorMsg = __( 'A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', $this->prefix );
                 $image_file = $_FILES && array_key_exists('image', $_FILES) ? $_FILES['image'] : null;
-                
                 if (empty($image_file)) {
                     $error = [ 'msg' => $errorMsg ];
                 }

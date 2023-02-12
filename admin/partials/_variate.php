@@ -4,15 +4,23 @@
 </div>
 <?php endif; ?>
 <div class="notice notice-info inline" style="margin-top:15px;">
-	<p><?php esc_attr_e( 'Heads up ! To make an image variation you need to provide a .png file less than 4MB in a 1:1 format (square).', $this->prefix ); ?></p>
+	<p><?php esc_attr_e( 'Heads up ! To make an image variation you need to provide a .png file less than 4MB in a 1:1 format (square). You can add a prompt input to describe the image. This value will be used to fill the image name and alternative text.', $this->prefix ); ?></p>
 </div>
 <form action="" method="post" enctype="multipart/form-data">
     <table class="form-table" role="presentation">
         <tbody>
             <tr>
-                <th scope="row"><label for="prompt"><?php esc_attr_e( 'PNG square file (< 4MB)', $this->prefix ); ?></label></th>
+                <th scope="row"><label for="image"><?php esc_attr_e( 'PNG square file (< 4MB)', $this->prefix ); ?></label></th>
                 <td>
                     <input type="file" name="image" id="image" class="regular-text" />
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label for="prompt"><?php esc_attr_e( 'Prompt', $this->prefix ); ?></label></th>
+                <td>
+                    <input type="text" id="prompt" name="prompt" class="regular-text" 
+                        placeholder="<?php esc_attr_e( 'Ex: A bowl of soup as a planet in the universe as digital art', $this->prefix ); ?>" 
+                        value="<?= $prompt_input ?? ''; ?>" />
                 </td>
             </tr>
             <tr>
