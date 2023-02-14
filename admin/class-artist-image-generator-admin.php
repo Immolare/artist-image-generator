@@ -278,7 +278,7 @@ class Artist_Image_Generator_Admin {
         require_once ABSPATH . "/wp-admin/includes/file.php";
         require_once ABSPATH . "/wp-admin/includes/media.php";
 
-        $url = sanitize_text_field($_POST['url']);
+        $url = sanitize_url($_POST['url']);
         $alt = sanitize_text_field($_POST['description']);
 
         // Download url to a temp file

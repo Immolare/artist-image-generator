@@ -60,6 +60,12 @@ https://www.youtube.com/watch?v=nEeR_qmkvWg
 
 The Artist Image Generator doesn\'t collect any data. When you prompt a file or description, the file / description is sent to the DALL·E 2 API. The API returns a response with the images generated. From there the plugin just use the description to rename and fill the image metadatas for your Wordpress website.
 
+### Credits
+
+- [OpenAI GPT-3 Api Client in PHP](https://github.com/orhanerday/open-ai)
+- [OpenAI - DALL·E 2](https://openai.com/dall-e-2/)
+- [Pierre Viéville](https://www.pierrevieville.fr/)
+- [Pierre Viéville\'s blog](https://developpeur-web.site/)
 
 
 == Installation ==
