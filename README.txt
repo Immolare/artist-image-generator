@@ -1,114 +1,126 @@
-=== Plugin Name ===
-Contributors: (this should be a list of wordpress.org userid's)
-Donate link: https://pierrevieville.fr
-Tags: comments, spam
-Requires at least: 3.0.1
-Tested up to: 3.4
-Stable tag: 4.3
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+=== Artist Image Generator ===
+Contributors: Immolare
+Tags: Image creation, OpenAI, DALL·E 2, AI, Artifical Intelligence, Image variation, creativity
+Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-to-support-this-plugin-development
+Requires at least: 5.9
+Tested up to: 6.1.1
+Requires PHP: 7.4
+Stable tag: 1.0.0
+License: GPLv2
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
+Artist Image Generator is a Wordpress plugin using the power of AI to create royality-free images from scratch for your Wordpress website.
+
+
 
 == Description ==
+### Why Artist Image Generator ?
 
-This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
+**Artist Image Generator** is an image creation tool using DALL·E 2. DALL·E 2 is a new artifical intelligence service provided by OpenAI (creators of ChatGPT) which allow users to create images from a text description they provide.
 
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and
-Markdown parsed.
+We\'ve integrated this tool in a Wordpress plugin to improve the creativity of the WP community. From there **you have access to a powerful AI assistant for helping you illustrate your blog posts, pages and more**.
 
-A few notes about the sections above:
+You can stop looking for royalty free images on the internet and just use our image creation tool to helping you illustrate any element of your Wordpress site.
 
-*   "Contributors" is a comma separated list of wp.org/wp-plugins.org usernames
-*   "Tags" is a comma separated list of tags that apply to the plugin
-*   "Requires at least" is the lowest version that the plugin will work on
-*   "Tested up to" is the highest version that you've *successfully used to test the plugin*. Note that it might work on
-higher versions... this is just the highest one you've verified.
-*   Stable tag should indicate the Subversion "tag" of the latest stable version, or "trunk," if you use `/trunk/` for
-stable.
+### What are the possibilities of Artist Image Generator ?
 
-    Note that the `readme.txt` of the stable tag is the one that is considered the defining one for the plugin, so
-if the `/trunk/readme.txt` file says that the stable tag is `4.3`, then it is `/tags/4.3/readme.txt` that'll be used
-for displaying information about the plugin.  In this situation, the only thing considered from the trunk `readme.txt`
-is the stable tag pointer.  Thus, if you develop in trunk, you can update the trunk `readme.txt` to reflect changes in
-your in-development version, without having that information incorrectly disclosed about the current stable version
-that lacks those changes -- as long as the trunk's `readme.txt` points to the correct stable tag.
+With **Artist Image Generator** you can easily :
 
-    If no stable tag is provided, it is assumed that trunk is stable, but you should specify "trunk" if that's where
-you put the stable version, in order to eliminate any doubt.
+- **Create images from text input** :  provide a description of what you want, define the size and the number of images the AI needs to generate. The plugin will makes you (1-10) images based on your text in a artistic or realistic way.
+
+- **Make an image variation from a .png file** :  provide a .png file, a description of the image, define the size and the number of images the AI needs to generate. The plugin will makes you (1-10) images variation from your file.
+
+- **Save the images you created yourself** : your creations can be saved in the Wordpress Media Library to use them wherever you want. Just selected the images you want to keep and add it to the WP library.
+
+### Artist Image Generator\'s demo :
+
+https://www.youtube.com/watch?v=nEeR_qmkvWg
+
+### What are advantages of our plugin ?
+
+- **An AI assistant helping you illustrate your posts** : no need to search random images on Internet, just describe what you want and let the AI do the work for you in few seconds
+
+- **SEO friendly** : when you save your images, the plugin will automaticaly rename the generated files in a SEO way using the description you provided. Then, the plugin will add some \"alt text\" and \"title\"  to help you improve your website SEO.
+
+- **Begginer friendly, light and easy to use** : contrary to other plugins you can find, there is only 2 core functionnalities that are really easy to use. Ideal for Wordpress users which are not developers and want some easy functions to generate images.
+
+- **Easy way to connect** : you just need an **OpenAI API Key to work**. All the steps are described in the settings page of the plugin, in a pedagogic way.
+
+- **Royalty-free images** - Use the images you create on your website without worrying about licensing issues. You are the creator, all the image belongs to you and are free to use.
+
+- **Unlimited users** : Any WordPress user on any site can use Artist Image Generator to create new images from scratch.
+
+- **Unlimited sites** : You can use the plugin on multiple websites. It is just a tools to generate image and save them in the Wordpress Media Library.
+
+- **Free to use, no extra licence** : Artist Image Generator provide a free way to use an artifical intelligence for the Wordpress community. All the functionnalities are free.
+
+- **Fully Translatable** : The plugin is translatable in any language the classic way (.po, .mo files)
+
+### Privacy
+
+The Artist Image Generator doesn\'t collect any data. When you prompt a file or description, the file / description is sent to the DALL·E 2 API. The API returns a response with the images generated. From there the plugin just use the description to rename and fill the image metadatas for your Wordpress website.
+
+
 
 == Installation ==
+### Install the plugin
 
-This section describes how to install the plugin and get it working.
+The Artist Image Generator plugin\'s installation is easy :
 
-e.g.
+- Search the Artist Image Generator plugin in the Wordpress extensions library and click \"Install\"
+- Or download the zip archive file and upload it through the \"upload plugin\" tools
+- Click on \"Activate\" and the plugin is ready to configure
 
-1. Upload `artist-generator.php` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('plugin_name_hook'); ?>` in your templates
+Globally install and activate the plugin like any other Wordpress extension. Then click on the \"Settings\" page link under the plugin name. The plugin is available in the Wordpress menu. Click under **Media Library > Image Generator > Settings tab** to configure.
+
+### Configure the plugin
+
+The plugin use an artificial intelligence called **DALL·E 2**, a tier service provided by OpenAI. To use it, you have to **generate a OpenAI API Key**. Don\'t worry, its easy !
+
+Once you are on the plugin\'s \"Settings\" tab, you\'ll have all the instructions to create an OpenAI API key :
+
+- Sign up / Log in into OpenAI developer portail : https://openai.com/api/
+- In **User > View API keys, create a new secret key** : https://platform.openai.com/account/api-keys
+- Copy and paste the new secret key in the **OPENAI_API_KEY** field.
+- Press \"Save changes\" and **you are ready to use the plugin**.
+
+
+
 
 == Frequently Asked Questions ==
+= Is the AI good to create new image from prompt ? =
 
-= A question that someone might have =
+Yes quite a lot. Just provide a full description of what you need. The AI will generate some image and you ca then fine tunes and reroll the results as you want according to the API limitations. Heads up ! This is an AI, so the results are not every time the best looking images ever according to your description, but in general this is an epic way to generate illustration
 
-An answer to that question.
+= What kind of images you can generate ? =
 
-= What about foo bar? =
+You can generate drawings, painting, realistic, artistic images with the plugin. Just provide the style you want and the AI will take care of generating the rights styled image for you.
 
-Answer to foo bar dilemma.
+= Is the Artist Image Generator free ? =
 
-== Screenshots ==
+Yes it is. All the functionnality are developed for free for the Wordpress Community.
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+= What is the copyright license of images I create? =
+
+All generated images you create are public domain and are yours to license as you see fit. We retain no rights to them. Because the public domain is not a unified concept across legal jurisdictions, the specific license of generated images is that of the [CC0 1.0 Universal Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/).
+
+= What restrictions are there for image generation ? =
+
+Yes. We provide just a tool to use DALL·E 2 service so we are not responsible of what you generate. Keep in mind DALL·E 2 have restrictions on image creation and variations so please respect  that to use correctly the service. 
+
+For an up to date list of **what you can\'t do using DALL·E 2 service**, please read theses official links :
+
+- [OpenAI - Blog post about restrictions](https://help.openai.com/en/articles/6338764-are-there-any-restrictions-to-how-i-can-use-dall-e-2-is-there-a-content-policy)
+- [OpenAI - Content Policy](https://labs.openai.com/policies/content-policy)
+
+= Is there a rate limitation for using the API =
+
+Yes. Read the rates limits on the official documentation : [OpenAI - Rate Limits](https://platform.openai.com/docs/guides/rate-limits/overview)
+
+- The AI generate only 3 images dimensions. All generated image will be on ratio format 1:1 (square).
+- If you need to do an image variation, your uploaded file needs to be a .png file <= 4MB and at format 1:1.
 
 == Changelog ==
-
-= 1.0 =
-* A change since the previous version.
-* Another change.
-
-= 0.5 =
-* List versions from most recent at top to oldest at bottom.
-
-== Upgrade Notice ==
-
-= 1.0 =
-Upgrade notices describe the reason a user should upgrade.  No more than 300 characters.
-
-= 0.5 =
-This version fixes a security related bug.  Upgrade immediately.
-
-== Arbitrary section ==
-
-You may provide arbitrary sections, in the same format as the ones above.  This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation."  Arbitrary sections will be shown below the built-in sections outlined above.
-
-== A brief Markdown Example ==
-
-Ordered list:
-
-1. Some feature
-1. Another feature
-1. Something else about the plugin
-
-Unordered list:
-
-* something
-* something else
-* third thing
-
-Here's a link to [WordPress](http://wordpress.org/ "Your favorite software") and one to [Markdown's Syntax Documentation][markdown syntax].
-Titles are optional, naturally.
-
-[markdown syntax]: http://daringfireball.net/projects/markdown/syntax
-            "Markdown is what the parser uses to process much of the readme file"
-
-Markdown uses email style notation for blockquotes and I've been told:
-> Asterisks for *emphasis*. Double it up  for **strong**.
-
-`<?php code(); // goes in backticks ?>`
+1.0 - 2023-02-14
+----------------------------------------------------------------------
+- Initial release

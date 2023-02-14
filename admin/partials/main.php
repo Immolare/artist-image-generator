@@ -16,22 +16,22 @@ use Artist_Image_Generator_Admin as AIGA;
 ?>
 
 <div class="wrap">
-    <h1><?php esc_attr_e( 'Artist Image Generator', $this->prefix ); ?></h1>
+    <h1><?php esc_attr_e( 'Artist Image Generator', 'artist-image-generator' ); ?></h1>
     <h2 class="nav-tab-wrapper">
-        <a href="<?= $this->get_admin_tab_url(AIGA::ACTION_GENERATE); ?>" 
-            class="nav-tab<?= $this->echo_admin_tab_active(AIGA::ACTION_GENERATE, true); ?>">
+        <a href="<?php echo $this->get_admin_tab_url(AIGA::ACTION_GENERATE); ?>" 
+            class="nav-tab<?php echo $this->echo_admin_tab_active(AIGA::ACTION_GENERATE, true); ?>">
             <?php esc_html_e(AIGA::ACTION_GENERATE); ?>
         </a>
-        <a href="<?= $this->get_admin_tab_url(AIGA::ACTION_VARIATE); ?>" 
-            class="nav-tab<?= $this->echo_admin_tab_active(AIGA::ACTION_VARIATE, true); ?>">
+        <a href="<?php echo $this->get_admin_tab_url(AIGA::ACTION_VARIATE); ?>" 
+            class="nav-tab<?php echo $this->echo_admin_tab_active(AIGA::ACTION_VARIATE, true); ?>">
             <?php esc_html_e(AIGA::ACTION_VARIATE); ?>
         </a>
-        <a href="<?= $this->get_admin_tab_url(AIGA::ACTION_SETTINGS); ?>" 
-            class="nav-tab<?= $this->echo_admin_tab_active(AIGA::ACTION_SETTINGS, true); ?>">
+        <a href="<?php echo $this->get_admin_tab_url(AIGA::ACTION_SETTINGS); ?>" 
+            class="nav-tab<?php echo $this->echo_admin_tab_active(AIGA::ACTION_SETTINGS, true); ?>">
             <?php esc_html_e(AIGA::ACTION_SETTINGS); ?>
         </a>
-        <a href="<?= $this->get_admin_tab_url(AIGA::ACTION_ABOUT); ?>" 
-            class="nav-tab<?= $this->echo_admin_tab_active(AIGA::ACTION_ABOUT, true); ?>">
+        <a href="<?php echo $this->get_admin_tab_url(AIGA::ACTION_ABOUT); ?>" 
+            class="nav-tab<?php echo $this->echo_admin_tab_active(AIGA::ACTION_ABOUT, true); ?>">
             <?php esc_html_e(AIGA::ACTION_ABOUT); ?>
         </a> 
     </h2>

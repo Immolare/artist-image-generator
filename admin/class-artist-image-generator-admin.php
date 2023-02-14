@@ -150,9 +150,9 @@ class Artist_Image_Generator_Admin {
         # Display meta links
         if ( strpos( $file, $this->plugin_name.'/'.$this->plugin_name.'.php' ) !== FALSE ) {
             $meta = array(
-                'support' => '<a href="https://wordpress.org/support/plugin/'.$this->plugin_name.'" target="_blank"><span class="dashicons dashicons-sos"></span> ' . __( 'Support', $this->prefix ) . '</a>',
-                'review' => '<a href="https://wordpress.org/support/plugin/'.$this->plugin_name.'/reviews/#new-post" target="_blank"><span class="dashicons dashicons-thumbs-up"></span> ' . __( 'Review', $this->prefix ) . '</a>',
-                'github' => '<a href="https://github.com/Immolare/'.$this->plugin_name.'" target="_blank"><span class="dashicons dashicons-randomize"></span> ' . __( 'GitHub', $this->prefix ) . '</a>',
+                'support' => '<a href="https://wordpress.org/support/plugin/'.$this->plugin_name.'" target="_blank"><span class="dashicons dashicons-sos"></span> ' . __( 'Support', 'artist-image-generator' ) . '</a>',
+                'review' => '<a href="https://wordpress.org/support/plugin/'.$this->plugin_name.'/reviews/#new-post" target="_blank"><span class="dashicons dashicons-thumbs-up"></span> ' . __( 'Review', 'artist-image-generator' ) . '</a>',
+                'github' => '<a href="https://github.com/Immolare/'.$this->plugin_name.'" target="_blank"><span class="dashicons dashicons-randomize"></span> ' . __( 'GitHub', 'artist-image-generator' ) . '</a>',
             );
             $links = array_merge( $links, $meta );
         }
@@ -165,7 +165,7 @@ class Artist_Image_Generator_Admin {
         if ( $file == $this->plugin_name.'/'.$this->plugin_name.'.php' && current_user_can( 'manage_options' ) ) {
             array_unshift(
                 $links,
-                '<a href="'.$this->get_admin_tab_url(self::ACTION_SETTINGS).'">' . __( ucfirst(self::ACTION_SETTINGS), $this->prefix ) . '</a>'
+                '<a href="'.$this->get_admin_tab_url(self::ACTION_SETTINGS).'">' . __( ucfirst(self::ACTION_SETTINGS), 'artist-image-generator' ) . '</a>'
             );
         }
         # Return the settings link
@@ -180,7 +180,7 @@ class Artist_Image_Generator_Admin {
 	public function admin_menu() {
 		add_media_page(
 			$this->plugin_full_name, // page_title
-			__( 'Image Generator', $this->prefix ), // menu_title
+			__( 'Image Generator', 'artist-image-generator' ), // menu_title
 			'manage_options', // capability
 			$this->prefix, // menu_slug
 			array( $this, 'admin_page' ) // function
@@ -193,8 +193,8 @@ class Artist_Image_Generator_Admin {
         $prompt_input = array_key_exists('prompt', $_POST) ? sanitize_text_field($_POST['prompt']) : null;
         $size_input = array_key_exists('size', $_POST) ? sanitize_text_field($_POST['size']) : $this->get_default_image_dimensions();
         $n_input = array_key_exists('n', $_POST) ? (int)sanitize_text_field($_POST['n']) : 1;
-        $is_generation = array_key_exists('generate', $_POST) && $_POST['generate'];
-        $is_variation = array_key_exists('variate', $_POST) && $_POST['variate'];
+        $is_generation = array_key_exists('generate', $_POST) && sanitize_text_field($_POST['generate']);
+        $is_variation = array_key_exists('variate', $_POST) && sanitize_text_field($_POST['variate']);
         $is_setting_up = is_array($this->options) && array_key_exists($this->prefix.'_openai_api_key_0', $this->options);
         $error = [];
 
@@ -202,7 +202,7 @@ class Artist_Image_Generator_Admin {
             if ($is_generation) {
                 if (empty($prompt_input)) {
                     $error = [
-                        'msg' => __( 'The Prompt input must be filled in order to generate an image.', $this->prefix )
+                        'msg' => __( 'The Prompt input must be filled in order to generate an image.', 'artist-image-generator' )
                     ];
                 }
                 else {
@@ -217,7 +217,7 @@ class Artist_Image_Generator_Admin {
                 }
             }
             elseif ($is_variation) {
-                $errorMsg = __( 'A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', $this->prefix );
+                $errorMsg = __( 'A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', 'artist-image-generator' );
                 $image_file = $_FILES['image']['size'] > 0 ? $_FILES['image'] : null;
 
                 if (empty($image_file)) {
@@ -258,7 +258,7 @@ class Artist_Image_Generator_Admin {
 
 		add_settings_section(
 			$this->prefix.'_setting_section', // id
-			__( 'Settings', $this->prefix ), // title
+			__( 'Settings', 'artist-image-generator' ), // title
 			array( $this, 'section_info' ), // callback
 			$this->prefix.'-admin' // page
 		);
@@ -278,8 +278,8 @@ class Artist_Image_Generator_Admin {
         require_once ABSPATH . "/wp-admin/includes/file.php";
         require_once ABSPATH . "/wp-admin/includes/media.php";
 
-        $url = $_POST['url'];
-        $alt = $_POST['description'];
+        $url = sanitize_text_field($_POST['url']);
+        $alt = sanitize_text_field($_POST['description']);
 
         // Download url to a temp file
         $tmp = download_url( $url );
