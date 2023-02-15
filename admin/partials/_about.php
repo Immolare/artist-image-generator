@@ -1,14 +1,14 @@
 <div class="aig-container aig-container-3">
     <div class="card">
         <h2 class="title">
-           <?php echo $this->plugin_full_name; ?>
+           <?php echo esc_attr($this->plugin_full_name); ?>
         </h2>
         <p>
             <strong>This plugin was created by me, <a href="https://www.pierrevieville.fr" title="Visit website" target="_blank">Pierre Viéville</a>.</strong>
         </p>
         <p>
             I have been a freelance developer for 10 years. 
-            <strong><?php echo $this->plugin_full_name; ?></strong> is my first Wordpress plugin. I want to help the Wordpress community to improve the creativity of their content. 
+            <strong><?php echo esc_attr($this->plugin_full_name); ?></strong> is my first Wordpress plugin. I want to help the Wordpress community to improve the creativity of their content. 
         </p>
         <p>
             That's why I made a plugin allowing you to generate <u>royalty-free images</u> that you can use anywhere on your site: media library, blog posts, pages, etc.
@@ -49,8 +49,8 @@
         <p>3. support the developer by a donation</p>
         <p>
             Theses things can be done on the
-            <a href="https://github.com/Immolare/<?php echo $this->plugin_name; ?>" title="Visit Github" target="_blank">
-                <?php echo $this->plugin_full_name; ?>'s Github page
+            <a href="https://github.com/Immolare/<?php echo esc_attr($this->plugin_name); ?>" title="Visit Github" target="_blank">
+                <?php echo esc_attr($this->plugin_full_name); ?>'s Github page
             </a>.
         </p>
         <p>

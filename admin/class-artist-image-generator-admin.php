@@ -273,7 +273,6 @@ class Artist_Image_Generator_Admin {
 	}
 
     public function add_to_media() {
-        require_once ABSPATH . "/wp-load.php";
         require_once ABSPATH . "/wp-admin/includes/image.php";
         require_once ABSPATH . "/wp-admin/includes/file.php";
         require_once ABSPATH . "/wp-admin/includes/media.php";
