@@ -21,7 +21,7 @@ According to the principles of this AI service, **all your created images belong
 
 ### Download, install and activate
 
-To use Artist Image Generator, you can download it from the Wordpress Official Store (link incoming) or you can download the latest release on this Github page.
+To use Artist Image Generator, you can download it from the [Wordpress official plugins store](https://wordpress.org/plugins/artist-image-generator) or you can download the latest release on this Github page.
 
 Install and activate the plugin like any other Wordpress extension. Click on the "Settings" page link under the plugin name. From the Wordpress menu, click under **Media Library > Image Generator > Settings tab**.
 
