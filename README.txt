@@ -1,6 +1,6 @@
 === Artist Image Generator ===
 Contributors: Immolare
-Tags: Image creation, OpenAI, DALL·E 2, AI, Artifical Intelligence, Image variation, creativity
+Tags: OpenAI, image creation, generative art, artificial intelligence, image processing, creative coding, deep learning, DALL·E 2, computer vision, neural networks
 Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-to-support-this-plugin-development
 Requires at least: 5.9
 Tested up to: 6.1.1
@@ -18,7 +18,7 @@ Artist Image Generator is a Wordpress plugin using the power of AI to create roy
 
 **Artist Image Generator** is an image creation tool using DALL·E 2. DALL·E 2 is a new artifical intelligence service provided by OpenAI (creators of ChatGPT) which allow users to create images from a text description they provide.
 
-We\'ve integrated this tool in a Wordpress plugin to improve the creativity of the WP community. From there **you have access to a powerful AI assistant for helping you illustrate your blog posts, pages and more**.
+We've integrated this tool in a Wordpress plugin to improve the creativity of the WP community. From there **you have access to a powerful AI assistant for helping you illustrate your blog posts, pages and more**.
 
 You can stop looking for royalty free images on the internet and just use our image creation tool to helping you illustrate any element of your Wordpress site.
 
@@ -32,7 +32,7 @@ With **Artist Image Generator** you can easily :
 
 - **Save the images you created yourself** : your creations can be saved in the Wordpress Media Library to use them wherever you want. Just selected the images you want to keep and add it to the WP library.
 
-### Artist Image Generator\'s demo :
+### Artist Image Generator's demo :
 
 https://www.youtube.com/watch?v=nEeR_qmkvWg
 
@@ -40,7 +40,7 @@ https://www.youtube.com/watch?v=nEeR_qmkvWg
 
 - **An AI assistant helping you illustrate your posts** : no need to search random images on Internet, just describe what you want and let the AI do the work for you in few seconds
 
-- **SEO friendly** : when you save your images, the plugin will automaticaly rename the generated files in a SEO way using the description you provided. Then, the plugin will add some \"alt text\" and \"title\"  to help you improve your website SEO.
+- **SEO friendly** : when you save your images, the plugin will automaticaly rename the generated files in a SEO way using the description you provided. Then, the plugin will add some "alt text" and "title"  to help you improve your website SEO.
 
 - **Begginer friendly, light and easy to use** : contrary to other plugins you can find, there is only 2 core functionnalities that are really easy to use. Ideal for Wordpress users which are not developers and want some easy functions to generate images.
 
@@ -58,14 +58,14 @@ https://www.youtube.com/watch?v=nEeR_qmkvWg
 
 ### Privacy
 
-The Artist Image Generator doesn\'t collect any data. When you prompt a file or description, the file / description is sent to the DALL·E 2 API. The API returns a response with the images generated. From there the plugin just use the description to rename and fill the image metadatas for your Wordpress website.
+The Artist Image Generator doesn't collect any data. When you prompt a file or description, the file / description is sent to the DALL·E 2 API. The API returns a response with the images generated. From there the plugin just use the description to rename and fill the image metadatas for your Wordpress website.
 
 ### Credits
 
 - [OpenAI GPT-3 Api Client in PHP](https://github.com/orhanerday/open-ai)
 - [OpenAI - DALL·E 2](https://openai.com/dall-e-2/)
 - [Pierre Viéville](https://www.pierrevieville.fr/)
-- [Pierre Viéville\'s blog](https://developpeur-web.site/)
+- [Pierre Viéville's blog](https://developpeur-web.site/)
 
 == Screenshots ==
 1. Fill your OpenAI API Key here in "Settings" tab
@@ -78,24 +78,24 @@ The Artist Image Generator doesn\'t collect any data. When you prompt a file or 
 == Installation ==
 ### Install the plugin
 
-The Artist Image Generator plugin\'s installation is easy :
+The Artist Image Generator plugin's installation is easy :
 
-- Search the Artist Image Generator plugin in the Wordpress extensions library and click \"Install\"
-- Or download the zip archive file and upload it through the \"upload plugin\" tools
-- Click on \"Activate\" and the plugin is ready to configure
+- Search the Artist Image Generator plugin in the Wordpress extensions library and click "Install"
+- Or download the zip archive file and upload it through the "upload plugin" tools
+- Click on "Activate" and the plugin is ready to configure
 
-Globally install and activate the plugin like any other Wordpress extension. Then click on the \"Settings\" page link under the plugin name. The plugin is available in the Wordpress menu. Click under **Media Library > Image Generator > Settings tab** to configure.
+Globally install and activate the plugin like any other Wordpress extension. Then click on the "Settings" page link under the plugin name. The plugin is available in the Wordpress menu. Click under **Media Library > Image Generator > Settings tab** to configure.
 
 ### Configure the plugin
 
-The plugin use an artificial intelligence called **DALL·E 2**, a tier service provided by OpenAI. To use it, you have to **generate a OpenAI API Key**. Don\'t worry, its easy !
+The plugin use an artificial intelligence called **DALL·E 2**, a tier service provided by OpenAI. To use it, you have to **generate a OpenAI API Key**. Don't worry, its easy !
 
-Once you are on the plugin\'s \"Settings\" tab, you\'ll have all the instructions to create an OpenAI API key :
+Once you are on the plugin's "Settings" tab, you'll have all the instructions to create an OpenAI API key :
 
 - Sign up / Log in into OpenAI developer portail : https://openai.com/api/
 - In **User > View API keys, create a new secret key** : https://platform.openai.com/account/api-keys
 - Copy and paste the new secret key in the **OPENAI_API_KEY** field.
-- Press \"Save changes\" and **you are ready to use the plugin**.
+- Press "Save changes" and **you are ready to use the plugin**.
 
 
 
@@ -121,7 +121,7 @@ All generated images you create are public domain and are yours to license as yo
 
 Yes. We provide just a tool to use DALL·E 2 service so we are not responsible of what you generate. Keep in mind DALL·E 2 have restrictions on image creation and variations so please respect  that to use correctly the service. 
 
-For an up to date list of **what you can\'t do using DALL·E 2 service**, please read theses official links :
+For an up to date list of **what you can't do using DALL·E 2 service**, please read theses official links :
 
 - [OpenAI - Blog post about restrictions](https://help.openai.com/en/articles/6338764-are-there-any-restrictions-to-how-i-can-use-dall-e-2-is-there-a-content-policy)
 - [OpenAI - Content Policy](https://labs.openai.com/policies/content-policy)
