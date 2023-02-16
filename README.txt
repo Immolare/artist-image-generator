@@ -92,8 +92,8 @@ The plugin use an artificial intelligence called **DALL·E 2**, a tier service p
 
 Once you are on the plugin's "Settings" tab, you'll have all the instructions to create an OpenAI API key :
 
-- Sign up / Log in into OpenAI developer portail : https://openai.com/api/
-- In **User > View API keys, create a new secret key** : https://platform.openai.com/account/api-keys
+- Sign up / Log in into OpenAI developer portail : [https://openai.com/api/](https://openai.com/api/)
+- In **User > View API keys, create a new secret key** : [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)
 - Copy and paste the new secret key in the **OPENAI_API_KEY** field.
 - Press "Save changes" and **you are ready to use the plugin**.
 
