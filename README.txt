@@ -67,6 +67,13 @@ The Artist Image Generator doesn\'t collect any data. When you prompt a file or 
 - [Pierre Viéville](https://www.pierrevieville.fr/)
 - [Pierre Viéville\'s blog](https://developpeur-web.site/)
 
+== Screenshots ==
+1. Fill your OpenAI API Key here in "Settings" tab
+2. Image creation in "Generate" tab
+3. Image variation (.png / 1:1 format / < 4MB) in "Variate" tab
+4. Press "Add to the media library" and find your image in your Wordpress Media Library
+5. Add the image for example in a blog post as image or thumbnail
+
 
 == Installation ==
 ### Install the plugin
