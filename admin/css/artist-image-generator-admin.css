@@ -25,3 +25,9 @@
 .aig-container .card .title .dashicons-yes.is-active {
     visibility: visible;
 }
+@media screen and (max-width: 960px) {
+    .aig-container { grid-template-columns: repeat(2, 1fr); }
+}
+@media screen and (max-width: 782px) {
+    .aig-container { grid-template-columns: repeat(1, 1fr); }
+}

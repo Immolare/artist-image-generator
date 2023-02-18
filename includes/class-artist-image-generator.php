@@ -171,6 +171,9 @@ class Artist_Image_Generator {
         $this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'plugin_row_meta', 10, 2 );
         # Add link to plugin settings
         $this->loader->add_filter( 'plugin_action_links', $plugin_admin, 'plugin_action_links', 10, 2 );
+        # Add underscore.js's templates
+        $this->loader->add_action( 'admin_footer', $plugin_admin, 'print_tabs_templates' );
+        $this->loader->add_action( 'customize_controls_print_footer_scripts', $plugin_admin, 'print_tabs_templates' );
 	}
 
 	/**
