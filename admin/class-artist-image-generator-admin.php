@@ -31,7 +31,7 @@ class Artist_Image_Generator_Admin
     private array $admin_display_templates;
     private array $admin_actions;
 
-    private mixed $options;
+    private $options;
 
     public function __construct(string $plugin_name, string $version)
     {
