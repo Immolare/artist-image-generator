@@ -139,6 +139,7 @@ Yes. Read the rates limits on the official documentation : [OpenAI - Rate Limits
 ----------------------------------------------------------------------
 - PHP refactoring
 - Add templating system using Wordpress's Underscore.js library for new features
+- Improve responsiveness
 
 
 1.0.0 - 2023-02-14

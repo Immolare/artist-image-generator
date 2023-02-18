@@ -505,8 +505,7 @@ class Artist_Image_Generator_Admin
     {
     ?>
 
-        <?php // Template for generate tab. 
-        ?>
+        <?php // Template for generate tab. ?>
         <script type="text/html" id="tmpl-artist-image-generator-generate">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
