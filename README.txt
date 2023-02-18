@@ -5,7 +5,7 @@ Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-
 Requires at least: 5.9
 Tested up to: 6.1.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,10 @@ Yes. Read the rates limits on the official documentation : [OpenAI - Rate Limits
 - If you need to do an image variation, your uploaded file needs to be a .png file <= 4MB and at format 1:1.
 
 == Changelog ==
+
+1.0.2 - 2023-02-18
+----------------------------------------------------------------------
+- Remove mixed type for options property
 
 1.0.1 - 2023-02-18
 ----------------------------------------------------------------------
