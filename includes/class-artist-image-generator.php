@@ -165,6 +165,8 @@ class Artist_Image_Generator {
         // Admin Settings Page
         $this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_menu' );
         $this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init' );
+        $this->loader->add_action( 'wp_ajax_nopriv_admin_page', $plugin_admin, 'admin_page' );
+        $this->loader->add_action( 'wp_ajax_admin_page', $plugin_admin, 'admin_page' );
         $this->loader->add_action( 'wp_ajax_nopriv_add_to_media', $plugin_admin, 'add_to_media' );
         $this->loader->add_action( 'wp_ajax_add_to_media', $plugin_admin, 'add_to_media' );
         # Add meta links to plugin page

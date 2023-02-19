@@ -71,14 +71,66 @@ class Artist_Image_Generator_Admin
      */
     public function enqueue_scripts(): void
     {
-        wp_enqueue_script('wp-util');
-        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin.js', array(
-            'wp-util',  'jquery',
-            'underscore'
-        ), $this->version, true);
-        wp_localize_script($this->plugin_name, 'aig_ajax_object', array(
-            'ajax_url' => admin_url('admin-ajax.php')
-        ));
+        $is_media_editor_page = $this->is_media_editor_page();
+        $is_plugin_page = $this->is_artist_image_generator_page();
+
+        // Enqueue scripts only on specific admin pages
+        if ( $is_plugin_page || $is_media_editor_page ) {
+            $dependencies = array('wp-util', 'jquery', 'underscore');
+            // Enqueue necessary scripts
+            wp_enqueue_script( 'wp-util' );
+
+            if ($is_media_editor_page) {
+                $dependencies[] = 'media-editor';
+                wp_enqueue_media();
+                wp_enqueue_script( 'media-editor' );
+            }
+
+            wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/artist-image-generator-admin.js', $dependencies, $this->version, true );
+            wp_localize_script( $this->plugin_name, 'aig_ajax_object', array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'is_media_editor' => $is_media_editor_page,
+                'variateLabel' => esc_attr('Variate', 'artist-image-generator'),
+                'generateLabel' => esc_attr('Generate', 'artist-image-generator')
+            ) );
+
+            if ($is_media_editor_page) {
+                $data = [
+                    'error' => [],
+                    'images' => [],
+                    'prompt_input' => "",
+                    'size_input' => $this->get_default_image_dimensions(),
+                    'n_input' => 1
+                ];
+        
+                // Pass the variable to the template
+                wp_localize_script($this->plugin_name, 'aig_data', $data);
+            }
+        }
+    }
+
+    /**
+     * Check if current page is the Artist Image Generator page
+     *
+     * @return bool
+     */
+    private function is_artist_image_generator_page(): bool
+    {
+        global $pagenow;
+
+        return $pagenow === 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] === $this->prefix;
+    }
+
+    /**
+     * Check if current page is the media editor page and the edit action is set
+     *
+     * @return bool
+     */
+    private function is_media_editor_page(): bool
+    {
+        global $pagenow;
+
+        return ( $pagenow === 'post.php' || $pagenow === 'post-new.php' ) && isset( $_GET['action'] ) && $_GET['action'] === 'edit' && isset( $_GET['post'] ) && $_GET['post'] > 0;
     }
 
     /**
@@ -215,17 +267,38 @@ class Artist_Image_Generator_Admin
      */
     public function admin_page()
     {
-        $images = $error = [];
+        $data = $this->do_post_request();
 
+        if (wp_doing_ajax()) {
+            wp_send_json($data);
+            wp_die();
+        }
+
+        // Pass the variable to the template
+        wp_localize_script($this->plugin_name, 'aig_data', $data);
+        
+        require_once $this->get_admin_template(self::LAYOUT_MAIN);
+    }
+
+    /**
+     * Utility function to do some post request processing used on admin_page and admin_media_manager_page
+     *
+     * @return void
+     */
+    private function do_post_request()
+    {
+        $images = [];
+        $error = [];
+    
         $this->options = get_option($this->prefix . '_option_name');
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $this->is_setting_up()) {
-            $is_generation = array_key_exists('generate', $_POST) && sanitize_text_field($_POST['generate']);
-            $is_variation = array_key_exists('variate', $_POST) && sanitize_text_field($_POST['variate']);
-            $prompt_input = array_key_exists('prompt', $_POST) ? sanitize_text_field($_POST['prompt']) : null;
-            $size_input = array_key_exists('size', $_POST) ? sanitize_text_field($_POST['size']) : $this->get_default_image_dimensions();
-            $n_input = array_key_exists('n', $_POST) ? sanitize_text_field($_POST['n']) : 1;
-
+    
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $this->is_setting_up()) {
+            $is_generation = isset($_POST['generate']) && sanitize_text_field($_POST['generate']);
+            $is_variation = isset($_POST['variate']) && sanitize_text_field($_POST['variate']);
+            $prompt_input = isset($_POST['prompt']) ? sanitize_text_field($_POST['prompt']) : null;
+            $size_input = isset($_POST['size']) ? sanitize_text_field($_POST['size']) : $this->get_default_image_dimensions();
+            $n_input = isset($_POST['n']) ? sanitize_text_field($_POST['n']) : 1;
+    
             if ($is_generation) {
                 if (empty($prompt_input)) {
                     $error = [
@@ -236,8 +309,8 @@ class Artist_Image_Generator_Admin
                 }
             } elseif ($is_variation) {
                 $errorMsg = __('A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', 'artist-image-generator');
-                $image_file = $_FILES['image']['size'] > 0 ? $_FILES['image'] : null;
-
+                $image_file = isset($_FILES['image']) && $_FILES['image']['size'] > 0 ? $_FILES['image'] : null;
+    
                 if (empty($image_file)) {
                     $error = ['msg' => $errorMsg];
                 } else {
@@ -245,7 +318,7 @@ class Artist_Image_Generator_Admin
                     list($image_width, $image_height) = getimagesize($image_file['tmp_name']);
                     $image_wrong_size = $image_file['size'] >= ((1024 * 1024) * 4) || $image_file['size'] == 0;
                     $allowed_file_types = ['image/png']; // If you want to allow certain files
-
+    
                     if (!in_array($image_mime_type, $allowed_file_types) || $image_wrong_size || $image_height !== $image_width) {
                         $error = ['msg' => $errorMsg];
                     } else {
@@ -253,7 +326,7 @@ class Artist_Image_Generator_Admin
                     }
                 }
             }
-
+    
             if (isset($response)) {
                 if (array_key_exists('error', $response)) {
                     $error = ['msg' => $response['message']];
@@ -262,19 +335,16 @@ class Artist_Image_Generator_Admin
                 }
             }
         }
-
+    
         $data = [
             'error' => $error,
-            'images' => $images && count($images) ? $images['data'] : [],
-            'prompt_input' => $prompt_input,
-            'size_input' => $size_input,
-            'n_input' => $n_input
+            'images' => count($images) ? $images['data'] : [],
+            'prompt_input' => $prompt_input ?? '',
+            'size_input' => $size_input ?? $this->get_default_image_dimensions(),
+            'n_input' => $n_input ?? 1
         ];
-
-        // Pass the variable to the template
-        wp_localize_script($this->plugin_name, 'aig_data', $data);
-
-        require_once $this->get_admin_template(self::LAYOUT_MAIN);
+    
+        return $data;
     }
 
     /**
