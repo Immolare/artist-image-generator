@@ -23,8 +23,6 @@
         about: '#tab-container-about',
     };
 
-    let $myTabContent;
-
     function buildTab(tabSelector, tabTemplate, data) {
         const $tabContainer = $(tabSelector);
         const html = tabTemplate(data);
@@ -67,10 +65,6 @@
                 }
             });
 
-            if (aig_ajax_object.is_media_editor) {
-                wp.media.frame.content.get('gallery').collection.props.set({ ignore: (+ new Date()) });
-            }
-
             return false;
         });
     }
@@ -87,6 +81,9 @@
             const formData = new FormData($tabEl.find('form')[0]);
             formData.append('action', 'admin_page');
 
+            const spinner = '<div class="spinner is-active" style="margin-top: 0; margin-left:15px; float:none;"></div>';
+            $(spinner).insertAfter($tabEl.find('form input[type="submit"]'));
+
             // Submit the form using AJAX
             jQuery.ajax({
                 url: aig_ajax_object.ajax_url,
@@ -95,11 +92,19 @@
                 contentType: false,
                 data: formData,
                 success: function (response) {
+                    $tabEl.find('.spinner').remove();
                     refreshMyTabContent(response, action);
                     addMediaHandler();
                 },
             });
         });
+
+        if (typeof wp.media.frames.modula !== 'undefined') {
+            wp.media.frames.modula.content.get().collection.props.set({ ignore: (+ new Date()) });
+        } 
+        if (typeof wp.media.frame.content.get() == null) {
+            wp.media.frame.content.get().collection.props.set({ ignore: (+ new Date()) });
+        }
     }
 
     function initAdminMediaModal() {
@@ -133,7 +138,7 @@
 
         jQuery(document).ready(function ($) {
             if (wp.media) {
-                wp.media.view.Modal.prototype.on( "open", function() {
+                wp.media.view.Modal.prototype.on("open", function () {
                     const activeItem = $('body').find('.media-modal-content').find('.media-router button.media-menu-item.active')[0];
                     const innerTextActive = activeItem ? (activeItem.innerText).toLowerCase() : null;
                     if ([labels.generate.toLowerCase(), labels.variate.toLowerCase()].includes(innerTextActive)) {
@@ -141,10 +146,19 @@
                     }
                 });
 
+                let needRefresh = false;
                 $(wp.media).on('click', '.media-router button.media-menu-item', function (e) {
-                    const innerTextActive = (e.target.innerText).toLowerCase();
-                    if ([labels.generate.toLowerCase(), labels.variate.toLowerCase()].includes(innerTextActive)) {
-                        refreshMyTabContent(data,innerTextActive);
+                    const activeTab = $('body').find('.media-modal-content').find('.media-router button.media-menu-item.active')[0];
+                    const innerTextActiveTab = activeTab ? (activeTab.innerText).toLowerCase() : null;
+                    if ([labels.generate.toLowerCase(), labels.variate.toLowerCase()].includes(innerTextActiveTab)) {
+                        needRefresh = true;
+                        refreshMyTabContent(data, innerTextActiveTab);
+                    } else if (needRefresh && wp.media.frame.content.get() !== null && wp.media.frame.content.get().collection !== undefined) {
+                        wp.media.frame.content.get().collection.props.set({ ignore: (+ new Date()) });
+                        needRefresh = false;
+                    }
+                    else {
+                        needRefresh = false;
                     }
                 });
             }
