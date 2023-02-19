@@ -2,6 +2,14 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+ #tab-container-generate,
+ #tab-container-variate {
+    padding: 0 16px;
+ }
+ .media-frame-content .notice {
+    margin-left: 0;
+    margin-right: 0;
+ }
  .aig-container {
     width: 100%;
     display: grid;

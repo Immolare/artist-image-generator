@@ -5,7 +5,7 @@ Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-
 Requires at least: 5.9
 Tested up to: 6.1.1
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,8 @@ With **Artist Image Generator** you can easily :
 
 - **Save the images you created yourself** : your creations can be saved in the Wordpress Media Library to use them wherever you want. Just selected the images you want to keep and add it to the WP library.
 
+- **Use the plugin directly in the Media Manager Modal** : we've added new 2 tabs in the Media Manager Modal to give you the capability to use the plugin directly when writing a post. Distraction free.
+
 ### Artist Image Generator's demo :
 
 https://www.youtube.com/watch?v=nEeR_qmkvWg
@@ -39,6 +41,8 @@ https://www.youtube.com/watch?v=nEeR_qmkvWg
 ### What are advantages of our plugin ?
 
 - **An AI assistant helping you illustrate your posts** : no need to search random images on Internet, just describe what you want and let the AI do the work for you in few seconds
+
+- **Distraction free** : the plugin can be used from the plugin page OR directly in the Media Manager Modal when writing a post.
 
 - **SEO friendly** : when you save your images, the plugin will automaticaly rename the generated files in a SEO way using the description you provided. Then, the plugin will add some "alt text" and "title"  to help you improve your website SEO.
 
@@ -73,7 +77,7 @@ The Artist Image Generator doesn't collect any data. When you prompt a file or d
 3. Image variation (.png / 1:1 format / < 4MB) in "Variate" tab
 4. Press "Add to the media library" and find your image in your Wordpress Media Library
 5. Add the image for example in a blog post as image or thumbnail
-
+6. Now you can use Artist Image Generator directly from the Media Manager Modal when you add new image while writing a post.
 
 == Installation ==
 ### Install the plugin
@@ -134,6 +138,10 @@ Yes. Read the rates limits on the official documentation : [OpenAI - Rate Limits
 - If you need to do an image variation, your uploaded file needs to be a .png file <= 4MB and at format 1:1.
 
 == Changelog ==
+
+1.0.3 - 2023-02-19
+----------------------------------------------------------------------
+- Add new tabs to the media manager modal to use Artist Image Generator when writing a post
 
 1.0.2 - 2023-02-18
 ----------------------------------------------------------------------
