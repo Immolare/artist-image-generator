@@ -2,10 +2,10 @@
 Contributors: Immolare
 Tags: OpenAI, image creation, generative art, artificial intelligence, image processing, creative coding, deep learning, DALL·E 2, computer vision, neural networks
 Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-to-support-this-plugin-development
-Requires at least: 5.9
+Requires at least: 5.3
 Tested up to: 6.1.1
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,8 @@ With **Artist Image Generator** you can easily :
 - **Create images from text input** :  provide a description of what you want, define the size and the number of images the AI needs to generate. The plugin will makes you (1-10) images based on your text in a artistic or realistic way.
 
 - **Make an image variation from a .png file** :  provide a .png file, a description of the image, define the size and the number of images the AI needs to generate. The plugin will makes you (1-10) images variation from your file.
+
+- **NEW : Make an image variation from a non square .png / .jpg file at full size** : same as above but you can now provide a .jpg or .png file at full size and use the crop functionnality to select the square area of your choice and push it dynamically into .png
 
 - **Save the images you created yourself** : your creations can be saved in the Wordpress Media Library to use them wherever you want. Just selected the images you want to keep and add it to the WP library.
 
@@ -138,6 +140,10 @@ Yes. Read the rates limits on the official documentation : [OpenAI - Rate Limits
 - If you need to do an image variation, your uploaded file needs to be a .png file <= 4MB and at format 1:1.
 
 == Changelog ==
+
+1.0.4 - 2023-02-21
+----------------------------------------------------------------------
+- Add a crop functionnality and a .jpg conversion on the fly in the "Variate" tab to allow users using non square full size .jpg and .png file.
 
 1.0.3 - 2023-02-19
 ----------------------------------------------------------------------
