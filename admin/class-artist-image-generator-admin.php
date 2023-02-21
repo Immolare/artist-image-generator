@@ -134,7 +134,7 @@ class Artist_Image_Generator_Admin
     {
         global $pagenow;
 
-        return ( $pagenow === 'post.php' || $pagenow === 'post-new.php' ) && isset( $_GET['action'] ) && $_GET['action'] === 'edit' && isset( $_GET['post'] ) && $_GET['post'] > 0;
+        return ( $pagenow === 'post.php' || $pagenow === 'post-new.php' );
     }
 
     /**
