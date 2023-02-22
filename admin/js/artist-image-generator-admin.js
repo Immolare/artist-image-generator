@@ -2,8 +2,8 @@
     'use strict';
 
     const data = aig_data;
-    const maxCanvasWidth = 350;
-    const maxCanvasHeight = 350;
+    const maxCanvasWidth = 405;
+    const maxCanvasHeight = 405;
 
     const templates = {
         generate: wp.template('artist-image-generator-generate'),
@@ -204,6 +204,7 @@
         const cropButton = document.createElement('button');
         cropButton.setAttribute('role', 'button');
         cropButton.style.width = '100%';
+        cropButton.classList.add('button');
         cropButton.innerHTML = aig_ajax_object.cropperCropLabel;
         cropButton.addEventListener('click', function (e) {
             e.preventDefault();

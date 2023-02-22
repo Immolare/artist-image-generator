@@ -13,8 +13,19 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+#aig_cropper_preview {
+    padding-bottom: 15px;
+}
+#aig_cropper_preview img:not(.hidden) {
+	margin: auto;
+	display: block;
+}
+#aig_cropper_preview button {
+    display: block;
+    margin: 15px auto 0 auto;
+}
 #aig_cropper_canvas_area {
-    max-width: 350px;
+    max-width: 405px;
 }
 #aig_cropper_canvas_area canvas {
     display: none !important;
