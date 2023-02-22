@@ -86,12 +86,16 @@ class Artist_Image_Generator_Admin
                 wp_enqueue_script( 'media-editor' );
             }
 
+            //wp_enqueue_script( $this->plugin_name . '-cropper', plugin_dir_url( __FILE__ ) . 'js/artist-image-generator-admin-cropper.js', [], $this->version, true );
             wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/artist-image-generator-admin.js', $dependencies, $this->version, true );
             wp_localize_script( $this->plugin_name, 'aig_ajax_object', array(
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'cropper_script_path' => plugin_dir_url( __FILE__ ) . 'js/artist-image-generator-admin-cropper.js',
                 'is_media_editor' => $is_media_editor_page,
                 'variateLabel' => esc_attr('Variate', 'artist-image-generator'),
-                'generateLabel' => esc_attr('Generate', 'artist-image-generator')
+                'generateLabel' => esc_attr('Generate', 'artist-image-generator'),
+                'cropperCropLabel' => esc_attr('Crop this zone', 'artist-image-generator'),
+                'cropperCancelLabel' => esc_attr('Cancel the zoom', 'artist-image-generator')
             ) );
 
             if ($is_media_editor_page) {
@@ -130,7 +134,7 @@ class Artist_Image_Generator_Admin
     {
         global $pagenow;
 
-        return ( $pagenow === 'post.php' || $pagenow === 'post-new.php' ) && isset( $_GET['action'] ) && $_GET['action'] === 'edit' && isset( $_GET['post'] ) && $_GET['post'] > 0;
+        return ( $pagenow === 'post.php' || $pagenow === 'post-new.php' );
     }
 
     /**
@@ -596,7 +600,7 @@ class Artist_Image_Generator_Admin
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
                 <div class="notice notice-info inline" style="margin-top:15px;">
-                    <p><?php esc_attr_e('Heads up ! To make an image variation you need to provide a .png file less than 4MB in a 1:1 format (square). You can add a prompt input to describe the image. This value will be used to fill the image name and alternative text.', 'artist-image-generator'); ?></p>
+                    <p><?php esc_attr_e('Heads up ! To make an image variation you need to submit a .png file less than 4MB in a 1:1 format (square). However, you can upload a non square .jpg or a .png file at full size, and use the "crop" functionnality to resize the area you want. You can also add a prompt input to describe the image. This value will be used to fill the image name and alternative text.', 'artist-image-generator'); ?></p>
                 </div>
                 <table class="form-table" role="presentation">
                     <tbody class="tbody-container"></tbody>
@@ -728,8 +732,8 @@ class Artist_Image_Generator_Admin
                                 <?php esc_attr_e('Add to media library', 'artist-image-generator'); ?>
                             </a>
                         </div>
-                        <# }) #>
-                            <# } #>
+                    <# }) #>
+                <# } #>
             </div>
         </script>
 
@@ -737,11 +741,15 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-form-image">
             <tr>
                 <th scope="row">
-                    <label for="image"><?php esc_attr_e('PNG square file (< 4MB)', 'artist-image-generator'); ?></label>
+                    <label for="image"><?php esc_attr_e('File (.png, .jpg)', 'artist-image-generator'); ?></label>
                 </th>
                 <td>
-                    <input type="file" name="image" id="image" class="regular-text" />
+                    <input type="file" name="image" id="image" class="regular-text aig_handle_cropper" accept=".png,.jpg"/>
                 </td>
+            </tr>
+            <tr>
+                <th id="aig_cropper_preview" scope="row"><img src="" class="hidden" width="210" height="210"/></th>
+                <td id="aig_cropper_canvas_area"></td>
             </tr>
         </script>
 

@@ -2,67 +2,72 @@
 Contributors: Immolare
 Tags: OpenAI, image creation, generative art, artificial intelligence, image processing, creative coding, deep learning, DALL·E 2, computer vision, neural networks
 Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-to-support-this-plugin-development
-Requires at least: 5.9
+Requires at least: 5.3
 Tested up to: 6.1.1
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.5
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Artist Image Generator is a Wordpress plugin using the power of AI to create royality-free images from scratch for your Wordpress website.
+Create royalty-free images for your Wordpress site with the AI-powered Artist Image Generator plugin. Easy to use and beginner-friendly.
 
 
 
 == Description ==
-### Why Artist Image Generator ?
+### Introducing Artist Image Generator - The Ultimate AI Image Creation Plugin for WordPress
 
-**Artist Image Generator** is an image creation tool using DALL·E 2. DALL·E 2 is a new artifical intelligence service provided by OpenAI (creators of ChatGPT) which allow users to create images from a text description they provide.
+**Artist Image Generator** is the leading AI image generator tool on the market, powered by [DALL·E 2](https://openai.com/dall-e-2/), the advanced artificial intelligence service developed by OpenAI (the same team behind **ChatGPT**). As a comprehensive AI image creation plugin, Artist Image Generator provides unmatched flexibility and convenience for WordPress users looking to create stunning, royalty-free images for a variety of purposes.
 
-We've integrated this tool in a Wordpress plugin to improve the creativity of the WP community. From there **you have access to a powerful AI assistant for helping you illustrate your blog posts, pages and more**.
+With Artist Image Generator, you can effortlessly **generate high-quality images in various styles, including art, painting, and realistic images**. Whether you need captivating blog post illustrations, engaging featured images, or eye-catching logos, our advanced AI technology ensures that every image you create is visually stunning and **optimized for your WordPress site, while also being completely royalty-free**.
 
-You can stop looking for royalty free images on the internet and just use our image creation tool to helping you illustrate any element of your Wordpress site.
+Say goodbye to the hassle and cost of searching for royalty-free images online - our plugin lets you quickly and easily create custom images with just a text description. Our integration with DALL·E 2 and OpenAI ensures that you have access to the latest in AI image creation technology, delivering superior results every time.
 
-### What are the possibilities of Artist Image Generator ?
+Experience the power of AI art generation with Artist Image Generator today. Download our AI image creation plugin now and take your WordPress site to the next level of productivity.
 
-With **Artist Image Generator** you can easily :
 
-- **Create images from text input** :  provide a description of what you want, define the size and the number of images the AI needs to generate. The plugin will makes you (1-10) images based on your text in a artistic or realistic way.
 
-- **Make an image variation from a .png file** :  provide a .png file, a description of the image, define the size and the number of images the AI needs to generate. The plugin will makes you (1-10) images variation from your file.
 
-- **Save the images you created yourself** : your creations can be saved in the Wordpress Media Library to use them wherever you want. Just selected the images you want to keep and add it to the WP library.
+### Unlock Your Creativity with the Artist Image Generator Plugin
 
-- **Use the plugin directly in the Media Manager Modal** : we've added new 2 tabs in the Media Manager Modal to give you the capability to use the plugin directly when writing a post. Distraction free.
+Looking for an easy way to create stunning images for your WordPress site? Look no further than Artist Image Generator! Our plugin harnesses the power of AI to help you create beautiful images quickly and easily.
+
+With Artist Image Generator, you can:
+
+- **Create images from text input:** Simply provide a text description of what you want to create, and the AI will generate up to 10 images based on your description. Choose from different image creation styles, including art, painting, and realistic.
+- **Generate image variations from a .png file:**C Upload a .png file, provide a description of the image, and the AI will create up to 10 variations of the image. You can choose from different image creation styles to suit your needs.
+- **Create image variations from a non-square .png or .jpg file at full size:** Upload a non-square .png or .jpg file at full size, use the crop functionality to select the area you want to use, and the AI will create up to 10 variations of the image. You can choose from different image creation styles to suit your needs.
+- **Save your images to the WordPress Media Library:** All the images you create can be saved to your WordPress Media Library for easy access. You can use these images however you like, without worrying about licensing issues.
+- **Use the plugin directly in the Media Manager Modal:** The plugin integrates seamlessly with WordPress, allowing you to use it directly when writing a post or page, without any distractions.
+
+Whether you're a blogger, marketer, or website owner, Artist Image Generator can help you create stunning images that will engage your audience and enhance your content. Give it a try today and see the difference it can make for your site!
 
 ### Artist Image Generator's demo :
 
 https://www.youtube.com/watch?v=nEeR_qmkvWg
 
-### What are advantages of our plugin ?
+### Benefits of Our AI Image Creation Plugin
 
-- **An AI assistant helping you illustrate your posts** : no need to search random images on Internet, just describe what you want and let the AI do the work for you in few seconds
+- **Effortlessly Illustrate Your Posts with AI:** No more wasting time searching for images online, simply provide a description and let our AI generate images for you in a matter of seconds.
 
-- **Distraction free** : the plugin can be used from the plugin page OR directly in the Media Manager Modal when writing a post.
+- **Distraction-Free Interface:** Use the plugin directly from the plugin page or in the Media Manager Modal while writing a post.
 
-- **SEO friendly** : when you save your images, the plugin will automaticaly rename the generated files in a SEO way using the description you provided. Then, the plugin will add some "alt text" and "title"  to help you improve your website SEO.
+- **Improved SEO:** Our plugin automatically renames the generated files with SEO-friendly names based on the description you provide. We also add "alt text" and "title" tags to the images to help improve your website's SEO.
 
-- **Begginer friendly, light and easy to use** : contrary to other plugins you can find, there is only 2 core functionnalities that are really easy to use. Ideal for Wordpress users which are not developers and want some easy functions to generate images.
+- **Beginner-Friendly and Lightweight:** Unlike other plugins, our image creation plugin focuses on two core functionalities that are easy to use. Perfect for non-developer WordPress users who want a simple tool to generate images.
 
-- **Easy way to connect** : you just need an **OpenAI API Key to work**. All the steps are described in the settings page of the plugin, in a pedagogic way.
+- **Easy Connection :** You only need an OpenAI API Key to use our plugin, and all the steps are clearly explained in the plugin's settings page.
 
-- **Royalty-free images** - Use the images you create on your website without worrying about licensing issues. You are the creator, all the image belongs to you and are free to use.
+- **Royalty-Free Images :** You own the images you create, and can use them on your website without worrying about licensing issues.
 
-- **Unlimited users** : Any WordPress user on any site can use Artist Image Generator to create new images from scratch.
+- **Unlimited Users and Sites :** Anyone with a WordPress site can use our image creation plugin for free, and it can be used on multiple websites.
 
-- **Unlimited sites** : You can use the plugin on multiple websites. It is just a tools to generate image and save them in the Wordpress Media Library.
+- **Completely Free and No Extra Licenses:** We provide a free and accessible way for the WordPress community to use artificial intelligence to create images.
 
-- **Free to use, no extra licence** : Artist Image Generator provide a free way to use an artifical intelligence for the Wordpress community. All the functionnalities are free.
+- **Fully Translatable:** The plugin can be translated into any language using the standard .po and .mo files.
 
-- **Fully Translatable** : The plugin is translatable in any language the classic way (.po, .mo files)
+### Privacy Policy
 
-### Privacy
-
-The Artist Image Generator doesn't collect any data. When you prompt a file or description, the file / description is sent to the DALL·E 2 API. The API returns a response with the images generated. From there the plugin just use the description to rename and fill the image metadatas for your Wordpress website.
+We take your privacy seriously at Artist Image Generator. Rest assured that we don't collect any data from you when you use our plugin. Your file or description is only sent to the DALL·E 2 API for generating images, and we don't store or share any of that information. The API responds with the generated images, which are then used by the plugin to fill in image metadata and rename files in a way that's optimized for SEO. We value your privacy and aim to provide a safe and secure experience for all our users.
 
 ### Credits
 
@@ -74,7 +79,7 @@ The Artist Image Generator doesn't collect any data. When you prompt a file or d
 == Screenshots ==
 1. Fill your OpenAI API Key here in "Settings" tab
 2. Image creation in "Generate" tab
-3. Image variation (.png / 1:1 format / < 4MB) in "Variate" tab
+3. Image variation (.png / 1:1 format / < 4MB) in "Variate" tab (you can crop a .jpg or .png file)
 4. Press "Add to the media library" and find your image in your Wordpress Media Library
 5. Add the image for example in a blog post as image or thumbnail
 6. Now you can use Artist Image Generator directly from the Media Manager Modal when you add new image while writing a post.
@@ -138,6 +143,10 @@ Yes. Read the rates limits on the official documentation : [OpenAI - Rate Limits
 - If you need to do an image variation, your uploaded file needs to be a .png file <= 4MB and at format 1:1.
 
 == Changelog ==
+
+1.0.4 - 2023-02-21
+----------------------------------------------------------------------
+- Add a crop functionnality and a .jpg conversion on the fly in the "Variate" tab to allow users using non square full size .jpg and .png file.
 
 1.0.3 - 2023-02-19
 ----------------------------------------------------------------------
