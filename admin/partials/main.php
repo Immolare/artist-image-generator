@@ -17,7 +17,7 @@
     <h2 class="nav-tab-wrapper">
         <?php foreach ( $this->admin_actions as $action ) : ?>
             <a href="<?php echo esc_url( $this->get_admin_tab_url( $action ) ); ?>" class="nav-tab <?php echo esc_attr( $this->is_tab_active( $action, true ) ); ?>">
-                <?php esc_attr_e(ucfirst($action), 'artist-image-generator'); ?>
+                <?php echo $this->admin_actions_labels[$action]; ?>
             </a>
         <?php endforeach; ?>
     </h2>

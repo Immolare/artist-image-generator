@@ -314,27 +314,37 @@
 
         jQuery(document).ready(function ($) {
             if (wp.media) {
+                let needRefreshItem = false;
+                let needRefreshTab = false;
                 wp.media.view.Modal.prototype.on("open", function () {
                     const activeItem = $('body').find('.media-modal-content').find('.media-router button.media-menu-item.active')[0];
-                    const innerTextActive = activeItem ? (activeItem.innerText).toLowerCase() : null;
-                    if ([labels.generate.toLowerCase(), labels.variate.toLowerCase()].includes(innerTextActive)) {
-                        refreshMyTabContent(data, innerTextActive);
+                    const menuItemId = $(activeItem).attr('id');
+                    const menuItemIdWithoutPrefix = menuItemId.replace(/^menu-item-/, '');
+                    if (["generate", "variate"].includes(menuItemIdWithoutPrefix)) {
+                        refreshMyTabContent(data, menuItemIdWithoutPrefix);
+                        needRefreshItem = true;
+                    } else if (needRefreshItem && wp.media.frame.content.get() !== null && wp.media.frame.content.get().collection !== undefined) {
+                        wp.media.frame.content.get().collection.props.set({ ignore: (+ new Date()) });
+                        needRefreshItem = false;
+                    }
+                    else {
+                        needRefreshItem = false;
                     }
                 });
 
-                let needRefresh = false;
                 $(wp.media).on('click', '.media-router button.media-menu-item', function (e) {
                     const activeTab = $('body').find('.media-modal-content').find('.media-router button.media-menu-item.active')[0];
-                    const innerTextActiveTab = activeTab ? (activeTab.innerText).toLowerCase() : null;
-                    if ([labels.generate.toLowerCase(), labels.variate.toLowerCase()].includes(innerTextActiveTab)) {
-                        needRefresh = true;
-                        refreshMyTabContent(data, innerTextActiveTab);
-                    } else if (needRefresh && wp.media.frame.content.get() !== null && wp.media.frame.content.get().collection !== undefined) {
+                    const menuTabId = $(activeTab).attr('id');
+                    const menuTabIdWithoutPrefix = menuTabId.replace(/^menu-item-/, '');
+                    if (["generate", "variate"].includes(menuTabIdWithoutPrefix)) {
+                        needRefreshTab = true;
+                        refreshMyTabContent(data, menuTabIdWithoutPrefix);
+                    } else if (needRefreshTab && wp.media.frame.content.get() !== null && wp.media.frame.content.get().collection !== undefined) {
                         wp.media.frame.content.get().collection.props.set({ ignore: (+ new Date()) });
-                        needRefresh = false;
+                        needRefreshTab = false;
                     }
                     else {
-                        needRefresh = false;
+                        needRefreshTab = false;
                     }
                 });
             }
@@ -349,7 +359,7 @@
             addInputFileCropperHandler();
         } else if ($(tabSelectors.about).length) {
             buildTab(tabSelectors.about, templates.about, data);
-        } else if ($(tabSelectors.generate).length) {
+        } else {
             buildTab(tabSelectors.generate, templates.generate, data);
         }
 
