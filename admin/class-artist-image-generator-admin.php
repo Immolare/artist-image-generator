@@ -30,6 +30,7 @@ class Artist_Image_Generator_Admin
     private string $admin_partials_path;
     private array $admin_display_templates;
     private array $admin_actions;
+    private array $admin_actions_labels;
 
     private $options;
 
@@ -51,6 +52,12 @@ class Artist_Image_Generator_Admin
             self::ACTION_VARIATE,
             self::ACTION_SETTINGS,
             self::ACTION_ABOUT
+        ];
+        $this->admin_actions_labels = [
+            self::ACTION_GENERATE => __('Variate', 'artist-image-generator'),
+            self::ACTION_VARIATE => __('Generate', 'artist-image-generator'),
+            self::ACTION_SETTINGS => __('Settings', 'artist-image-generator'),
+            self::ACTION_ABOUT => __('About', 'artist-image-generator')
         ];
     }
 
@@ -92,10 +99,10 @@ class Artist_Image_Generator_Admin
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'cropper_script_path' => plugin_dir_url( __FILE__ ) . 'js/artist-image-generator-admin-cropper.js',
                 'is_media_editor' => $is_media_editor_page,
-                'variateLabel' => esc_attr('Variate', 'artist-image-generator'),
-                'generateLabel' => esc_attr('Generate', 'artist-image-generator'),
-                'cropperCropLabel' => esc_attr('Crop this zone', 'artist-image-generator'),
-                'cropperCancelLabel' => esc_attr('Cancel the zoom', 'artist-image-generator')
+                'variateLabel' => esc_attr__('Variate', 'artist-image-generator'),
+                'generateLabel' => esc_attr__('Generate', 'artist-image-generator'),
+                'cropperCropLabel' => esc_attr__('Crop this zone', 'artist-image-generator'),
+                'cropperCancelLabel' => esc_attr__('Cancel the zoom', 'artist-image-generator')
             ) );
 
             if ($is_media_editor_page) {
@@ -122,7 +129,7 @@ class Artist_Image_Generator_Admin
     {
         global $pagenow;
 
-        return $pagenow === 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] === $this->prefix;
+        return $pagenow === 'upload.php' && isset( $_GET['page'] ) && $_GET['page'] === $this->prefix;
     }
 
     /**
@@ -547,7 +554,7 @@ class Artist_Image_Generator_Admin
                 [
                     self::QUERY_FIELD_ACTION => $action
                 ],
-                admin_url('admin.php?page=' . $this->prefix)
+                admin_url('upload.php?page=' . $this->prefix)
             )
         );
     }
