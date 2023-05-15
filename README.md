@@ -75,7 +75,7 @@ Read the rates limits on the official documentation : https://platform.openai.co
 ## Make a donation to support this plugin development
 
 This plugin is free and made available to the Wordpress community. To allow me to effectively maintain this plugin, feel free to make a donation. To be credited as donator you can email me at **contact@pierrevieville.fr**.
-
+- **PAYPAL** : https://www.paypal.me/pierrevieville
 - **BTC** : 3KtmAMgtkusp1a7UCtThQF4DW2uaeHQsuF
 - **ETH** : 0x30d2ec629a16fb035d19e5c0e3e06bdf75ee562a
 - **LTC** : ltc1q2r3wht2mz4m97yw3mxq823rkgp82e8uz09d6dr
