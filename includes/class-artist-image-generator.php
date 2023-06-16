@@ -78,7 +78,44 @@ class Artist_Image_Generator {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+        // Initialize the license SDK
+        $this->initialize_license_sdk();
+	}
 
+    /**
+	 * Initialize the license SDK.
+	 *
+	 * Create an instance of the license SDK and set the necessary configuration.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function initialize_license_sdk() {
+		// Set the license server URL, customer key, customer secret, and product IDs
+		$license_server = 'https://developpeur-web.site'; // Replace with your license server URL
+		$customer_key = 'ck_cd59905ed7072a7f07ff8a028031743ec657661c'; // Replace with your customer key
+		$customer_secret = 'cs_52543ce45eb75c518aa939a480539e9a226026e1'; // Replace with your customer secret
+		$product_ids = [26733]; // Replace with your product IDs
+
+		// Create an instance of the license SDK
+		$license_sdk = new LMFW\SDK\License(
+			'Artist Image Generator (Pro)', // Replace with the name of your plugin
+			$license_server,
+			$customer_key,
+			$customer_secret,
+			$product_ids,
+			'plugin_license', // Replace with a unique value to avoid conflicts with other plugins
+			'plugin-is-valid', // Replace with a unique value to avoid conflicts with other plugins
+			5 // Replace with the number of days before checking the license validity
+		);
+
+		// Validate the license status
+		$valid_status = $license_sdk->validate_status();
+		if ($valid_status['is_valid']) {
+			// The license is valid, perform actions accordingly
+		} else {
+			// The license is not valid, handle it as needed
+		}
 	}
 
 	/**
@@ -103,6 +140,11 @@ class Artist_Image_Generator {
          * Load the vendor/autoload.php
          */
         require plugin_dir_path( dirname( __FILE__ ) ) . 'vendor/autoload.php';
+
+        /**
+		 * The class responsible for orchestrating the licence keys
+		 */
+        require plugin_dir_path( dirname( __FILE__ ) ) . 'libraries/license-sdk/License.php';
 
 		/**
 		 * The class responsible for orchestrating the actions and filters of the

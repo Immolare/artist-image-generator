@@ -2,12 +2,15 @@
     'use strict';
 
     const data = aig_data;
-    const maxCanvasWidth = 405;
-    const maxCanvasHeight = 405;
+    const maxCanvasWidth = 450;
+    const maxCanvasHeight = 450;
+    var action = '';
 
     const templates = {
         generate: wp.template('artist-image-generator-generate'),
         variate: wp.template('artist-image-generator-variate'),
+        edit: wp.template('artist-image-generator-edit'),
+        editDemo: wp.template('artist-image-generator-edit-demo'),
         settings: wp.template('artist-image-generator-settings'),
         about: wp.template('artist-image-generator-about'),
         notice: wp.template('artist-image-generator-notice'),
@@ -21,6 +24,7 @@
     const tabSelectors = {
         generate: '#tab-container-generate',
         variate: '#tab-container-variate',
+        edit: '#tab-container-edit',
         settings: '#tab-container-settings',
         about: '#tab-container-about',
     };
@@ -32,9 +36,13 @@
 
         const $tbodyContainer = $tabContainer.find('.tbody-container');
 
-        if (tabSelector === '#tab-container-variate') {
+        if (tabSelector === '#tab-container-variate' || tabSelector === '#tab-container-edit') {
             $tbodyContainer.append(templates.formImage(data));
         }
+
+        const words = tabSelector.split('-');
+        const lastWord = words[words.length - 1];
+        action = lastWord;
 
         $tbodyContainer.append(templates.formPrompt(data));
         $tbodyContainer.append(templates.formSize(data));
@@ -42,6 +50,181 @@
 
         $tabContainer.find('.notice-container').append(templates.notice(data));
         $tabContainer.find('.result-container').append(templates.result(data));
+    }
+
+    function addFabricDrawing(canvas) {
+        const originalCanvas = canvas;
+        const fabricCanvas = new fabric.Canvas(canvas.id, { backgroundImage: originalCanvas.toDataURL("image/png", 1) });
+
+        fabricCanvas.isDrawingMode = true;
+
+       // Customize the brush options
+       let brushSize = 50;
+       fabricCanvas.freeDrawingBrush.width = brushSize;
+       fabricCanvas.freeDrawingBrush.color = 'rgba(0, 0, 0, 1)';
+       fabricCanvas.freeDrawingBrush.globalCompositeOperation = 'source-out';
+
+        // Create a new canvas element to store the mask
+        const maskCanvas = document.createElement('canvas');
+        maskCanvas.width = fabricCanvas.width;
+        maskCanvas.height = fabricCanvas.height;
+        const maskContext = maskCanvas.getContext('2d');
+
+        // Listen to the path:created event
+        fabricCanvas.on('path:created', function (e) {
+            const path = e.path;
+            path.globalCompositeOperation = 'destination-out';
+            fabricCanvas.renderAll();
+
+            // Check if the fabric canvas is usable
+            if (fabricCanvas.width > 0 && fabricCanvas.height > 0) {
+                // Clear the mask canvas and set a transparent background
+                maskContext.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+                maskContext.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent background
+                maskContext.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+
+                // Copy the fabric canvas content to the mask canvas
+                maskContext.drawImage(fabricCanvas.getElement(), 0, 0, fabricCanvas.width, fabricCanvas.height);
+                const maskImageData = maskContext.getImageData(0, 0, fabricCanvas.width, fabricCanvas.height);
+
+                // Convert the mask canvas to transparent PNG data URL
+                // Iterate through the mask image data and set alpha channel to 0 (transparent)
+                for (let i = 0; i < maskImageData.data.length; i += 4) {
+                    maskImageData.data[i + 3] = 0; // Set alpha channel to 0
+                }
+
+                // Put the modified mask image data back onto the mask canvas
+                maskContext.putImageData(maskImageData, 0, 0);
+
+                // Create a new canvas for the final result
+                const resultCanvas = document.createElement('canvas');
+                resultCanvas.width = fabricCanvas.width;
+                resultCanvas.height = fabricCanvas.height;
+                const resultContext = resultCanvas.getContext('2d');
+
+                // Draw the original image on the result canvas
+                resultContext.drawImage(originalCanvas, 0, 0);
+
+                // Draw the mask on the result canvas
+                resultContext.drawImage(maskCanvas, 0, 0);
+
+                // Convert the result canvas to a blob
+                resultCanvas.toBlob(function (blob) {
+                    // Create a file from the blob
+                    const file = new File([blob], 'mask.png', { type: 'image/png', lastModified: new Date().getTime() });
+
+                    // Create a DataTransfer object to store the file
+                    let container = new DataTransfer();
+                    container.items.add(file);
+
+                    // Assign the files to the input element
+                    const maskInput = document.querySelector('#mask');
+                    maskInput.files = container.files;
+                }, 'image/png');
+            }
+        });
+
+        // Create Undo button
+        const undoButton = document.createElement('button');
+        undoButton.innerHTML = '<span class="dashicons dashicons-undo"></span>';
+        undoButton.type = 'button';
+        undoButton.className = 'button-link';
+        undoButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            fabricCanvas.undo();
+        });
+
+        // Create Brush Size range input
+        const brushSizeInput = document.createElement('input');
+        brushSizeInput.id = 'aig_brush_size_input';
+        brushSizeInput.type = 'range';
+        brushSizeInput.min = '1';
+        brushSizeInput.max = '100';
+        brushSizeInput.value = brushSize;
+        brushSizeInput.addEventListener('input', function () {
+            brushSize = parseInt(brushSizeInput.value);
+            fabricCanvas.freeDrawingBrush.width = brushSize;
+        });
+
+        // Create Brush Size range input
+        //const brushSizeInputLabel = document.createElement('label');
+        //brushSizeInputLabel.for = 'aig_brush_size_input';
+        //brushSizeInputLabel.textContent = 'Brush size';
+
+        // Create container div for buttons
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'button-container';
+        //buttonContainer.style.display = 'grid';
+        //buttonContainer.appendChild(brushSizeInputLabel);
+        buttonContainer.appendChild(brushSizeInput);
+        buttonContainer.appendChild(undoButton);
+        
+        // Append the button container and fabric canvas to the parent container
+        const parentContainer = document.querySelector('#aig_cropper_preview');
+        parentContainer.style.position = 'relative';
+        parentContainer.appendChild(buttonContainer);
+
+        // Function to undo the last path
+        fabricCanvas.undo = function () {
+            const paths = fabricCanvas.getObjects('path');
+            if (paths.length > 0) {
+                const lastPath = paths[paths.length - 1];
+                fabricCanvas.remove(lastPath);
+                fabricCanvas.renderAll();
+            }
+        };
+    }
+
+    function addDrawingTool(container, canvasId, cropper) {
+        const croppedCanvas = cropper.getCroppedCanvas({
+            width: maxCanvasWidth,
+            height: maxCanvasHeight // input value
+        });
+        croppedCanvas.id = 'canvas-draw';
+        const cropperContainer = cropper.container;
+        cropper.destroy(); // Destroy the cropper
+
+        cropperContainer.appendChild(croppedCanvas); // Append the original canvas back to the container
+
+        const cancelButton = document.createElement('button');
+        cancelButton.type = 'button';
+        cancelButton.textContent =  aig_ajax_object.cancelLabel;;
+        cancelButton.className = 'button aig_cancel_button';
+        cancelButton.style.width = '100%';
+        cancelButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            container.removeChild(cancelButton);
+            const canvas = document.getElementById('aig_cropper_canvas_area');
+            canvas.hidden = true;
+            addInputFileCropperHandler(true); // Initialize a new cropper on the original canvas
+        });
+        container.appendChild(cancelButton);
+
+        if (action === 'edit') {
+            const fabricButton = document.createElement('button');
+            fabricButton.type = 'button';
+            fabricButton.textContent = aig_ajax_object.maskLabel;
+            fabricButton.className = 'button';
+            fabricButton.style.width = '100%';
+            fabricButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                addFabricDrawing(croppedCanvas);
+
+                this.parentNode.removeChild(this);
+            });
+
+            container.appendChild(fabricButton);
+        }
+    }
+
+    function showDrawingButtons(cropper) {
+        const drawingToolContainer = document.getElementById('drawing-button-container');
+        drawingToolContainer.innerHTML = '';
+        drawingToolContainer.style.display = 'block';
+
+        const canvas = document.getElementById('aig_cropper_canvas_area');
+        addDrawingTool(drawingToolContainer, canvas.id, cropper);
     }
 
     function addMediaHandler() {
@@ -90,13 +273,18 @@
         });
     }
 
-    async function addInputFileCropperHandler() {
+    async function addInputFileCropperHandler(refresh) {
+        refresh = refresh || false;
         const input = document.querySelector('input[type="file"].aig_handle_cropper');
-        input.addEventListener('change', async function () {
-            if (input.files && input.files[0]) {
-                const dataUrl = await readFileAsDataURL(input.files[0]);
+        const originalInput = document.getElementById('original');
+
+        async function init(fileInput, keepOriginal) {
+            fileInput = fileInput || input;
+            keepOriginal = keepOriginal || false;
+            if (fileInput.files && fileInput.files[0]) {
+                const dataUrl = await readFileAsDataURL(fileInput.files[0]);
                 const image = await createImage(dataUrl);
-                
+
                 await imageLoaded(image);
 
                 const container = createContainer(maxCanvasWidth, maxCanvasHeight);
@@ -105,16 +293,55 @@
 
                 const cropperArea = document.getElementById('aig_cropper_canvas_area');
                 cropperArea.innerHTML = '';
+                cropperArea.hidden = false;
                 cropperArea.appendChild(container);
 
                 const cropper = createCropper(canvas);
                 const cropButton = createCropButton(canvas, cropper, input);
-
                 const cropperPreview = document.getElementById('aig_cropper_preview');
-                cropperPreview.innerHTML = '<img src="" class="hidden" width="210" height="210"/>';
-                cropperPreview.appendChild(cropButton);
+                cropperPreview.innerHTML = '';
+                
+
+                const imgElement = document.createElement('img');
+                imgElement.src = '';
+                imgElement.className = 'hidden';
+                imgElement.width = 210;
+                imgElement.height = 210;
+
+                const divDrawingTools = document.createElement('div');
+                divDrawingTools.id = 'drawing-button-container';
+
+                const divParent = document.createElement('div');
+                divParent.id = 'aig_cropper_preview_inner';
+                
+                divParent.appendChild(imgElement);
+                divParent.appendChild(cropButton);
+                divParent.appendChild(divDrawingTools);
+                cropperPreview.appendChild(divParent);
+
+                // Update original input with original image
+                if (!keepOriginal) {
+                    const originalFile = new File([input.files[0]], 'original.png', {
+                        type: 'image/png',
+                        lastModified: new Date().getTime()
+                    });
+                    const originalContainer = new DataTransfer();
+                    originalContainer.items.add(originalFile);
+                    originalInput.files = originalContainer.files;
+                }
             }
-        });
+        }
+
+        if (refresh) {
+            init(originalInput, true);
+        }
+        else {
+            if (input) {
+                input.addEventListener('change', async function () {
+                    init();
+                });
+            }
+        }
     }
 
     async function createImage(dataUrl) {
@@ -187,12 +414,12 @@
         const cropper = new Cropper(canvas, {
             aspectRatio: 1 / 1,
             crop: function (event) {
-                let imgSrc = this.cropper.getCroppedCanvas({
+                let imgSrc = cropper.getCroppedCanvas({
                     width: 210,
-                    height: 210// input value
+                    height: 210 // input value
                 }).toDataURL("image/png", 1);
 
-                const previewImg = document.querySelector('#aig_cropper_preview img');
+                const previewImg = document.querySelector('#aig_cropper_preview_inner img');
                 previewImg.src = imgSrc;
                 previewImg.classList.remove('hidden');
             }
@@ -218,7 +445,11 @@
                 let container = new DataTransfer();
                 container.items.add(file);
                 targetEventInput.files = container.files;
+                showDrawingButtons(cropper);
             }, 'image/png');
+
+            this.parentNode.removeChild(this);
+
             return false;
         });
         return cropButton;
@@ -244,10 +475,16 @@
         const $tabEl = $('<div id="tab-container-' + action + '"></div>');
         $('body .media-modal-content .media-frame-content').empty().append($tabEl);
 
-        buildTab('#tab-container-' + action, templates[action], data);
+        var template = templates[action];
+
+        if (action === "edit" && !aig_ajax_object.valid_licence) {
+            template = templates.editDemo;
+        }
+
+        buildTab('#tab-container-' + action, template, data);
 
         $tabEl.append($(tabSelectors[action]));
-        if (action === "variate") {
+        if (action === "variate" || (action === "edit" && aig_ajax_object.valid_licence)) {
             addInputFileCropperHandler();
         }
         $tabEl.on('submit', 'form', function (e) {
@@ -286,6 +523,7 @@
     function initAdminMediaModal() {
         const labels = {
             variate: aig_ajax_object.variateLabel,
+            edit: aig_ajax_object.editLabel,
             generate: aig_ajax_object.generateLabel,
         };
         const l10n = wp.media.view.l10n;
@@ -309,6 +547,10 @@
                     text: labels.variate,
                     priority: 80,
                 },
+                edit: {
+                    text: labels.edit,
+                    priority: 80,
+                },
             });
         };
 
@@ -320,7 +562,7 @@
                     const activeItem = $('body').find('.media-modal-content').find('.media-router button.media-menu-item.active')[0];
                     const menuItemId = $(activeItem).attr('id');
                     const menuItemIdWithoutPrefix = menuItemId.replace(/^menu-item-/, '');
-                    if (["generate", "variate"].includes(menuItemIdWithoutPrefix)) {
+                    if (["generate", "variate", "edit"].includes(menuItemIdWithoutPrefix)) {
                         refreshMyTabContent(data, menuItemIdWithoutPrefix);
                         needRefreshItem = true;
                     } else if (needRefreshItem && wp.media.frame.content.get() !== null && wp.media.frame.content.get().collection !== undefined) {
@@ -336,7 +578,7 @@
                     const activeTab = $('body').find('.media-modal-content').find('.media-router button.media-menu-item.active')[0];
                     const menuTabId = $(activeTab).attr('id');
                     const menuTabIdWithoutPrefix = menuTabId.replace(/^menu-item-/, '');
-                    if (["generate", "variate"].includes(menuTabIdWithoutPrefix)) {
+                    if (["generate", "variate", "edit"].includes(menuTabIdWithoutPrefix)) {
                         needRefreshTab = true;
                         refreshMyTabContent(data, menuTabIdWithoutPrefix);
                     } else if (needRefreshTab && wp.media.frame.content.get() !== null && wp.media.frame.content.get().collection !== undefined) {
@@ -356,6 +598,10 @@
             buildTab(tabSelectors.settings, templates.settings, data);
         } else if ($(tabSelectors.variate).length) {
             buildTab(tabSelectors.variate, templates.variate, data);
+            addInputFileCropperHandler();
+        } else if ($(tabSelectors.edit).length) {
+            var template = aig_ajax_object.valid_licence ? templates.edit : templates.editDemo;
+            buildTab(tabSelectors.edit, template, data);
             addInputFileCropperHandler();
         } else if ($(tabSelectors.about).length) {
             buildTab(tabSelectors.about, templates.about, data);
@@ -384,14 +630,22 @@
             document.head.appendChild(script);
             return loadScript(aig_ajax_object.cropper_script_path);
         })
+        .then(() => fetch(aig_ajax_object.drawing_tool_script_path))
+        .then(response => response.text())
+        .then(scriptContent => {
+            const script = document.createElement('script');
+            script.textContent = scriptContent;
+            document.head.appendChild(script);
+            return loadScript(aig_ajax_object.drawing_tool_script_path);
+        })
         .then(() => {
-            aig_ajax_object.is_media_editor ?
-                initAdminMediaModal() :
-                initAdminPage()
-            ;
+            aig_ajax_object.is_media_editor
+                ? initAdminMediaModal()
+                : initAdminPage();
         })
         .catch(error => {
             console.error('Error loading script', error);
         });
+
 
 })(jQuery);

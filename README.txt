@@ -3,14 +3,13 @@ Contributors: Immolare
 Tags: openai, image creation, generative art, artificial intelligence, image processing, creative coding, deep learning, computer vision, neural networks, AI art generator, generative artist, generative AI art, AI-generated art, generative art creation, deep learning technology
 Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-to-support-this-plugin-development
 Requires at least: 5.3
-Tested up to: 6.1.1
+Tested up to: 6.2
 Requires PHP: 7.4
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Create royalty-free images for your Wordpress site with the AI-powered Artist Image Generator plugin. Easy to use and beginner-friendly.
-
 
 
 == Description ==
@@ -23,17 +22,26 @@ Are you tired of searching for the perfect images for your WordPress site, only 
 
 Say goodbye to the hassle and cost of searching for royalty-free images online – our plugin lets you quickly and easily create custom images with just a text description. With the power of [DALL·E 2](https://openai.com/dall-e-2/), the advanced artificial intelligence service developed by OpenAI (the team behind **ChatGPT**), you'll have access to the latest in AI image creation technology, delivering superior results every time.
 
-#### Create Stunning Images in Various Styles
+#### Create Stunning Images in Various Styles (Free version)
 
 With Artist Image Generator, you can effortlessly generate high-quality images in various styles, including art, painting, and realistic images. Whether you need captivating blog post illustrations, engaging featured images, or eye-catching logos, our advanced AI technology ensures that every image you create is visually stunning and optimized for your WordPress site, while also being completely royalty-free.
 
 https://www.youtube.com/watch?v=msd81YXw5J8
 
-#### Generate Image Variations with Ease
+#### Generate Image Variations with Ease (Free version)
 
 Need to create multiple variations of the same image? No problem! Artist Image Generator lets you generate up to 10 variations of an image, simply by providing a text description or uploading a .png or .jpg file. And if you're working with a non-square image, no worries – our plugin's crop functionality makes it easy to select the area you want to use and create variations at full size.
 
 https://www.youtube.com/watch?v=FtGFMsLTxYw
+
+
+#### Mask Image and input what you want (Pro version)
+
+Enhance your image editing capabilities with the Pro version, which seamlessly integrates into the WordPress Media Library when creating articles. Now, you can upload an image, effortlessly crop it to your desired dimensions, and create captivating mask overlays. Simply provide a descriptive text of the elements you want to incorporate within the mask, and watch as your vision comes to life. This intuitive feature offers unparalleled customization options, right at your fingertips, making it easier than ever to create visually stunning and engaging content for your articles.
+
+https://www.youtube.com/watch?v=zfK1yJk9gRc
+
+Purchase pro version licence key now : https://developpeur-web.site/produit/artist-image-generator-pro/
 
 #### Save Time and Stay SEO-Friendly
 
@@ -170,6 +178,12 @@ Yes. Read the rates limits on the official documentation : [OpenAI - Rate Limits
 - If you need to do an image variation, your uploaded file needs to be a .png file <= 4MB and at format 1:1.
 
 == Changelog ==
+
+1.0.8 - 2023-06-15
+----------------------------------------------------------------------
+- Refactoring
+- Add pro version
+- Add image edition feature
 
 1.0.7 - 2023-02-24
 ----------------------------------------------------------------------
