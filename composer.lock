@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc5fc091b5faa208d4b76152f4d9f3df",
+    "content-hash": "680d1359e9ac25f50320cfb22d476de1",
     "packages": [
         {
             "name": "orhanerday/open-ai",
-            "version": "3.5",
+            "version": "4.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orhanerday/open-ai.git",
-                "reference": "04abf7a4b651556a6af900475de7bfeab75ec1d5"
+                "reference": "990d811759d53dbfdb42b2271155088fa2ca20b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orhanerday/open-ai/zipball/04abf7a4b651556a6af900475de7bfeab75ec1d5",
-                "reference": "04abf7a4b651556a6af900475de7bfeab75ec1d5",
+                "url": "https://api.github.com/repos/orhanerday/open-ai/zipball/990d811759d53dbfdb42b2271155088fa2ca20b1",
+                "reference": "990d811759d53dbfdb42b2271155088fa2ca20b1",
                 "shasum": ""
             },
             "require": {
@@ -55,7 +55,7 @@
             ],
             "support": {
                 "issues": "https://github.com/orhanerday/open-ai/issues",
-                "source": "https://github.com/orhanerday/open-ai/tree/3.5"
+                "source": "https://github.com/orhanerday/open-ai/tree/4.7.2"
             },
             "funding": [
                 {
@@ -63,7 +63,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-02-10T09:15:29+00:00"
+            "time": "2023-05-15T07:52:19+00:00"
         }
     ],
     "packages-dev": [],

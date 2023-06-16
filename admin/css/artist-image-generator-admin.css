@@ -13,57 +13,94 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
-#aig_cropper_preview {
+
+ #aig_cropper_preview {
     padding-bottom: 15px;
 }
+
 #aig_cropper_preview img:not(.hidden) {
-	margin: auto;
-	display: block;
+    margin: auto;
+    display: block;
 }
+
 #aig_cropper_preview button {
     display: block;
     margin: 15px auto 0 auto;
 }
+
 #aig_cropper_canvas_area {
     max-width: 405px;
 }
-#aig_cropper_canvas_area canvas {
+
+#aig_cropper_canvas_area > div > canvas:first-child {
     display: none !important;
 }
- #tab-container-generate,
- #tab-container-variate {
+
+#aig_cropper_preview .button-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-gap: 10px;
+    align-items: center;
+    margin-top: 15px;
+}
+
+#aig_cropper_preview .button-container .button-link {
+    text-decoration: none;
+    margin: 0;
+}
+
+.aig_cancel_button {
+    border-color: red !important;
+    color: red !important;
+}
+
+#tab-container-generate,
+#tab-container-variate,
+#tab-container-edit {
     padding: 0 16px;
- }
- .media-frame-content .notice {
+}
+
+.media-frame-content .notice {
     margin-left: 0;
     margin-right: 0;
- }
- .aig-container {
+}
+
+.aig-container {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-auto-rows: minmax(min-content, max-content);
-    grid-row-gap: .5em;
+    grid-row-gap: 0.5em;
     grid-column-gap: 1em;
 }
+
 .aig-container-3 {
     grid-template-columns: repeat(3, 1fr);
 }
+
 .aig-container .card .add_as_media {
     font-variant: all-small-caps;
     text-align: center;
     margin: 8px 0 0 0;
     width: 100%;
 }
+
 .aig-container .card .title .dashicons-yes {
     visibility: hidden;
 }
+
 .aig-container .card .title .dashicons-yes.is-active {
     visibility: visible;
 }
+
 @media screen and (max-width: 960px) {
-    .aig-container { grid-template-columns: repeat(2, 1fr); }
+    .aig-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
+
 @media screen and (max-width: 782px) {
-    .aig-container { grid-template-columns: repeat(1, 1fr); }
+    .aig-container {
+        grid-template-columns: repeat(1, 1fr);
+    }
 }

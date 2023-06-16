@@ -18,6 +18,7 @@ class Artist_Image_Generator_Admin
     const QUERY_FIELD_ACTION = 'action';
     const ACTION_GENERATE = 'generate';
     const ACTION_VARIATE = 'variate';
+    const ACTION_EDIT = 'edit';
     const ACTION_SETTINGS = 'settings';
     const ACTION_ABOUT = 'about';
     const LAYOUT_MAIN = 'main';
@@ -32,6 +33,12 @@ class Artist_Image_Generator_Admin
     private array $admin_actions;
     private array $admin_actions_labels;
 
+    // Set the license server URL, customer key, customer secret, and product IDs
+    const AIG_LICENCE_SERVER = 'https://developpeur-web.site';
+    const AIG_CUSTOMER_KEY = 'ck_cd59905ed7072a7f07ff8a028031743ec657661c';
+    const AIG_CUSTOMER_SECRET = 'cs_52543ce45eb75c518aa939a480539e9a226026e1';
+    const AIG_PRODUCT_IDS = [26733];
+
     private $options;
 
     public function __construct(string $plugin_name, string $version)
@@ -43,6 +50,7 @@ class Artist_Image_Generator_Admin
         $this->admin_display_templates = [
             'generate' => 'generate',
             'variate' => 'variate',
+            'edit' => 'edit',
             'settings' => 'settings',
             'about' => 'about',
             'main' => 'main'
@@ -50,15 +58,23 @@ class Artist_Image_Generator_Admin
         $this->admin_actions = [
             self::ACTION_GENERATE,
             self::ACTION_VARIATE,
+            self::ACTION_EDIT,
             self::ACTION_SETTINGS,
             self::ACTION_ABOUT
         ];
         $this->admin_actions_labels = [
             self::ACTION_GENERATE => __('Variate', 'artist-image-generator'),
             self::ACTION_VARIATE => __('Generate', 'artist-image-generator'),
+            self::ACTION_EDIT => __('Edit (Pro)', 'artist-image-generator'),
             self::ACTION_SETTINGS => __('Settings', 'artist-image-generator'),
             self::ACTION_ABOUT => __('About', 'artist-image-generator')
         ];
+
+        // Schedule license validity check event
+        if (!wp_next_scheduled($this->prefix . '_license_validity')) {
+            wp_schedule_event(time(), 'daily', $this->prefix . '_license_validity');
+        }
+        add_action($this->prefix . '_license_validity', [$this, 'validate_license']);
     }
 
     /**
@@ -82,28 +98,33 @@ class Artist_Image_Generator_Admin
         $is_plugin_page = $this->is_artist_image_generator_page();
 
         // Enqueue scripts only on specific admin pages
-        if ( $is_plugin_page || $is_media_editor_page ) {
+        if ($is_plugin_page || $is_media_editor_page) {
             $dependencies = array('wp-util', 'jquery', 'underscore');
             // Enqueue necessary scripts
-            wp_enqueue_script( 'wp-util' );
+            wp_enqueue_script('wp-util');
 
             if ($is_media_editor_page) {
                 $dependencies[] = 'media-editor';
                 wp_enqueue_media();
-                wp_enqueue_script( 'media-editor' );
+                wp_enqueue_script('media-editor');
             }
 
             //wp_enqueue_script( $this->plugin_name . '-cropper', plugin_dir_url( __FILE__ ) . 'js/artist-image-generator-admin-cropper.js', [], $this->version, true );
-            wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/artist-image-generator-admin.js', $dependencies, $this->version, true );
-            wp_localize_script( $this->plugin_name, 'aig_ajax_object', array(
-                'ajax_url' => admin_url( 'admin-ajax.php' ),
-                'cropper_script_path' => plugin_dir_url( __FILE__ ) . 'js/artist-image-generator-admin-cropper.js',
+            wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin.js', $dependencies, $this->version, true);
+            wp_localize_script($this->plugin_name, 'aig_ajax_object', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'cropper_script_path' => plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin-cropper.js',
+                'drawing_tool_script_path' => plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin-drawing.js',
                 'is_media_editor' => $is_media_editor_page,
                 'variateLabel' => esc_attr__('Variate', 'artist-image-generator'),
+                'editLabel' => esc_attr__('Edit (Pro)', 'artist-image-generator'),
                 'generateLabel' => esc_attr__('Generate', 'artist-image-generator'),
                 'cropperCropLabel' => esc_attr__('Crop this zone', 'artist-image-generator'),
-                'cropperCancelLabel' => esc_attr__('Cancel the zoom', 'artist-image-generator')
-            ) );
+                'cropperCancelLabel' => esc_attr__('Cancel the zoom', 'artist-image-generator'),
+                'cancelLabel' => esc_attr__('Cancel', 'artist-image-generator'),
+                'maskLabel' => esc_attr__('Create mask', 'artist-image-generator'),
+                'valid_licence' => $this->check_license_validity(),
+            ));
 
             if ($is_media_editor_page) {
                 $data = [
@@ -113,7 +134,7 @@ class Artist_Image_Generator_Admin
                     'size_input' => $this->get_default_image_dimensions(),
                     'n_input' => 1
                 ];
-        
+
                 // Pass the variable to the template
                 wp_localize_script($this->plugin_name, 'aig_data', $data);
             }
@@ -129,7 +150,7 @@ class Artist_Image_Generator_Admin
     {
         global $pagenow;
 
-        return $pagenow === 'upload.php' && isset( $_GET['page'] ) && $_GET['page'] === $this->prefix;
+        return $pagenow === 'upload.php' && isset($_GET['page']) && $_GET['page'] === $this->prefix;
     }
 
     /**
@@ -141,7 +162,7 @@ class Artist_Image_Generator_Admin
     {
         global $pagenow;
 
-        return ( $pagenow === 'post.php' || $pagenow === 'post-new.php' );
+        return ($pagenow === 'post.php' || $pagenow === 'post-new.php');
     }
 
     /**
@@ -203,6 +224,63 @@ class Artist_Image_Generator_Admin
         );
     }
 
+    public function check_license_validity() {
+        // Récupérer l'objet de licence depuis les options
+        $license_object = get_option($this->prefix . '_aig_licence_object_0', '');
+
+        // Vérifier si l'objet de licence existe et s'il est valide
+        if ($license_object && $license_object['status'] === 2) {
+            return true;
+        }
+            
+        return false;
+    }
+
+    public function validate_license($license_key = null, $activate = false)
+    {
+        $license_key = is_null($license_key) ?
+            get_option($this->prefix . '_aig_licence_key_0', '') :
+            $license_key;
+
+        // Create an instance of the license SDK
+        $license_sdk = new LMFW\SDK\License(
+            'Artist Image Generator',
+            self::AIG_LICENCE_SERVER,
+            self::AIG_CUSTOMER_KEY,
+            self::AIG_CUSTOMER_SECRET,
+            self::AIG_PRODUCT_IDS,
+            $license_key,
+            'aig-is-valid',
+            2
+        );
+
+        // Validate the license first
+        $valid_status = $license_sdk->validate_status($license_key);
+
+        if (!$valid_status['is_valid']) {
+            // The license is not valid, return WP_Error
+            return new WP_Error('invalid_license', __('Invalid license key. Please enter a valid license key.', 'artist-image-generator'));
+        }
+
+        if ($activate && !$this->check_license_validity()) {
+            try {
+                // Activate the license
+                $activated_license = $license_sdk->activate($license_key);
+    
+                // Store the license object on the database
+                update_option($this->prefix . '_aig_licence_object_0', $activated_license);
+    
+                // Return true on success
+                return true;
+            } catch (Exception $e) {
+                // Exception occurred, return WP_Error
+                return new WP_Error('license_activation_failed', __('License activation failed.', 'artist-image-generator'));
+            }
+        }
+        
+        return true;
+    }
+
     /**
      * Hook : Init plugin's parameters
      *
@@ -230,6 +308,14 @@ class Artist_Image_Generator_Admin
             $this->prefix . '-admin', // page
             $this->prefix . '_setting_section' // section
         );
+
+        add_settings_field(
+            $this->prefix . '_aig_licence_key_0', // id
+            'AIG_PREMIUM_LICENCE_KEY', // title
+            array($this, 'aig_licence_key_0_callback'), // callback
+            $this->prefix . '-admin', // page
+            $this->prefix . '_setting_section' // section
+        );
     }
 
     /**
@@ -244,6 +330,27 @@ class Artist_Image_Generator_Admin
 
         if (isset($input[$this->prefix . '_openai_api_key_0'])) {
             $sanitizedValues[$this->prefix . '_openai_api_key_0'] = sanitize_text_field($input[$this->prefix . '_openai_api_key_0']);
+        }
+
+        if (isset($input[$this->prefix . '_aig_licence_key_0'])) {
+            $licence_key = sanitize_text_field($input[$this->prefix . '_aig_licence_key_0']);
+
+            // Validate the license
+            $is_valid_license = $this->validate_license($licence_key, true);
+
+            // If the license is valid, save it to the options
+            if ($is_valid_license === true) {
+                $sanitizedValues[$this->prefix . '_aig_licence_key_0'] = $licence_key;
+            } else {
+                // The license is not valid, reset the license key value
+                add_settings_error(
+                    $this->prefix . '_option_name',
+                    'invalid_license',
+                    $is_valid_license->get_error_message(),
+                    'error'
+                );
+                return $sanitizedValues;
+            }
         }
 
         return $sanitizedValues;
@@ -272,6 +379,19 @@ class Artist_Image_Generator_Admin
     }
 
     /**
+     * Utility function to print the input field parameter
+     *
+     * @return void
+     */
+    public function aig_licence_key_0_callback(): void
+    {
+        printf(
+            '<input class="regular-text" type="text" name="' . $this->prefix . '_option_name[' . $this->prefix . '_aig_licence_key_0]" id="' . $this->prefix . '_aig_licence_key_0" value="%s">',
+            isset($this->options[$this->prefix . '_aig_licence_key_0']) ? esc_attr($this->options[$this->prefix . '_aig_licence_key_0']) : ''
+        );
+    }
+
+    /**
      * Hook : The plugin's administration page
      *
      * @return void
@@ -287,7 +407,7 @@ class Artist_Image_Generator_Admin
 
         // Pass the variable to the template
         wp_localize_script($this->plugin_name, 'aig_data', $data);
-        
+
         require_once $this->get_admin_template(self::LAYOUT_MAIN);
     }
 
@@ -300,16 +420,17 @@ class Artist_Image_Generator_Admin
     {
         $images = [];
         $error = [];
-    
+
         $this->options = get_option($this->prefix . '_option_name');
-    
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && $this->is_setting_up()) {
             $is_generation = isset($_POST['generate']) && sanitize_text_field($_POST['generate']);
             $is_variation = isset($_POST['variate']) && sanitize_text_field($_POST['variate']);
+            $is_edit = isset($_POST['edit']) && sanitize_text_field($_POST['edit']);
             $prompt_input = isset($_POST['prompt']) ? sanitize_text_field($_POST['prompt']) : null;
             $size_input = isset($_POST['size']) ? sanitize_text_field($_POST['size']) : $this->get_default_image_dimensions();
             $n_input = isset($_POST['n']) ? sanitize_text_field($_POST['n']) : 1;
-    
+
             if ($is_generation) {
                 if (empty($prompt_input)) {
                     $error = [
@@ -321,7 +442,7 @@ class Artist_Image_Generator_Admin
             } elseif ($is_variation) {
                 $errorMsg = __('A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', 'artist-image-generator');
                 $image_file = isset($_FILES['image']) && $_FILES['image']['size'] > 0 ? $_FILES['image'] : null;
-    
+
                 if (empty($image_file)) {
                     $error = ['msg' => $errorMsg];
                 } else {
@@ -329,15 +450,35 @@ class Artist_Image_Generator_Admin
                     list($image_width, $image_height) = getimagesize($image_file['tmp_name']);
                     $image_wrong_size = $image_file['size'] >= ((1024 * 1024) * 4) || $image_file['size'] == 0;
                     $allowed_file_types = ['image/png']; // If you want to allow certain files
-    
+
                     if (!in_array($image_mime_type, $allowed_file_types) || $image_wrong_size || $image_height !== $image_width) {
                         $error = ['msg' => $errorMsg];
                     } else {
                         $response = $this->variate($image_file, $n_input, $size_input);
                     }
                 }
+            } elseif ($is_edit && $this->check_license_validity()) {
+                $errorMsg = __('A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', 'artist-image-generator');
+                $image_file = isset($_FILES['image']) && $_FILES['image']['size'] > 0 ? $_FILES['image'] : null;
+                $mask_file = isset($_FILES['mask']) && $_FILES['mask']['size'] > 0 ? $_FILES['mask'] : null;
+
+                if (empty($image_file)) {
+                    $error = ['msg' => $errorMsg];
+                } else {
+                    // EDIT MASK FILE                  
+                    $image_mime_type = mime_content_type($image_file['tmp_name']);
+                    list($image_width, $image_height) = getimagesize($image_file['tmp_name']);
+                    $image_wrong_size = $image_file['size'] >= ((1024 * 1024) * 4) || $image_file['size'] == 0;
+                    $allowed_file_types = ['image/png']; // If you want to allow certain files
+
+                    if (!in_array($image_mime_type, $allowed_file_types) || $image_wrong_size || $image_height !== $image_width) {
+                        $error = ['msg' => $errorMsg];
+                    } else {
+                        $response = $this->edit($image_file, $mask_file, $prompt_input, $n_input, $size_input);
+                    }
+                }
             }
-    
+
             if (isset($response)) {
                 if (array_key_exists('error', $response)) {
                     $error = ['msg' => $response['message']];
@@ -346,7 +487,7 @@ class Artist_Image_Generator_Admin
                 }
             }
         }
-    
+
         $data = [
             'error' => $error,
             'images' => count($images) ? $images['data'] : [],
@@ -354,7 +495,7 @@ class Artist_Image_Generator_Admin
             'size_input' => $size_input ?? $this->get_default_image_dimensions(),
             'n_input' => $n_input ?? 1
         ];
-    
+
         return $data;
     }
 
@@ -385,6 +526,7 @@ class Artist_Image_Generator_Admin
             "n" => $num_images,
             "size" => $size_input,
         ]);
+
         return json_decode($result, true);
     }
 
@@ -408,6 +550,43 @@ class Artist_Image_Generator_Admin
             "n" => $num_variations,
             "size" => $size_input,
         ]);
+        return json_decode($result, true);
+    }
+
+    /**
+     * Utility function to communicate with OpenAI API when making a variation of an image
+     *
+     * @param array $image_file
+     * @param array $mask_file
+     * @param string $prompt_input
+     * @param integer $n_input
+     * @param string $size_input
+     * @return array
+     */
+    private function edit(array $image_file, array $mask_file, string $prompt_input, int $n_input, string $size_input): array
+    {
+        if (!$this->check_license_validity()) {
+            return [];
+        }
+
+        $num_variations = max(1, min(10, (int) $n_input));
+        $open_ai = new OpenAi($this->options[$this->prefix . '_openai_api_key_0']);
+        $tmp_file = $image_file['tmp_name'];
+        $file_name = basename($image_file['name']);
+        $image = curl_file_create($tmp_file, $image_file['type'], $file_name);
+
+        $tmp_file_mask = $mask_file['tmp_name'];
+        $file_name_mask = basename($mask_file['name']);
+        $mask = curl_file_create($tmp_file_mask, $mask_file['type'], $file_name_mask);
+
+        $result = $open_ai->imageEdit([
+            "image" => $image,
+            "mask" => $mask,
+            "prompt" => $prompt_input,
+            "n" => $num_variations,
+            "size" => $size_input,
+        ]);
+
         return json_decode($result, true);
     }
 
@@ -584,9 +763,9 @@ class Artist_Image_Generator_Admin
 
     public function print_tabs_templates()
     {
-    ?>
-
-        <?php // Template for generate tab. ?>
+?>
+        <?php // Template for generate tab. 
+        ?>
         <script type="text/html" id="tmpl-artist-image-generator-generate">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
@@ -602,7 +781,8 @@ class Artist_Image_Generator_Admin
             </form>
         </script>
 
-        <?php // Template for variate tab. ?>
+        <?php // Template for variate tab. 
+        ?>
         <script type="text/html" id="tmpl-artist-image-generator-variate">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
@@ -621,7 +801,51 @@ class Artist_Image_Generator_Admin
             </form>
         </script>
 
-        <?php // Template for settings tab. ?>
+        <?php // Template for edit tab. 
+        ?>
+        <script type="text/html" id="tmpl-artist-image-generator-edit">
+            <form action="" method="post" enctype="multipart/form-data">
+                <div class="notice-container"></div>
+                <div class="notice notice-info inline" style="margin-top:15px;">
+                    <p><?php esc_attr_e('Heads up ! To make an image edition you need to submit a .png file less than 4MB in a 1:1 format (square). However, you can upload a non square .jpg or a .png file at full size, and use the "crop" functionnality to resize the area you want. You can also add a prompt input to describe the image. This value will be used to fill the image name and alternative text.', 'artist-image-generator'); ?></p>
+                </div>
+                <table class="form-table" role="presentation">
+                    <tbody class="tbody-container"></tbody>
+                </table>
+                <p class="submit">
+                    <input type="hidden" name="edit" value="1" />
+                    <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php esc_attr_e('Generate Image(s)', 'artist-image-generator'); ?>" />
+                </p>
+                <hr />
+                <div class="result-container"></div>
+            </form>
+        </script>
+
+        <?php // Template for edit demo tab. 
+        ?>
+        <script type="text/html" id="tmpl-artist-image-generator-edit-demo">
+            <div class="card">
+                <h2 class="title">Provide full access to OpenAi Edit Image feature</h2>
+                <p>With Open AI Edit Image, you can upload an image, create a mask around the subject, enter your desired modifications within the mask, and generate various image variations.</p>
+                <p>By purchasing a unique license for just <strong>€29.99 (including 20% VAT)</strong>, you unlock this powerful functionality along with future updates.</p>
+                <p>1. you can transform your images like never before</p>
+                <p>2. in "Edit" tab, import any image and add a mask and an input to fill the mask with what you want</p>
+                <p>3. bring your imagination in a next level with image manipulation</p>
+                <p>Demo : <a href="https://youtu.be/zfK1yJk9gRc" target="_blank" title="Artist Image Generator - Image Edition feature">https://youtu.be/zfK1yJk9gRc</a></p>
+                <p>
+                    Don't miss out on this opportunity to elevate your image editing capabilities. Unlock your artistic potential today.
+                    <br/><br/>
+
+                    <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" 
+                        title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button">
+                        Buy Artist Image Generator (Pro) - Licence Key
+                    </a>
+                </p>
+            </div>
+        </script>
+
+        <?php // Template for settings tab. 
+        ?>
         <script type="text/html" id="tmpl-artist-image-generator-settings">
             <h2><?php esc_attr_e('How to get your OpenAI API key ?', 'artist-image-generator'); ?></h2>
             <ol>
@@ -650,7 +874,8 @@ class Artist_Image_Generator_Admin
             </form>
         </script>
 
-        <?php // Template for about tab. ?>
+        <?php // Template for about tab. 
+        ?>
         <script type="text/html" id="tmpl-artist-image-generator-about">
             <div class="aig-container aig-container-3">
                 <div class="card">
@@ -711,10 +936,34 @@ class Artist_Image_Generator_Admin
                         Thanks a lot for using my plugin !
                     </p>
                 </div>
+                <div class="card">
+                    <h2 class="title">
+                        Pro feature
+                    </h2>
+                    <p>
+                        <strong>Artist Image Generator can provide you full access to OpenAi Edit Image feature</strong>
+                    </p>
+                    <p>With Open AI Edit Image, you can upload an image, create a mask around the subject, enter your desired modifications within the mask, and generate various image variations.</p>
+                    <p>By purchasing a unique license for just <strong>€29.99 (including 20% VAT)</strong>, you unlock this powerful functionality along with future updates.</p>
+                    <p>1. you can transform your images like never before</p>
+                    <p>2. in "Edit" tab, import any image and add a mask and an input to fill the mask with what you want</p>
+                    <p>3. bring your imagination in a next level with image manipulation</p>
+                    <p>Demo : <a href="https://youtu.be/zfK1yJk9gRc" target="_blank" title="Artist Image Generator - Image Edition feature">https://youtu.be/zfK1yJk9gRc</a></p>
+                    <p>
+                        Don't miss out on this opportunity to elevate your image editing capabilities. Unlock your artistic potential today by visiting our 
+                        <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank">
+                            sales page
+                        </a>.
+                    </p>
+                    <p>
+                        Thanks a lot for using my plugin !
+                    </p>
+                </div>
             </div>
         </script>
 
-        <?php // Child template for notice block (notice-container). ?>
+        <?php // Child template for notice block (notice-container). 
+        ?>
         <script type="text/html" id="tmpl-artist-image-generator-notice">
             <# if ( data.error && data.error.msg ) { #>
                 <div class="notice notice-error inline" style="margin-top:15px;">
@@ -723,7 +972,8 @@ class Artist_Image_Generator_Admin
                 <# } #>
         </script>
 
-        <?php // Child template for result block (result-container). ?>
+        <?php // Child template for result block (result-container). 
+        ?>
         <script type="text/html" id="tmpl-artist-image-generator-result">
             <div class="aig-container">
                 <# if ( data.images ) { #>
@@ -739,28 +989,32 @@ class Artist_Image_Generator_Admin
                                 <?php esc_attr_e('Add to media library', 'artist-image-generator'); ?>
                             </a>
                         </div>
-                    <# }) #>
-                <# } #>
+                        <# }) #>
+                            <# } #>
             </div>
         </script>
 
-        <?php // Child template for form/image block (tbody-container). ?>
+        <?php // Child template for form/image block (tbody-container). 
+        ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-image">
             <tr>
                 <th scope="row">
                     <label for="image"><?php esc_attr_e('File (.png, .jpg)', 'artist-image-generator'); ?></label>
                 </th>
                 <td>
-                    <input type="file" name="image" id="image" class="regular-text aig_handle_cropper" accept=".png,.jpg"/>
+                    <input type="file" name="image" id="image" class="regular-text aig_handle_cropper" accept=".png,.jpg" />
+                    <input type="file" name="mask" id="mask" class="regular-text" accept=".png,.jpg" hidden readonly />
+                    <input type="file" name="original" id="original" class="regular-text" accept=".png,.jpg" hidden readonly />
                 </td>
             </tr>
             <tr>
-                <th id="aig_cropper_preview" scope="row"><img src="" class="hidden" width="210" height="210"/></th>
+                <th id="aig_cropper_preview" scope="row"></th>
                 <td id="aig_cropper_canvas_area"></td>
             </tr>
         </script>
 
-        <?php // Child template for form/n block (tbody-container). ?>
+        <?php // Child template for form/n block (tbody-container). 
+        ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-n">
             <tr>
                 <th scope="row">
@@ -779,7 +1033,8 @@ class Artist_Image_Generator_Admin
             </tr>
         </script>
 
-        <?php // Child template for form/prompt block (tbody-container). ?>
+        <?php // Child template for form/prompt block (tbody-container). 
+        ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-prompt">
             <tr>
                 <th scope="row">
@@ -791,7 +1046,8 @@ class Artist_Image_Generator_Admin
             </tr>
         </script>
 
-        <?php // Child template for form/size block (tbody-container). ?>
+        <?php // Child template for form/size block (tbody-container). 
+        ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-size">
             <# var is_selected_256=(data.size_input && data.size_input=='256x256' ) ? 'selected' : '' ; #>
                 <# var is_selected_512=(data.size_input && data.size_input=='512x512' ) ? 'selected' : '' ; #>
