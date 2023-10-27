@@ -11,6 +11,7 @@
         variate: wp.template('artist-image-generator-variate'),
         edit: wp.template('artist-image-generator-edit'),
         editDemo: wp.template('artist-image-generator-edit-demo'),
+        public: wp.template('artist-image-generator-public'),
         settings: wp.template('artist-image-generator-settings'),
         about: wp.template('artist-image-generator-about'),
         notice: wp.template('artist-image-generator-notice'),
@@ -25,6 +26,7 @@
         generate: '#tab-container-generate',
         variate: '#tab-container-variate',
         edit: '#tab-container-edit',
+        public: '#tab-container-public',
         settings: '#tab-container-settings',
         about: '#tab-container-about',
     };
@@ -40,16 +42,18 @@
             $tbodyContainer.append(templates.formImage(data));
         }
 
-        const words = tabSelector.split('-');
-        const lastWord = words[words.length - 1];
-        action = lastWord;
-
-        $tbodyContainer.append(templates.formPrompt(data));
-        $tbodyContainer.append(templates.formSize(data));
-        $tbodyContainer.append(templates.formN(data));
-
-        $tabContainer.find('.notice-container').append(templates.notice(data));
-        $tabContainer.find('.result-container').append(templates.result(data));
+        if (tabSelector !== '#tab-container-public') {
+            const words = tabSelector.split('-');
+            const lastWord = words[words.length - 1];
+            action = lastWord;
+    
+            $tbodyContainer.append(templates.formPrompt(data));
+            $tbodyContainer.append(templates.formSize(data));
+            $tbodyContainer.append(templates.formN(data));
+    
+            $tabContainer.find('.notice-container').append(templates.notice(data));
+            $tabContainer.find('.result-container').append(templates.result(data));
+        }
     }
 
     function addFabricDrawing(canvas) {
@@ -605,6 +609,8 @@
             addInputFileCropperHandler();
         } else if ($(tabSelectors.about).length) {
             buildTab(tabSelectors.about, templates.about, data);
+        }else if ($(tabSelectors.public).length) {
+            buildTab(tabSelectors.public, templates.public, data);
         } else {
             buildTab(tabSelectors.generate, templates.generate, data);
         }

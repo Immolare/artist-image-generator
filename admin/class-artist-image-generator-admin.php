@@ -19,6 +19,7 @@ class Artist_Image_Generator_Admin
     const ACTION_GENERATE = 'generate';
     const ACTION_VARIATE = 'variate';
     const ACTION_EDIT = 'edit';
+    const ACTION_PUBLIC = 'public';
     const ACTION_SETTINGS = 'settings';
     const ACTION_ABOUT = 'about';
     const LAYOUT_MAIN = 'main';
@@ -51,6 +52,7 @@ class Artist_Image_Generator_Admin
             'generate' => 'generate',
             'variate' => 'variate',
             'edit' => 'edit',
+            'public' => 'public',
             'settings' => 'settings',
             'about' => 'about',
             'main' => 'main'
@@ -59,6 +61,7 @@ class Artist_Image_Generator_Admin
             self::ACTION_GENERATE,
             self::ACTION_VARIATE,
             self::ACTION_EDIT,
+            self::ACTION_PUBLIC,
             self::ACTION_SETTINGS,
             self::ACTION_ABOUT
         ];
@@ -66,6 +69,7 @@ class Artist_Image_Generator_Admin
             self::ACTION_GENERATE => __('Variate', 'artist-image-generator'),
             self::ACTION_VARIATE => __('Generate', 'artist-image-generator'),
             self::ACTION_EDIT => __('Edit (Pro)', 'artist-image-generator'),
+            self::ACTION_PUBLIC => __('Shortcode', 'artist-image-generator'),
             self::ACTION_SETTINGS => __('Settings', 'artist-image-generator'),
             self::ACTION_ABOUT => __('About', 'artist-image-generator')
         ];
@@ -118,6 +122,7 @@ class Artist_Image_Generator_Admin
                 'is_media_editor' => $is_media_editor_page,
                 'variateLabel' => esc_attr__('Variate', 'artist-image-generator'),
                 'editLabel' => esc_attr__('Edit (Pro)', 'artist-image-generator'),
+                'publicLabel' => esc_attr__('Shortcodes', 'artist-image-generator'),
                 'generateLabel' => esc_attr__('Generate', 'artist-image-generator'),
                 'cropperCropLabel' => esc_attr__('Crop this zone', 'artist-image-generator'),
                 'cropperCancelLabel' => esc_attr__('Cancel the zoom', 'artist-image-generator'),
@@ -224,7 +229,8 @@ class Artist_Image_Generator_Admin
         );
     }
 
-    public function check_license_validity() {
+    public function check_license_validity()
+    {
         // Récupérer l'objet de licence depuis les options
         $license_object = get_option($this->prefix . '_aig_licence_object_0', '');
 
@@ -232,7 +238,7 @@ class Artist_Image_Generator_Admin
         if ($license_object && $license_object['status'] === 2) {
             return true;
         }
-            
+
         return false;
     }
 
@@ -266,10 +272,10 @@ class Artist_Image_Generator_Admin
             try {
                 // Activate the license
                 $activated_license = $license_sdk->activate($license_key);
-    
+
                 // Store the license object on the database
                 update_option($this->prefix . '_aig_licence_object_0', $activated_license);
-    
+
                 // Return true on success
                 return true;
             } catch (Exception $e) {
@@ -277,7 +283,7 @@ class Artist_Image_Generator_Admin
                 return new WP_Error('license_activation_failed', __('License activation failed.', 'artist-image-generator'));
             }
         }
-        
+
         return true;
     }
 
@@ -335,21 +341,23 @@ class Artist_Image_Generator_Admin
         if (isset($input[$this->prefix . '_aig_licence_key_0'])) {
             $licence_key = sanitize_text_field($input[$this->prefix . '_aig_licence_key_0']);
 
-            // Validate the license
-            $is_valid_license = $this->validate_license($licence_key, true);
+            if (!empty($licence_key)) {
+                // Validate the license
+                $is_valid_license = $this->validate_license($licence_key, true);
 
-            // If the license is valid, save it to the options
-            if ($is_valid_license === true) {
-                $sanitizedValues[$this->prefix . '_aig_licence_key_0'] = $licence_key;
-            } else {
-                // The license is not valid, reset the license key value
-                add_settings_error(
-                    $this->prefix . '_option_name',
-                    'invalid_license',
-                    $is_valid_license->get_error_message(),
-                    'error'
-                );
-                return $sanitizedValues;
+                // If the license is valid, save it to the options
+                if ($is_valid_license === true) {
+                    $sanitizedValues[$this->prefix . '_aig_licence_key_0'] = $licence_key;
+                } else {
+                    // The license is not valid, reset the license key value
+                    add_settings_error(
+                        $this->prefix . '_option_name',
+                        'invalid_license',
+                        $is_valid_license->get_error_message(),
+                        'error'
+                    );
+                    return $sanitizedValues;
+                }
             }
         }
 
@@ -416,7 +424,7 @@ class Artist_Image_Generator_Admin
      *
      * @return void
      */
-    private function do_post_request()
+    public function do_post_request()
     {
         $images = [];
         $error = [];
@@ -481,7 +489,7 @@ class Artist_Image_Generator_Admin
 
             if (isset($response)) {
                 if (array_key_exists('error', $response)) {
-                    $error = ['msg' => $response['message']];
+                    $error = ['msg' => $response['error']['message']];
                 } else {
                     $images = $response;
                 }
@@ -834,15 +842,61 @@ class Artist_Image_Generator_Admin
                 <p>Demo : <a href="https://youtu.be/zfK1yJk9gRc" target="_blank" title="Artist Image Generator - Image Edition feature">https://youtu.be/zfK1yJk9gRc</a></p>
                 <p>
                     Don't miss out on this opportunity to elevate your image editing capabilities. Unlock your artistic potential today.
-                    <br/><br/>
+                    <br /><br />
 
-                    <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" 
-                        title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button">
+                    <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button">
                         Buy Artist Image Generator (Pro) - Licence Key
                     </a>
                 </p>
             </div>
         </script>
+
+        <?php // Template for public tab. 
+        ?>
+        <script type="text/html" id="tmpl-artist-image-generator-public">
+            <div class="aig-container aig-container-3">
+                <style>
+                    /* Ajout de CSS pour améliorer l'apparence */
+                    .aig-code {
+                        background-color: #f0f0f0;
+                        padding: 10px;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                    }
+                </style>
+                <div class="card">
+                    <h2 class="title"><?php esc_attr_e('Shortcode (Bêta)', 'artist-image-generator'); ?></h2>
+                    <p><?php esc_attr_e('To create a public AI image generation form in WordPress, you can use the following shortcode:', 'artist-image-generator'); ?></p>
+                    <div class="aig-code">
+                        [aig prompt="Your custom description here with {topics} and {public_prompt}" topics="Comma-separated list of topics" n="3" size="1024x1024"]
+                    </div>
+                    <p><?php esc_attr_e('Replace "Your custom description here" with your own description, and specify the topics you want to offer as a comma-separated list. You can use the following placeholders in your description:', 'artist-image-generator'); ?></p>
+                    <ul>
+                        <li>- {topics} : <?php esc_attr_e('To include a list of topics that users can select.', 'artist-image-generator'); ?></li>
+                        <li>- {public_prompt} : <?php esc_attr_e('To include a prompt for users.', 'artist-image-generator'); ?></li>
+                    </ul>
+                    <p><?php esc_attr_e('You can also use the following optional attributes in the shortcode:', 'artist-image-generator'); ?></p>
+                    <ul>
+                        <li>- n : <?php esc_attr_e('Number of images to generate (default is 3, maximum 10).', 'artist-image-generator'); ?></li>
+                        <li>- size : <?php esc_attr_e('The size of the images to generate (e.g., "256x256", "512x512", "1024x1024". Default is 1024x1024).', 'artist-image-generator'); ?></li>
+                    </ul>
+                    <p><?php esc_attr_e('Once you have the shortcode ready, you can add it to any page or post in WordPress to display the public AI image generation form.', 'artist-image-generator'); ?></p>
+                    <p><a href="https://github.com/Immolare/artist-image-generator" target="_blank" title="Visit Github">Feedback and donation</a> are welcome !</p>
+                </div>
+                <div class="card">
+                    <h2 class="title"><?php esc_attr_e('Exemple: Rendering the shortcode into a page', 'artist-image-generator'); ?></h2>
+                    <p><?php esc_attr_e('The shortcode:', 'artist-image-generator'); ?></p>
+                    <div class="aig-code">
+                        [aig prompt="Painting of {public_prompt}, including following criterias: {topics}" topics="Impressionism, Surrealism, Portraits, Landscape Painting, Watercolor Techniques, Oil Painting, Street Art, Hyperrealism, Cat, Dog, Bird, Person"]
+                    </div>
+                    <p><?php esc_attr_e('The result:', 'artist-image-generator'); ?></p>
+                    <img style="width:100%" src="<?php echo plugin_dir_url(__FILE__) . '/img/aig-public-form.jpg'; ?>" alt="Exemple of form render" />
+                </div>
+
+            </div>
+        </script>
+
+
 
         <?php // Template for settings tab. 
         ?>
@@ -950,7 +1004,7 @@ class Artist_Image_Generator_Admin
                     <p>3. bring your imagination in a next level with image manipulation</p>
                     <p>Demo : <a href="https://youtu.be/zfK1yJk9gRc" target="_blank" title="Artist Image Generator - Image Edition feature">https://youtu.be/zfK1yJk9gRc</a></p>
                     <p>
-                        Don't miss out on this opportunity to elevate your image editing capabilities. Unlock your artistic potential today by visiting our 
+                        Don't miss out on this opportunity to elevate your image editing capabilities. Unlock your artistic potential today by visiting our
                         <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank">
                             sales page
                         </a>.
@@ -1052,18 +1106,20 @@ class Artist_Image_Generator_Admin
             <# var is_selected_256=(data.size_input && data.size_input=='256x256' ) ? 'selected' : '' ; #>
                 <# var is_selected_512=(data.size_input && data.size_input=='512x512' ) ? 'selected' : '' ; #>
                     <# var is_selected_1024=(!data.size_input || (data.size_input && data.size_input=='1024x1024' )) ? 'selected' : '' ; #>
-                        <tr>
-                            <th scope="row">
-                                <label for="size"><?php esc_attr_e('Size in pixels', 'artist-image-generator'); ?></label>
-                            </th>
-                            <td>
-                                <select name="size" id="size">
-                                    <option value="256x256" <?php echo esc_attr('{{ is_selected_256 }}'); ?>>256x256</option>
-                                    <option value="512x512" <?php echo esc_attr('{{ is_selected_512 }}'); ?>>512x512</option>
-                                    <option value="1024x1024" <?php echo esc_attr('{{ is_selected_1024 }}'); ?>>1024x1024</option>
-                                </select>
-                            </td>
-                        </tr>
+                        <# var is_selected_1792h=(!data.size_input || (data.size_input && data.size_input=='1024x1792' )) ? 'selected' : '' ; #>
+                            <# var is_selected_1792v=(!data.size_input || (data.size_input && data.size_input=='1792x1024' )) ? 'selected' : '' ; #>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="size"><?php esc_attr_e('Size in pixels', 'artist-image-generator'); ?></label>
+                                    </th>
+                                    <td>
+                                        <select name="size" id="size">
+                                            <option value="256x256" <?php echo esc_attr('{{ is_selected_256 }}'); ?>>256x256</option>
+                                            <option value="512x512" <?php echo esc_attr('{{ is_selected_512 }}'); ?>>512x512</option>
+                                            <option value="1024x1024" <?php echo esc_attr('{{ is_selected_1024 }}'); ?>>1024x1024</option>
+                                        </select>
+                                    </td>
+                                </tr>
         </script>
 
 <?php

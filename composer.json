@@ -1,81 +1,34 @@
-Hello, je voudrais réaliser une petite application tournant sur PHP 7.3 / Bootstrap 5 / HTML / CSS / JS qui :
-- contient un fichier de constante dans lequel se trouvera:
----- les codes de connexion à la base
----- les codes SMTP
----- la langue configurée (FR ou EN)
----- diverses constantes de l'application à définir
-- génère une classe PHP basique qui permet la connexion PDO à une base Mysql avec les codes fourni dans le fichier de constantes, et permet de faire des requêtes optimisées de type SELECT seulement, en PHP ou via Ajax
-- une classe PHP optimisée qui génère un formulaire HTML en fonction des champs. La classe doit pouvoir générer le formulaire contenant des ensembles de champs qui seront séparés par un système d'Accordéons (toogle) dépliant. Il faut prévoir que certaines valeurs de champs nécessiteront de faire des requêtes ajax pour récupérer des valeurs en base, et les renvoyer sous forme JSON
-- une classe PHP optimisée qui permet de traiter et de valider les champs requis et le format des champs attendu et envoyer 2 mail HTML  "nouvelle demande de devis" et "récapitulatif de votre demande de devis" via PHPMailer et une connexion SMTP
-- Une classe PHP qui regroupera des fonctions d'utilités globales à l'application
-- Les chaines de textes peuvent changer en fonction de la langue FR ou EN, il faudra donc prévoir un fichier de config JSON qui liste les chaines en anglais et leur traductions en français.
-- un fichier index.php qui contiendra le formulaire en question avec une compatibilité bootstrap 5.
-
-Peux-tu me générer l'architecture de cette application, la liste des dossiers et des fichiers à créer. Pour information, voici un exemple de formulaire :
-
-
-
-
---------------
-
-- app/
-  - config/
-    - config.php
-  - lang/
-    - en/
-      - translations.php
-    - fr/
-      - translations.php
-  - templates/
-    - index.tpl
-- public/
-  - index.php
-- src/
-  - Core/
-    - Application.php
-    - Database.php
-    - Utils.php
-  - Form/
-    - FormGenerator.php
-  - Mail/
-    - Mailer.php
-  - Model/
-    - Company.php
-    - User.php
-  - Validation/
-    - FormValidator.php
-  - Utils/
-    - GlobalUtils.php
-- vendor/
-  - (les répertoires des dépendances installées par Composer)
-- composer.json
-- composer.lock
-
-
-Explications de l'architecture :
-
-    Le répertoire src/ contient les fichiers de classes de votre application, organisés par namespace, en fonction des exigences spécifiées.
-
-    Dans le namespace Core, vous pouvez trouver les fichiers de base pour le fonctionnement de l'application :
-        Application.php : contient la classe Application qui gère le cycle de vie de l'application.
-        Database.php : contient la classe Database qui permet la connexion PDO à une base de données MySQL et l'exécution de requêtes optimisées de type SELECT.
-
-    Dans le namespace Form, vous pouvez trouver les fichiers liés à la génération de formulaires :
-        FormGenerator.php : contient la classe FormGenerator qui génère un formulaire HTML en fonction des champs fournis. Il prend en charge la génération de champs et peut également gérer des ensembles de champs séparés par des accordéons.
-
-    Dans le namespace Mail, vous pouvez trouver les fichiers liés à l'envoi d'e-mails :
-        Mailer.php : contient la classe Mailer qui utilise PHPMailer et une connexion SMTP pour envoyer des e-mails. Il comprend des méthodes pour envoyer des e-mails de demande de devis et de récapitulatif.
-
-    Dans le namespace Model, vous pouvez trouver les fichiers liés aux modèles de données de votre application :
-        Company.php : contient la classe Company qui représente une entité de l'application, par exemple, une entreprise.
-        User.php : contient la classe User qui représente une entité utilisateur de l'application.
-
-    Dans le namespace Validation, vous pouvez trouver les fichiers liés à la validation des champs de formulaire :
-        FormValidator.php : contient la classe FormValidator qui gère la validation des champs requis et du format des champs attendus.
-
-    Dans le namespace Utils, vous pouvez trouver les fichiers regroupant des fonctions d'utilité globales à l'application :
-        GlobalUtils.php : contient la classe GlobalUtils qui regroupe des fonctions d'utilité globales à l'application.
-
-Les autres répertoires et fichiers restent les mêmes que dans l'architecture précédente.
-
-N'oubliez pas de mettre à jour le fichier composer.json avec les dépendances requises et d'exécuter composer install pour installer les dépendances.
+{
+    "name": "immolare/artist-image-generator",
+    "description": "Artist is a WordPress plugin to create AI-generated royalty-free images from scratch.",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "Pierre Vieville",
+            "email": "contact@pierrevieville.fr",
+            "homepage": "https://www.pierrevieville.fr",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "contact@pierrevieville.fr",
+        "irc": "https://artist-image-generator.com/"
+    },
+    "funding": [
+        {
+            "type": "shop",
+            "url": "https://developpeur-web.site/produit/artist-image-generator-pro/"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/immolare/artist-image-generator"
+        },
+        {
+            "type": "paypal",
+            "url": "https://www.paypal.com/paypalme/pierrevieville"
+        }
+    ],
+    "require": {
+        "orhanerday/open-ai": "^4.8"
+    }
+}

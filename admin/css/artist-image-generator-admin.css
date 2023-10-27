@@ -74,6 +74,10 @@
     grid-column-gap: 1em;
 }
 
+.aig-container-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
 .aig-container-3 {
     grid-template-columns: repeat(3, 1fr);
 }
