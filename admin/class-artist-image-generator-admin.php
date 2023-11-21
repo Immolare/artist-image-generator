@@ -23,6 +23,8 @@ class Artist_Image_Generator_Admin
     const ACTION_SETTINGS = 'settings';
     const ACTION_ABOUT = 'about';
     const LAYOUT_MAIN = 'main';
+    const DALL_E_MODEL_3 = "dall-e-3";
+    const DALL_E_MODEL_2 = "dall-e-2";
 
     private string $plugin_name;
     private string $plugin_full_name = "Artist Image Generator";
@@ -438,6 +440,8 @@ class Artist_Image_Generator_Admin
             $prompt_input = isset($_POST['prompt']) ? sanitize_text_field($_POST['prompt']) : null;
             $size_input = isset($_POST['size']) ? sanitize_text_field($_POST['size']) : $this->get_default_image_dimensions();
             $n_input = isset($_POST['n']) ? sanitize_text_field($_POST['n']) : 1;
+            // DALL-E 3
+            $model = isset($_POST['model']) && sanitize_text_field($_POST['model']) === self::DALL_E_MODEL_3 ? self::DALL_E_MODEL_3 : null; 
 
             if ($is_generation) {
                 if (empty($prompt_input)) {
@@ -445,7 +449,7 @@ class Artist_Image_Generator_Admin
                         'msg' => __('The Prompt input must be filled in order to generate an image.', 'artist-image-generator')
                     ];
                 } else {
-                    $response = $this->generate($prompt_input, $n_input, $size_input);
+                    $response = $this->generate($prompt_input, $n_input, $size_input, $model);
                 }
             } elseif ($is_variation) {
                 $errorMsg = __('A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', 'artist-image-generator');
@@ -525,15 +529,23 @@ class Artist_Image_Generator_Admin
      * @param string $size_input
      * @return array
      */
-    private function generate(string $prompt_input, int $n_input, string $size_input): array
+    private function generate(string $prompt_input, int $n_input, string $size_input, string $model = null): array
     {
         $num_images = max(1, min(10, (int) $n_input));
         $open_ai = new OpenAi($this->options[$this->prefix . '_openai_api_key_0']);
-        $result = $open_ai->image([
+        $params = [
             "prompt" => $prompt_input,
             "n" => $num_images,
             "size" => $size_input,
-        ]);
+        ];
+
+        if (!is_null($model)) {
+            $params['model'] = self::DALL_E_MODEL_3;
+            $params['n'] = 1;
+            $params['quality'] = 'hd';
+        }
+
+        $result = $open_ai->image($params);
 
         return json_decode($result, true);
     }
@@ -554,6 +566,7 @@ class Artist_Image_Generator_Admin
         $file_name = basename($image_file['name']);
         $image = curl_file_create($tmp_file, $image_file['type'], $file_name);
         $result = $open_ai->createImageVariation([
+            //"model" => self::DALL_E_MODEL_3,
             "image" => $image,
             "n" => $num_variations,
             "size" => $size_input,
@@ -588,6 +601,7 @@ class Artist_Image_Generator_Admin
         $mask = curl_file_create($tmp_file_mask, $mask_file['type'], $file_name_mask);
 
         $result = $open_ai->imageEdit([
+            //"model" => self::DALL_E_MODEL_3,
             "image" => $image,
             "mask" => $mask,
             "prompt" => $prompt_input,
@@ -1043,8 +1057,8 @@ class Artist_Image_Generator_Admin
                                 <?php esc_attr_e('Add to media library', 'artist-image-generator'); ?>
                             </a>
                         </div>
-                        <# }) #>
-                            <# } #>
+                    <# }) #>
+                <# } #>
             </div>
         </script>
 
@@ -1081,7 +1095,7 @@ class Artist_Image_Generator_Admin
                                 <option value="<?php echo esc_attr('{{ i }}'); ?>" <?php echo esc_attr('{{ is_selected }}'); ?>>
                                     <?php echo esc_attr('{{ i }}'); ?>
                                 </option>
-                                <# } #>
+                        <# } #>
                     </select>
                 </td>
             </tr>
@@ -1100,6 +1114,24 @@ class Artist_Image_Generator_Admin
             </tr>
         </script>
 
+        <?php // Child template for form/model block (tbody-container). 
+        ?>
+        <script type="text/html" id="tmpl-artist-image-generator-form-model">
+            <# var is_selected_dalle2=(data.model && data.model=='' ) ? 'selected' : '' ; #>
+            <# var is_selected_dalle3=(data.model && data.model=='dall-e-3' ) ? 'selected' : '' ; #>
+            <tr>
+                <th scope="row">
+                    <label for="model"><?php esc_attr_e('Model', 'artist-image-generator'); ?></label>
+                </th>
+                <td>
+                    <select name="model" id="model">
+                        <option value="" <?php echo esc_attr('{{ is_selected_dalle2 }}'); ?>><?php echo self::DALL_E_MODEL_2; ?></option>
+                        <option value="<?php echo self::DALL_E_MODEL_3; ?>" <?php echo esc_attr('{{ is_selected_dalle3 }}'); ?>><?php echo self::DALL_E_MODEL_3; ?></option>
+                    </select>
+                </td>
+            </tr>
+        </script>
+
         <?php // Child template for form/size block (tbody-container). 
         ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-size">
@@ -1114,9 +1146,11 @@ class Artist_Image_Generator_Admin
                                     </th>
                                     <td>
                                         <select name="size" id="size">
-                                            <option value="256x256" <?php echo esc_attr('{{ is_selected_256 }}'); ?>>256x256</option>
-                                            <option value="512x512" <?php echo esc_attr('{{ is_selected_512 }}'); ?>>512x512</option>
-                                            <option value="1024x1024" <?php echo esc_attr('{{ is_selected_1024 }}'); ?>>1024x1024</option>
+                                            <option data-dalle="2" value="256x256" <?php echo esc_attr('{{ is_selected_256 }}'); ?>>256x256</option>
+                                            <option data-dalle="2" value="512x512" <?php echo esc_attr('{{ is_selected_512 }}'); ?>>512x512</option>
+                                            <option data-dalle="23" value="1024x1024" <?php echo esc_attr('{{ is_selected_1024 }}'); ?>>1024x1024</option>
+                                            <option data-dalle="3" value="1024x1792" <?php echo esc_attr('{{ is_selected_1792h }}'); ?>>1024x1792</option>
+                                            <option data-dalle="3" value="1792x1024" <?php echo esc_attr('{{ is_selected_1792v }}'); ?>>1792x1024</option>
                                         </select>
                                     </td>
                                 </tr>

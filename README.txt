@@ -5,7 +5,7 @@ Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-
 Requires at least: 5.3
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.10
+Stable tag: 1.0.11
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,7 +108,6 @@ We take your privacy seriously at Artist Image Generator. Rest assured that we d
 2. Create new images in the "Generate" tab
 3. Create images variation from .jpg or .png file in "Variate" tab. Crop it to your needs with our cropper tool
 4. Press "Add to the media library" and find your image in your Wordpress Media Library
-5. Add the image for example in a blog post as image or thumbnail
 6. Access to the Artist Image Generator plugin from the Media Manager modal while creating blog post
 7. The shortcode functionnality
 
