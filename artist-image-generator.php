@@ -16,7 +16,7 @@
  * Plugin Name:       Artist Image Generator
  * Plugin URI:        https://github.com/Immolare/artist-image-generator
  * Description:       A Wordpress plugin using DALL·E 2 to create AI generated royality-free images from scratch.
- * Version:           1.0.10
+ * Version:           1.0.11
  * Author:            Pierre Viéville
  * Author URI:        https://www.pierrevieville.fr
  * License:           GPL-2.0+

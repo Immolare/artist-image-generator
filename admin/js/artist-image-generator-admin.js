@@ -18,6 +18,7 @@
         result: wp.template('artist-image-generator-result'),
         formImage: wp.template('artist-image-generator-form-image'),
         formPrompt: wp.template('artist-image-generator-form-prompt'),
+        formModel: wp.template('artist-image-generator-form-model'),
         formSize: wp.template('artist-image-generator-form-size'),
         formN: wp.template('artist-image-generator-form-n'),
     };
@@ -46,15 +47,138 @@
             const words = tabSelector.split('-');
             const lastWord = words[words.length - 1];
             action = lastWord;
-    
+
+            if (tabSelector === '#tab-container-generate') {
+                $tbodyContainer.append(templates.formModel(data));
+            }
+
             $tbodyContainer.append(templates.formPrompt(data));
             $tbodyContainer.append(templates.formSize(data));
             $tbodyContainer.append(templates.formN(data));
-    
+
+            if (tabSelector === '#tab-container-generate') {
+                // Appeler la fonction restoreFieldValues au chargement de la page pour restaurer les valeurs depuis le stockage local
+                restoreFieldValues();
+
+                const modelSelect = document.getElementById("model");
+                const sizeSelect = document.getElementById("size");
+                const nSelect = document.getElementById("n");
+
+                modelSelect.addEventListener("change", handleModelChange);
+                sizeSelect.addEventListener("change", handleSizeChange);
+                nSelect.addEventListener("change", handleNChange);
+
+                // Appeler la fonction handleModelChange au chargement de la page pour s'assurer que les règles sont appliquées
+                handleModelChange();
+                handleSizeChange();
+                handleNChange();
+            }
+
             $tabContainer.find('.notice-container').append(templates.notice(data));
             $tabContainer.find('.result-container').append(templates.result(data));
         }
     }
+
+
+    // Fonction pour gérer le changement de sélection du champ "Size"
+    function handleSizeChange() {
+        const sizeSelect = document.getElementById("size");
+
+        // Enregistrer la valeur du champ "Size" dans le stockage local
+        localStorage.setItem("selectedSize", sizeSelect.value);
+    }
+
+    // Fonction pour gérer le changement de sélection du champ "N"
+    function handleNChange() {
+        const nSelect = document.getElementById("n");
+
+        // Enregistrer la valeur du champ "N" dans le stockage local
+        localStorage.setItem("selectedN", nSelect.value);
+    }
+
+    // Fonction pour gérer le changement de sélection du champ "Model"
+    function handleModelChange() {
+        const modelSelect = document.getElementById("model");
+        const sizeSelect = document.getElementById("size");
+        const nSelect = document.getElementById("n");
+
+        // Récupérer la valeur sélectionnée dans le champ "Model"
+        const selectedModel = modelSelect.value;
+
+        // Définir le tableau des tailles autorisées en fonction du modèle sélectionné
+        let allowedSizes = [];
+        if (selectedModel === "dall-e-3") {
+            allowedSizes = ["1024x1024", "1024x1792", "1792x1024"];
+        } else {
+            allowedSizes = ["256x256", "512x512", "1024x1024"];
+        }
+
+        // Vider les options actuelles du champ "Size"
+        sizeSelect.innerHTML = "";
+
+        // Ajouter les nouvelles options en fonction du tableau des tailles autorisées
+        allowedSizes.forEach(function (size) {
+            const option = document.createElement("option");
+            option.value = size;
+            option.text = size;
+            sizeSelect.add(option);
+        });
+
+        // Sélectionner la première option si elle est disponible, sinon, sélectionner la première option
+        if (sizeSelect.options.length > 0) {
+            const firstAvailableOption = Array.from(sizeSelect.options).find(option => !option.disabled);
+            sizeSelect.value = firstAvailableOption ? firstAvailableOption.value : sizeSelect.options[0].value;
+        }
+
+        // Réinitialiser le champ "n" en sélectionnant la première option disponible
+        nSelect.selectedIndex = 0;
+
+        // Limiter le champ "n" à 1 si le modèle est "dall-e-3", sinon réactiver toutes les options pour le champ "n"
+        for (let j = 1; j < nSelect.options.length; j++) {
+            nSelect.options[j].style.display = selectedModel === "dall-e-3" ? "none" : "block";
+            nSelect.options[j].disabled = selectedModel === "dall-e-3";
+        }
+
+        // Limiter le champ "n" à 1 si le modèle est "dall-e-3", sinon autoriser les valeurs de 1 à 10
+        nSelect.options[0].disabled = selectedModel === "dall-e-3";
+        for (let j = 1; j < nSelect.options.length; j++) {
+            nSelect.options[j].style.display = selectedModel === "dall-e-3" ? "none" : "block";
+            nSelect.options[j].disabled = false;
+        }
+
+        // Enregistrer la valeur du champ "Model" dans le stockage local
+        localStorage.setItem("selectedModel", selectedModel);
+        // Enregistrer la valeur du champ "Size" dans le stockage local
+        localStorage.setItem("selectedSize", sizeSelect.value);
+        // Enregistrer la valeur du champ "N" dans le stockage local
+        localStorage.setItem("selectedN", nSelect.value);
+    }
+
+    // Fonction pour restaurer les valeurs des champs depuis le stockage local
+    function restoreFieldValues() {
+        const modelSelect = document.getElementById("model");
+        const sizeSelect = document.getElementById("size");
+        const nSelect = document.getElementById("n");
+
+        // Restaurer la valeur du champ "Model" depuis le stockage local
+        const storedModel = localStorage.getItem("selectedModel");
+        if (storedModel) {
+            modelSelect.value = storedModel;
+        }
+
+        // Restaurer la valeur du champ "Size" depuis le stockage local
+        const storedSize = localStorage.getItem("selectedSize");
+        if (storedSize) {
+            sizeSelect.value = storedSize;
+        }
+
+        // Restaurer la valeur du champ "N" depuis le stockage local
+        const storedN = localStorage.getItem("selectedN");
+        if (storedN) {
+            nSelect.value = storedN;
+        }
+    }
+
 
     function addFabricDrawing(canvas) {
         const originalCanvas = canvas;
@@ -62,11 +186,11 @@
 
         fabricCanvas.isDrawingMode = true;
 
-       // Customize the brush options
-       let brushSize = 50;
-       fabricCanvas.freeDrawingBrush.width = brushSize;
-       fabricCanvas.freeDrawingBrush.color = 'rgba(0, 0, 0, 1)';
-       fabricCanvas.freeDrawingBrush.globalCompositeOperation = 'source-out';
+        // Customize the brush options
+        let brushSize = 50;
+        fabricCanvas.freeDrawingBrush.width = brushSize;
+        fabricCanvas.freeDrawingBrush.color = 'rgba(0, 0, 0, 1)';
+        fabricCanvas.freeDrawingBrush.globalCompositeOperation = 'source-out';
 
         // Create a new canvas element to store the mask
         const maskCanvas = document.createElement('canvas');
@@ -163,7 +287,7 @@
         //buttonContainer.appendChild(brushSizeInputLabel);
         buttonContainer.appendChild(brushSizeInput);
         buttonContainer.appendChild(undoButton);
-        
+
         // Append the button container and fabric canvas to the parent container
         const parentContainer = document.querySelector('#aig_cropper_preview');
         parentContainer.style.position = 'relative';
@@ -193,7 +317,7 @@
 
         const cancelButton = document.createElement('button');
         cancelButton.type = 'button';
-        cancelButton.textContent =  aig_ajax_object.cancelLabel;;
+        cancelButton.textContent = aig_ajax_object.cancelLabel;;
         cancelButton.className = 'button aig_cancel_button';
         cancelButton.style.width = '100%';
         cancelButton.addEventListener('click', function (e) {
@@ -304,7 +428,7 @@
                 const cropButton = createCropButton(canvas, cropper, input);
                 const cropperPreview = document.getElementById('aig_cropper_preview');
                 cropperPreview.innerHTML = '';
-                
+
 
                 const imgElement = document.createElement('img');
                 imgElement.src = '';
@@ -317,7 +441,7 @@
 
                 const divParent = document.createElement('div');
                 divParent.id = 'aig_cropper_preview_inner';
-                
+
                 divParent.appendChild(imgElement);
                 divParent.appendChild(cropButton);
                 divParent.appendChild(divDrawingTools);
@@ -609,7 +733,7 @@
             addInputFileCropperHandler();
         } else if ($(tabSelectors.about).length) {
             buildTab(tabSelectors.about, templates.about, data);
-        }else if ($(tabSelectors.public).length) {
+        } else if ($(tabSelectors.public).length) {
             buildTab(tabSelectors.public, templates.public, data);
         } else {
             buildTab(tabSelectors.generate, templates.generate, data);
