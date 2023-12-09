@@ -52,6 +52,12 @@ DALL·E 2 / 3 enables you to [generate images from text input](https://openai.co
 
 With this extension, you can save the generated images directly into the WordPress Media Library, making them accessible for use throughout your website, including blog posts, pages, plugins, and more.
 
+## Image rendering exemple Artist Image Generator - Image Creation via DALL·E 3 modele :
+
+![realistic-astronaut-in-space-repairing-space-battleship](https://github.com/Immolare/artist-image-generator/assets/11742929/9aa147de-2a68-487b-adf7-e20c9cdefb36)
+![img-odTY4q8GA5WGRiHXSw84uTgz](https://github.com/Immolare/artist-image-generator/assets/11742929/5e26f12a-894a-49cf-a0a1-ef39bbfa6b48)
+
+
 ## About the Royalty-Free Images Generated
 
 According to the principles of this AI service, **all your created images belong to you**. You can use them for anything because **you are the creator**!
