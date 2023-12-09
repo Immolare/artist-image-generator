@@ -44,11 +44,11 @@ Once you are on the plugin's "Settings" tab, you'll have all the instructions to
 
 ## How it Works
 
-The extension utilizes the API of OpenAI (ChatGPT) and leverages their cutting-edge artificial intelligence service, [DALL·E 2](https://openai.com/dall-e-2/).
+The extension utilizes the API of OpenAI (ChatGPT) and leverages their cutting-edge artificial intelligence service, [DALL·E 2](https://openai.com/dall-e-2/) | [DALL·E 3](https://openai.com/dall-e-3/).
 
-DALL·E 2 enables you to [generate images from text input](https://openai.com/blog/dall-e/). Additionally, it provides the capability to generate variations of images from a .png file.
+DALL·E 2 / 3 enables you to [generate images from text input](https://openai.com/blog/dall-e/). Additionally, it provides the capability to generate variations of images from a .png file.
 
-![DALL·E 2 Demo](https://user-images.githubusercontent.com/11742929/218429935-96e05c48-3506-4c0a-ab10-c81ede4746c9.mp4)
+[Youtube demo of Artist Image Generator Plugin for Wordpress](https://www.youtube.com/watch?v=nEeR_qmkvWg)
 
 With this extension, you can save the generated images directly into the WordPress Media Library, making them accessible for use throughout your website, including blog posts, pages, plugins, and more.
 
