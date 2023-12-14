@@ -13,7 +13,8 @@ Explore the limitless possibilities of visual content with Artist Image Generato
 | Image Generations    | Create original images based on text prompts.               | ✔️           | ✔️                        | ✔️                         |
 | Image Variations             | Generate diverse image variations effortlessly.            | ✔️                         | ❌                        | ✔️                         |
 | Image Edits                  | Unlock advanced editing features by uploading a mask. | ✔️                         | ❌                         | ❌                         |
-| Shortcodes                   | Prompt form to generate & download images.    | ✔️                         | ❌                        | ✔️                         |
+| Shortcodes                   | Prompt form to generate & download images.    | ✔️                         | ✔️                        | ✔️                         |
+| Wordpress Avatar AI          | Create AI generated avatar for WP users.    | ✔️                         | ✔️                        | ✔️                         |
 
 Whether you're a blogger, marketer, or website owner, Artist Image Generator revolutionizes image creation. Download now to experience the future of AI-powered image creation for WordPress sites.
 
