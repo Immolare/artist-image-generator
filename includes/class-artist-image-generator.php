@@ -234,9 +234,17 @@ class Artist_Image_Generator {
         $this->loader->add_action('wp_ajax_generate_image', $plugin_public, 'generate_image');
         $this->loader->add_action('wp_ajax_nopriv_generate_image', $plugin_public, 'generate_image');
 
+        // Ajoutez ces actions pour change_wp_avatar et change_wc_avatar
+        $this->loader->add_action('wp_ajax_change_wp_avatar', $plugin_public, 'change_wp_avatar');
+        $this->loader->add_action('wp_ajax_nopriv_change_wp_avatar', $plugin_public, 'change_wp_avatar');
+
+        $this->loader->add_action('wp_ajax_change_wc_avatar', $plugin_public, 'change_wc_avatar');
+        $this->loader->add_action('wp_ajax_nopriv_change_wc_avatar', $plugin_public, 'change_wc_avatar');
+
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
+        $this->loader->add_filter('get_avatar', $plugin_public, 'get_avatar_filter', 1, 5);
 	}
 
 	/**

@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Remplacez les balises {public_prompt} et {topics} dans le champ prompt
             const promptWithValues = prompt
-            .replace("{public_prompt}", publicPrompt)
-            .replace("{topics}", topics);
+                .replace("{public_prompt}", publicPrompt)
+                .replace("{topics}", topics);
 
             const container = document.querySelector(".aig-form-container");
             const containerResults = document.querySelector(".aig-results");
@@ -34,6 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 generate: 1,
                 n: form.getAttribute("data-n"),
                 size: form.getAttribute("data-size"),
+                model: form.getAttribute("data-model"),
+                download: form.getAttribute("data-download"),
                 prompt: promptWithValues,
                 public_prompt: publicPrompt,
                 topics: topics,
@@ -49,55 +51,108 @@ document.addEventListener("DOMContentLoaded", function () {
                     "Cache-Control": "no-cache",
                 },
             })
-            .then((response) => response.json())
-            .then((result) => {
-                overlay.style.display = "none";
-                document.querySelector(".aig-results-separator").style.display = 'block';
+                .then((response) => response.json())
+                .then((result) => {
+                    overlay.style.display = "none";
+                    document.querySelector(".aig-results-separator").style.display = 'block';
 
-                const imageContainer = document.createElement("div");
-                imageContainer.className = "custom-row";
-                containerResults.appendChild(imageContainer);
+                    const imageContainer = document.createElement("div");
+                    imageContainer.className = "custom-row";
+                    containerResults.appendChild(imageContainer);
 
-                result.images.forEach((image, index) => {
-                    const figure = document.createElement("figure");
-                    figure.className = "custom-col";
+                    result.images.forEach((image, index) => {
+                        const figure = document.createElement("figure");
+                        figure.className = "custom-col";
 
-                    const imgElement = document.createElement("img");
-                    imgElement.src = image.url;
-                    imgElement.className = "aig-image";
-                    imgElement.alt = "Generated Image " + (index + 1);
-                    figure.appendChild(imgElement);
+                        const imgElement = document.createElement("img");
+                        imgElement.src = image.url;
+                        imgElement.className = "aig-image";
+                        imgElement.alt = "Generated Image " + (index + 1);
+                        figure.appendChild(imgElement);
 
-                    const figCaption = document.createElement("figcaption");
-                    const downloadButton = document.createElement("button");
-                    downloadButton.setAttribute('type', 'button');
-                    downloadButton.className = "aig-download-button";
-                    // Utilisez l'icône WordPress pour le bouton de téléchargement (par exemple, un bouton de téléchargement généré par WordPress).
-                    downloadButton.innerHTML = '<span class="dashicons dashicons-download"></span> Download Image ' + (index + 1);
-                    figCaption.appendChild(downloadButton);
+                        const figCaption = document.createElement("figcaption");
+                        const downloadButton = document.createElement("button");
+                        downloadButton.setAttribute('type', 'button');
+                        downloadButton.className = "aig-download-button";
+                        // Utilisez l'icône WordPress pour le bouton de téléchargement (par exemple, un bouton de téléchargement généré par WordPress).
+                        const label = form.getAttribute("data-download") === "manual" ? 'Download Image ' + (index + 1) : 'Use Image ' + (index + 1) + ' as profile picture';
+                        downloadButton.innerHTML = '<span class="dashicons dashicons-download"></span> ' + label;
+                        figCaption.appendChild(downloadButton);
 
-                    figure.appendChild(figCaption);
-                    imageContainer.appendChild(figure);
+                        figure.appendChild(figCaption);
+                        imageContainer.appendChild(figure);
 
-                    // Gestion du téléchargement d'image
-                    downloadButton.addEventListener("click", function () {
-                        // Créez un lien de téléchargement
-                        const link = document.createElement("a");
-                        link.href = image.url;
-                        link.target = '_blank';
-                        link.download = "image" + (index + 1) + ".png";
-                        link.style.display = "none";
+                        // Gestion du téléchargement d'image
+                        downloadButton.addEventListener("click", function () {
 
-                        // Ajoutez le lien au DOM et déclenchez le téléchargement
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
+
+                            if (form.getAttribute("data-download") === "manual") {
+                                // Téléchargement manuel : déclenchez simplement le téléchargement
+                                const link = document.createElement("a");
+                                link.href = image.url;
+                                link.target = '_blank';
+                                link.download = "image" + (index + 1) + ".png";
+                                link.style.display = "none";
+
+                                // Ajoutez le lien au DOM et déclenchez le téléchargement
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            } else if (form.getAttribute("data-download") === "wp_avatar") {
+                                // Change la photo de profil de l'auteur WP connecté
+                                fetch(ajaxurl, {
+                                    method: "POST",
+                                    body: new URLSearchParams({
+                                        action: "change_wp_avatar",
+                                        image_url: image.url,
+                                        // Autres paramètres nécessaires, par exemple, l'ID de l'utilisateur
+                                    }),
+                                    headers: {
+                                        "Content-Type": "application/x-www-form-urlencoded",
+                                        "Cache-Control": "no-cache",
+                                    },
+                                })
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        if (confirm("You have successfully changed your profile picture.")) {
+                                            window.location.reload();
+                                        }                                        
+                                    })
+                                    .catch((error) => {
+                                        console.error("Error API request :", error);
+                                    });
+                            } else if (form.getAttribute("data-download") === "wc_avatar") {
+                                // Change la photo de profil de l'utilisateur WooCommerce connecté
+                                fetch(ajaxurl, {
+                                    method: "POST",
+                                    body: new URLSearchParams({
+                                        action: "change_wc_avatar",
+                                        image_url: image.url,
+                                        // Autres paramètres nécessaires, par exemple, l'ID de l'utilisateur WooCommerce
+                                    }),
+                                    headers: {
+                                        "Content-Type": "application/x-www-form-urlencoded",
+                                        "Cache-Control": "no-cache",
+                                    },
+                                })
+                                    .then((response) => response.json())
+                                    .then((result) => {
+                                        // Traitement de la réponse, par exemple, affichage d'un message de succès
+                                        console.log("Photo de profil WooCommerce changée avec succès.");
+                                    })
+                                    .catch((error) => {
+                                        console.error("Erreur lors de la requête API :", error);
+                                    });
+                            }
+
+                            
+                        });
+
                     });
+                })
+                .catch((error) => {
+                    console.error("Erreur lors de la requête API :", error);
                 });
-            })
-            .catch((error) => {
-                console.error("Erreur lors de la requête API :", error);
-            });
         });
     }
 });

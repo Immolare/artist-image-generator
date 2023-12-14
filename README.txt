@@ -1,24 +1,26 @@
 === Artist Image Generator - AI image generation plugin for Wordpress ===
 Contributors: Immolare
-Tags: AI image, image generation, image editing, image creation, AI, OpenAI, DALL-E, DALL·E, visual art, creative design, artificial intelligence, digital art
+Tags: AI image, AI user profile, AI user avatar, image generation, image editing, image creation, AI, OpenAI, DALL-E 2, DALL·E 3, visual art, creative design, artificial intelligence, digital art
 Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-to-support-this-plugin-development
 Requires at least: 5.3
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.11
+Stable tag: 1.0.12
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Create royalty-free images for your Wordpress site with the AI-powered Artist Image Generator plugin. Easy to use and beginner-friendly.
+Create AI images and edit existing ones with OpenAI DALL·E 2/3. Empower users with AI: craft WP profile avatars and use public forms to generate image through topics.
 
 == Description ==
 
-Artist Image Generator is a powerful WordPress plugin based on OpenAI DALL·E 2 that allows you to create and edit images using AI. This plugin provides three main methods for interacting with images:
+Artist Image Generator is a powerful WordPress plugin based on OpenAI DALL·E 2 and DALL·E 3 that allows you to create and edit images using AI. This plugin provides three main methods for interacting with images:
 
 - **Image Generation** (free): Create original images from scratch based on a text prompt. You can request 1-10 images at a time with sizes of 256x256, 512x512, or 1024x1024 pixels.
 - **Image Variations** (free): Generate variations of a given image to add diversity and creativity to your designs.
-- **Shortcodes** (free): Generate a multiple choices form in a shortcode to allow users generate and download images
 - **Image Edits** (premium): Edit and extend existing images by uploading a mask. The prompt should describe the full new image, not just the erased area.
+- **Shortcodes** (free): Generate a multiple choices form in a shortcode to allow users generate and download images 
+- **AI User Profile Picture/Avatar** (free): Generate a shortcode which allow user to generate an image and set it as WP profile picture
+
 
 ### Unlock Your Creativity with Artist Image Generator – An AI-Powered Image Creation Plugin for WordPress
 
@@ -50,10 +52,13 @@ https://www.youtube.com/watch?v=zfK1yJk9gRc
 [Purchase pro version licence key](https://developpeur-web.site/produit/artist-image-generator-pro/) now !
 
 
-#### Shortcodes: Generate a Public Form with Subjects and Topics
+#### Shortcodes: Generate a Public ÄI image creation Form with Subjects and Topics
 
-Do you need to provide a public tool for your website users? With the Shortcodes feature, you can display a multiple-choice form on a subject of your choice, allowing your visitors to generate images easily.
+Do you need to provide a public tool for your website users? With the Shortcodes feature, you can display a multiple-choice form on a subject of your choice, allowing your visitors to generate images easily. Compatible DALL·E 2 and DALL·E 3 model.
 
+#### Shortcodes: Public AI User Profile Picture/Avatar
+
+WP User can now customize their profile picture / avatar from the shortcode form. Simply add "download=wp_avatar" to the shortcode. Compatible DALL·E 2 and DALL·E 3 model.
 
 #### Save Time and Stay SEO-Friendly
 
@@ -184,6 +189,16 @@ Yes. Read the rates limits on the official documentation : [OpenAI - Rate Limits
 - If you need to do an image variation, your uploaded file needs to be a .png file <= 4MB and at format 1:1.
 
 == Changelog ==
+
+1.0.12 - 2023-12-13
+----------------------------------------------------------------------
+- Update WP profil picture via AI 
+- Shortcode modif
+
+1.0.11 - 2023-11-23
+----------------------------------------------------------------------
+- Support OpenAI Dall-e 3
+- Bump vendors
 
 1.0.10 - 2023-10-25
 ----------------------------------------------------------------------
