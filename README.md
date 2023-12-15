@@ -49,7 +49,7 @@ The extension utilizes the API of OpenAI (ChatGPT) and leverages their cutting-e
 
 DALL·E 2 / 3 enables you to [generate images from text input](https://openai.com/blog/dall-e/). Additionally, it provides the capability to generate variations of images from a .png file.
 
-[Youtube demo of Artist Image Generator Plugin for Wordpress](https://www.youtube.com/watch?v=nEeR_qmkvWg)
+Demo : https://www.youtube.com/watch?v=nEeR_qmkvWg
 
 With this extension, you can save the generated images directly into the WordPress Media Library, making them accessible for use throughout your website, including blog posts, pages, plugins, and more.
 
@@ -71,7 +71,7 @@ According to the principles of this AI service, **all your created images belong
 
 Create stunning images with ease, whether you're looking for captivating blog post illustrations, engaging featured images, or eye-catching logos. Artist Image Generator offers two methods for image generation:
 
-![Image Generation](https://www.youtube.com/watch?v=msd81YXw5J8)
+https://www.youtube.com/watch?v=msd81YXw5J8
 
 #### DALL·E 2 Image Generation:
 
@@ -87,21 +87,31 @@ Create stunning images with ease, whether you're looking for captivating blog po
 
 Effortlessly create multiple variations of the same image using Artist Image Generator. Generate up to 10 variations by providing a text description or uploading a .png or .jpg file. The plugin's crop functionality ensures easy selection of the desired area, even for non-square images.
 
-![Image Variations](https://www.youtube.com/watch?v=FtGFMsLTxYw)
+https://www.youtube.com/watch?v=FtGFMsLTxYw
 
 ### 3. Image Edits (Premium)
 
 Unlock advanced image editing capabilities with the premium version. Seamlessly integrated into the WordPress Media Library, the Pro version allows you to upload, crop, and create captivating mask overlays. Provide a descriptive text of the elements you want in the mask to achieve unparalleled customization.
 
-![Image Edits](https://www.youtube.com/watch?v=zfK1yJk9gRc)
+Demo : https://www.youtube.com/watch?v=zfK1yJk9gRc
 
 [Purchase pro version license key](https://developpeur-web.site/produit/artist-image-generator-pro/) now!
 
-### 4. Shortcodes
+### 4. Shortcodes - Public Form AI image generation
 
 Enable users to generate and download images effortlessly with Shortcodes. Display a multiple-choice form on a subject of your choice, allowing visitors to generate images easily.
 
-![Shortcodes](https://github.com/Immolare/artist-image-generator/assets/11742929/663def5e-a44a-4f4c-8255-231334c0d3f5)
+![Public Form AI image generation](https://github.com/Immolare/artist-image-generator/assets/11742929/663def5e-a44a-4f4c-8255-231334c0d3f5)
+
+Demo : https://youtu.be/_c6EJlMgpkE
+
+### 4. Shortcodes - Public form WP Avatar / AI User Profile Picture
+
+Allow user to generate / customize a profile picture through topics and set it as WP profile picture / avatar.
+
+![AI User Profile Picture](https://github.com/Immolare/artist-image-generator/assets/11742929/a4d6e8e5-c3a2-4775-987d-b7d8e9b9ff90)
+
+Demo : https://youtu.be/oxpKZtFnJLs
 
 ## Advantages
 
