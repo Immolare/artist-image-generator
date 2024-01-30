@@ -90,7 +90,8 @@ class Artist_Image_Generator_Admin
      */
     public function enqueue_styles(): void
     {
-        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/artist-image-generator-admin.css', array(), $this->version, 'all');
+        wp_enqueue_style('wp-admin');
+        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/artist-image-generator-admin.css', array('wp-admin'), $this->version, 'all');
     }
 
     /**
@@ -113,9 +114,9 @@ class Artist_Image_Generator_Admin
                 $dependencies[] = 'media-editor';
                 wp_enqueue_media();
                 wp_enqueue_script('media-editor');
+
             }
 
-            //wp_enqueue_script( $this->plugin_name . '-cropper', plugin_dir_url( __FILE__ ) . 'js/artist-image-generator-admin-cropper.js', [], $this->version, true );
             wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin.js', $dependencies, $this->version, true);
             wp_localize_script($this->plugin_name, 'aig_ajax_object', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
@@ -829,7 +830,8 @@ class Artist_Image_Generator_Admin
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
                 <div class="notice notice-info inline" style="margin-top:15px;">
-                    <p><?php esc_attr_e('Heads up ! To make an image edition you need to submit a .png file less than 4MB in a 1:1 format (square). However, you can upload a non square .jpg or a .png file at full size, and use the "crop" functionnality to resize the area you want. You can also add a prompt input to describe the image. This value will be used to fill the image name and alternative text.', 'artist-image-generator'); ?></p>
+                    <p><?php esc_attr_e('Heads up ! To make an image edition you need to submit a .png file less than 4MB in a 1:1 format (square). However, you can upload a non square .jpg or a .png file at full size, and use the "crop" functionnality to resize the area you want. 
+                    You have to draw a mask (= some part who needs to be replaced) on the original image and provide a prompt text describring the full new image, not only the mask area.', 'artist-image-generator'); ?></p>
                 </div>
                 <table class="form-table" role="presentation">
                     <tbody class="tbody-container"></tbody>
@@ -942,6 +944,23 @@ class Artist_Image_Generator_Admin
                 submit_button();
                 ?>
             </form>
+
+            <h2 class="title">
+                Upgrade to Pro feature
+            </h2>
+            <p>By purchasing a unique lifetime license, you help the developer and unlock powerful functionalities along with future updates.</p>
+            <p>1. Integration to the <strong>Elementor editor - Media Library</strong> like WP native Media Library</p>
+            <p>2. Edit function : create newely image from an existing source by using masks and prompt</p>
+            <p>Demo : <a href="https://youtu.be/zfK1yJk9gRc" target="_blank" title="Artist Image Generator - Image Edition feature">https://youtu.be/zfK1yJk9gRc</a></p>
+            <p>
+                Don't miss out on this opportunity to elevate your image editing capabilities. Unlock your artistic potential today by visiting our
+                <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank">
+                    sales page
+                </a>.
+            </p>
+            <p>
+                Thanks a lot for using my plugin !
+            </p>
         </script>
 
         <?php // Template for about tab. 
@@ -1015,7 +1034,7 @@ class Artist_Image_Generator_Admin
                     </p>
                     <p>With Open AI Edit Image, you can upload an image, create a mask around the subject, enter your desired modifications within the mask, and generate various image variations.</p>
                     <p>By purchasing a unique license for just <strong>€29.99 (including 20% VAT)</strong>, you unlock this powerful functionality along with future updates.</p>
-                    <p>1. you can transform your images like never before</p>
+                    <p>1. you can transform your images like never before <strong>including from Elementor Media Library</strong></p>
                     <p>2. in "Edit" tab, import any image and add a mask and an input to fill the mask with what you want</p>
                     <p>3. bring your imagination in a next level with image manipulation</p>
                     <p>Demo : <a href="https://youtu.be/zfK1yJk9gRc" target="_blank" title="Artist Image Generator - Image Edition feature">https://youtu.be/zfK1yJk9gRc</a></p>
