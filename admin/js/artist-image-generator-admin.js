@@ -43,36 +43,36 @@
             $tbodyContainer.append(templates.formImage(data));
         }
 
-        if (tabSelector !== '#tab-container-public') {
+        if (tabSelector !== '#tab-container-public' && tabSelector !== '#tab-container-settings') {
             const words = tabSelector.split('-');
             const lastWord = words[words.length - 1];
             action = lastWord;
 
-            if (tabSelector === '#tab-container-generate') {
-                $tbodyContainer.append(templates.formModel(data));
+            $tbodyContainer.append(templates.formModel(data));
+            if (tabSelector !== '#tab-container-generate') {
+                const modelEl = document.getElementById("model");
+                const modelElParent = modelEl.closest("tr");
+                modelElParent.setAttribute('hidden', true);
             }
-
             $tbodyContainer.append(templates.formPrompt(data));
             $tbodyContainer.append(templates.formSize(data));
             $tbodyContainer.append(templates.formN(data));
 
-            if (tabSelector === '#tab-container-generate') {
-                // Appeler la fonction restoreFieldValues au chargement de la page pour restaurer les valeurs depuis le stockage local
-                restoreFieldValues();
+            // Appeler la fonction restoreFieldValues au chargement de la page pour restaurer les valeurs depuis le stockage local
+            restoreFieldValues();
 
-                const modelSelect = document.getElementById("model");
-                const sizeSelect = document.getElementById("size");
-                const nSelect = document.getElementById("n");
+            const modelSelect = document.getElementById("model");
+            const sizeSelect = document.getElementById("size");
+            const nSelect = document.getElementById("n");
 
-                modelSelect.addEventListener("change", handleModelChange);
-                sizeSelect.addEventListener("change", handleSizeChange);
-                nSelect.addEventListener("change", handleNChange);
+            modelSelect.addEventListener("change", handleModelChange);
+            sizeSelect.addEventListener("change", handleSizeChange);
+            nSelect.addEventListener("change", handleNChange);
 
-                // Appeler la fonction handleModelChange au chargement de la page pour s'assurer que les règles sont appliquées
-                handleModelChange();
-                handleSizeChange();
-                handleNChange();
-            }
+            // Appeler la fonction handleModelChange au chargement de la page pour s'assurer que les règles sont appliquées
+            handleModelChange();
+            handleSizeChange();
+            handleNChange();
 
             $tabContainer.find('.notice-container').append(templates.notice(data));
             $tabContainer.find('.result-container').append(templates.result(data));
@@ -248,6 +248,24 @@
                     // Assign the files to the input element
                     const maskInput = document.querySelector('#mask');
                     maskInput.files = container.files;
+
+                    /**console.log(blob);
+                    console.log(maskInput.files);
+
+                    // Créer un élément img
+                    let imgElement = document.getElementById('testimg');
+                    if (!imgElement) {
+                        imgElement = document.createElement('img');
+                        imgElement.id = 'testimg';
+                    }
+
+                    // Définir la source de l'image en utilisant toDataURL() du canevas
+                    imgElement.src = resultCanvas.toDataURL();
+
+                    // Ajouter l'élément img au document (ou à un autre conteneur)
+                    document.getElementById('aig_cropper_canvas_area').appendChild(imgElement);**/
+
+                    
                 }, 'image/png');
             }
         });
@@ -776,6 +794,7 @@
         .catch(error => {
             console.error('Error loading script', error);
         });
+        
 
 
 })(jQuery);

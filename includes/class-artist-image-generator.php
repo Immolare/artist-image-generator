@@ -200,10 +200,10 @@ class Artist_Image_Generator {
 	private function define_admin_hooks() {
 
 		$plugin_admin = new Artist_Image_Generator_Admin( $this->get_plugin_name(), $this->get_version() );
-
         // Styles and Scripts
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+
         // Admin Settings Page
         $this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_menu' );
         $this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init' );
@@ -218,6 +218,14 @@ class Artist_Image_Generator {
         # Add underscore.js's templates
         $this->loader->add_action( 'admin_footer', $plugin_admin, 'print_tabs_templates' );
         $this->loader->add_action( 'customize_controls_print_footer_scripts', $plugin_admin, 'print_tabs_templates' );
+
+
+        # Check if Elementor is active
+        if (is_plugin_active('elementor/elementor.php') && $plugin_admin->check_license_validity()) {
+            $this->loader->add_action( 'elementor/editor/after_enqueue_styles', $plugin_admin, 'enqueue_styles' );
+            $this->loader->add_action( 'elementor/editor/after_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+            $this->loader->add_action( 'elementor/editor/footer', $plugin_admin, 'print_tabs_templates' );
+        }
 	}
 
 	/**
