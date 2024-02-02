@@ -221,7 +221,12 @@ class Artist_Image_Generator {
 
 
         # Check if Elementor is active
-        if (is_plugin_active('elementor/elementor.php') && $plugin_admin->check_license_validity()) {
+        if (!function_exists('is_plugin_active')) {
+            include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+        }
+        if (function_exists('is_plugin_active') && 
+            is_plugin_active('elementor/elementor.php') && 
+            $plugin_admin->check_license_validity()) {
             $this->loader->add_action( 'elementor/editor/after_enqueue_styles', $plugin_admin, 'enqueue_styles' );
             $this->loader->add_action( 'elementor/editor/after_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
             $this->loader->add_action( 'elementor/editor/footer', $plugin_admin, 'print_tabs_templates' );

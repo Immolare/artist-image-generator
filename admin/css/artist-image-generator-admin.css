@@ -121,6 +121,11 @@
     padding-inline: 10px 22px !important;
 }
 
+#aig_cropper_canvas_area canvas {
+    display: block;
+    max-width: 100%;
+}
+
 @media screen and (max-width: 960px) {
     .aig-container {
         grid-template-columns: repeat(2, 1fr);

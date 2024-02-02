@@ -182,7 +182,10 @@
 
     function addFabricDrawing(canvas) {
         const originalCanvas = canvas;
-        const fabricCanvas = new fabric.Canvas(canvas.id, { backgroundImage: originalCanvas.toDataURL("image/png", 1) });
+        const fabricCanvas = new fabric.Canvas(canvas.id, {
+            backgroundImage: originalCanvas.toDataURL("image/png", 1),
+            enableRetinaScaling: false, // Désactive la mise à l'échelle Retina par défaut
+        });
 
         fabricCanvas.isDrawingMode = true;
 
