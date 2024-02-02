@@ -5,7 +5,7 @@ Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-
 Requires at least: 5.3
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.13
+Stable tag: 1.0.15
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,7 +18,7 @@ Artist Image Generator is a powerful WordPress plugin based on OpenAI DALL·E 2 
 - **Image Generation** (free): Create original images from scratch based on a text prompt. You can request 1-10 images at a time with sizes of 256x256, 512x512, or 1024x1024 pixels.
 - **Image Variations** (free): Generate variations of a given image to add diversity and creativity to your designs.
 - **Image Edits** (premium): Edit and extend existing images by uploading a mask. The prompt should describe the full new image, not just the erased area.
-- **Elementor integration** (premium): All the functionalities are available through Elementor media library
+- **Elementor integration** (premium): All the functionalities (generate, variate, edit) are available through Elementor media library
 - **Shortcodes** (free): Generate a multiple choices form in a shortcode to allow users generate and download images 
 - **AI User Profile Picture/Avatar** (free): Generate a shortcode which allow user to generate an image and set it as WP profile picture
 
