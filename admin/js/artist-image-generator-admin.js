@@ -188,12 +188,12 @@
         });
 
         fabricCanvas.isDrawingMode = true;
-
-        // Customize the brush options
+        
+        // Personnalise les options du pinceau
         let brushSize = 50;
         fabricCanvas.freeDrawingBrush.width = brushSize;
         fabricCanvas.freeDrawingBrush.color = 'rgba(0, 0, 0, 1)';
-        fabricCanvas.freeDrawingBrush.globalCompositeOperation = 'source-out';
+        fabricCanvas.freeDrawingBrush.globalCompositeOperation = 'source-out';        
 
         // Create a new canvas element to store the mask
         const maskCanvas = document.createElement('canvas');
@@ -235,10 +235,8 @@
 
                 // Draw the original image on the result canvas
                 resultContext.drawImage(originalCanvas, 0, 0);
-
                 // Draw the mask on the result canvas
                 resultContext.drawImage(maskCanvas, 0, 0);
-
                 // Convert the result canvas to a blob
                 resultCanvas.toBlob(function (blob) {
                     // Create a file from the blob
@@ -251,25 +249,7 @@
                     // Assign the files to the input element
                     const maskInput = document.querySelector('#mask');
                     maskInput.files = container.files;
-
-                    /**console.log(blob);
-                    console.log(maskInput.files);
-
-                    // Créer un élément img
-                    let imgElement = document.getElementById('testimg');
-                    if (!imgElement) {
-                        imgElement = document.createElement('img');
-                        imgElement.id = 'testimg';
-                    }
-
-                    // Définir la source de l'image en utilisant toDataURL() du canevas
-                    imgElement.src = resultCanvas.toDataURL();
-
-                    // Ajouter l'élément img au document (ou à un autre conteneur)
-                    document.getElementById('aig_cropper_canvas_area').appendChild(imgElement);**/
-
-                    
-                }, 'image/png');
+                }, 'image/png', 1);
             }
         });
 
@@ -562,6 +542,11 @@
         }
         const cropper = new Cropper(canvas, {
             aspectRatio: 1 / 1,
+            viewMode: 0,
+            minContainerWidth: 450,
+            minContainerHeight: 450,
+            minCanvasWidth: 450,
+            minCanvasHeight:450,
             crop: function (event) {
                 let imgSrc = cropper.getCroppedCanvas({
                     width: 210,
@@ -586,7 +571,12 @@
             e.preventDefault();
             const croppedCanvas = cropper.getCroppedCanvas({
                 width: 450,
+                minWidth: 450,
+                maxWidth: 450,
                 height: 450,
+                minHeight: 450,
+                maxHeight: 450,
+                imageSmoothingQuality:"high"
             });
 
             croppedCanvas.toBlob(function (blob) {
@@ -595,7 +585,7 @@
                 container.items.add(file);
                 targetEventInput.files = container.files;
                 showDrawingButtons(cropper);
-            }, 'image/png');
+            }, 'image/png', 1);
 
             this.parentNode.removeChild(this);
 
@@ -763,41 +753,56 @@
         addMediaHandler();
     }
 
-    function loadScript(url) {
-        return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = url;
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
+    function loadAsyncScript(file, callback, id) {
+        const d = document;
+        if (!id) {
+            id = 'artist-image-generator-js-external-' + Math.random().toString(36).substring(7);
+        }
+    
+        if (!d.getElementById(id)) {
+            const tag = 'script';
+            const newScript = d.createElement(tag);
+            const firstScript = d.getElementsByTagName(tag)[0];
+    
+            newScript.id = id;
+            newScript.async = true;
+            newScript.src = file;
+    
+            if (callback) {
+                newScript.onreadystatechange = function () {
+                    if (newScript.readyState === 'loaded' || newScript.readyState === 'complete') {
+                        newScript.onreadystatechange = null;
+                        callback(file);
+                    }
+                };
+    
+                newScript.onload = function () {
+                    callback(file);
+                };
+            }
+    
+            firstScript.parentNode.insertBefore(newScript, firstScript);
+        } else {
+            console.error(`Le script avec l'ID ${id} est déjà chargé`);
+        }
     }
-
-    fetch(aig_ajax_object.cropper_script_path)
-        .then(response => response.text())
-        .then(scriptContent => {
-            const script = document.createElement('script');
-            script.textContent = scriptContent;
-            document.head.appendChild(script);
-            return loadScript(aig_ajax_object.cropper_script_path);
-        })
-        .then(() => fetch(aig_ajax_object.drawing_tool_script_path))
-        .then(response => response.text())
-        .then(scriptContent => {
-            const script = document.createElement('script');
-            script.textContent = scriptContent;
-            document.head.appendChild(script);
-            return loadScript(aig_ajax_object.drawing_tool_script_path);
-        })
-        .then(() => {
-            aig_ajax_object.is_media_editor
-                ? initAdminMediaModal()
-                : initAdminPage();
-        })
-        .catch(error => {
-            console.error('Error loading script', error);
+    
+    function initializeAdmin() {
+        if (aig_ajax_object.is_media_editor) {
+            initAdminMediaModal();
+        } else {
+            initAdminPage();
+        }
+    }
+    
+    // Charger les scripts de manière séquentielle, puis initialiser
+    loadAsyncScript(aig_ajax_object.cropper_script_path, function () {
+        console.log('Cropped script loaded successfully');
+        loadAsyncScript(aig_ajax_object.drawing_tool_script_path, function () {
+            console.log('Drawing tool script loaded successfully');
+            initializeAdmin();
         });
-        
-
+    });
+    
 
 })(jQuery);

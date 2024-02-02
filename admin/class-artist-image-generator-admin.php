@@ -90,8 +90,8 @@ class Artist_Image_Generator_Admin
      */
     public function enqueue_styles(): void
     {
-        wp_enqueue_style('wp-admin');
-        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/artist-image-generator-admin.css', array('wp-admin'), $this->version, 'all');
+        //wp_enqueue_style('wp-admin');
+        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/artist-image-generator-admin.css', array(), $this->version, 'all');
     }
 
     /**

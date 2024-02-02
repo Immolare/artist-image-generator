@@ -121,6 +121,109 @@
     padding-inline: 10px 22px !important;
 }
 
+.elementor-editor-active #tab-container-generate .form-table,
+.elementor-editor-active #tab-container-variate .form-table,
+.elementor-editor-active #tab-container-edit .form-table {
+    border-collapse: collapse;
+    margin-top: .5em;
+    width: 100%;
+    clear: both;
+}
+
+.elementor-editor-active #tab-container-generate .form-table th,
+.elementor-editor-active #tab-container-variate .form-table th,
+.elementor-editor-active #tab-container-edit .form-table th {
+    vertical-align: top;
+    text-align: left;
+    padding: 20px 10px 20px 0;
+    width: 200px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.elementor-editor-active #tab-container-generate p.submit,
+.elementor-editor-active #tab-container-variate p.submit,
+.elementor-editor-active #tab-container-edit p.submit {
+    padding: 1.5em 0;
+    margin: 5px 0;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border: none;
+}
+
+.elementor-editor-active #tab-container-generate hr,
+.elementor-editor-active #tab-container-variate hr,
+.elementor-editor-active #tab-container-edit hr {
+    border: 0;
+    border-top: 1px solid #dcdcde;
+    border-bottom: 1px solid #f6f7f7;
+    margin: 10px 0;
+}
+
+.elementor-editor-active #tab-container-generate .card,
+.elementor-editor-active #tab-container-variate .card,
+.elementor-editor-active #tab-container-edit .card {
+    position: relative;
+    margin-top: 20px;
+    padding: .7em 2em 1em;
+    min-width: 255px;
+    max-width: 520px;
+    border: 1px solid #c3c4c7;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.elementor-editor-active #tab-container-generate h2,
+.elementor-editor-active #tab-container-variate h2,
+.elementor-editor-active #tab-container-edit h2 {
+    margin: 1em 0;
+}
+
+.elementor-editor-active #tab-container-generate .notice,
+.elementor-editor-active #tab-container-variate .notice,
+.elementor-editor-active #tab-container-edit .notice {
+    margin: 5px 0 15px;
+}
+
+.elementor-editor-active #tab-container-generate .notice,
+.elementor-editor-active #tab-container-variate .notice,
+.elementor-editor-active #tab-container-edit .notice {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-left-width: 4px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    margin: 5px 15px 2px;
+    padding: 1px 12px;
+}
+
+.elementor-editor-active #tab-container-generate .notice-error,
+.elementor-editor-active #tab-container-variate .notice-error,
+.elementor-editor-active #tab-container-edit .notice-error {
+    border-left-color: #d63638;
+}
+
+.elementor-editor-active #tab-container-generate .notice-info,
+.elementor-editor-active #tab-container-variate .notice-info,
+.elementor-editor-active #tab-container-edit .notice-info {
+    border-left-color: #72aee6;
+}
+
+.elementor-editor-active #tab-container-generate .notice p::before,
+.elementor-editor-active #tab-container-variate .notice p::before,
+.elementor-editor-active #tab-container-edit .notice p::before{
+    margin-right: 6px;
+}
+
+.elementor-editor-active #tab-container-generate .notice p,
+.elementor-editor-active #tab-container-variate .notice p,
+.elementor-editor-active #tab-container-edit .notice p{
+	margin: .5em 0;
+	padding: 2px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 #aig_cropper_canvas_area canvas {
     display: block;
     max-width: 100%;
