@@ -107,7 +107,7 @@
 /* Pour #tab-container-generate */
 .elementor-editor-active #tab-container-generate input:not([type="submit"]),
 .elementor-editor-active #tab-container-variate input:not([type="submit"]),
-.elementor-editor-active #tab-container-edit input:not([type="submit"]) {
+.elementor-editor-active #tab-container-edit input:not([type="submit"]):not(#aig_brush_size_input) {
     width: 25em !important;
 }
 
