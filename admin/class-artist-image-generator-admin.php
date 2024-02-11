@@ -90,10 +90,55 @@ class Artist_Image_Generator_Admin
      */
     public function enqueue_styles(): void
     {
-        wp_enqueue_style('wp-admin');
-        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/artist-image-generator-admin.css', array('wp-admin'), $this->version, 'all');
+        //wp_enqueue_style('wp-admin');
+        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/artist-image-generator-admin.css', array(), $this->version, 'all');
     }
 
+    /**
+     * Filter Beaver Builder CSS
+     *
+     * @return void
+     */
+    public function enqueue_bb_styles($css, $nodes, $global_settings)
+    {
+        $css .= file_get_contents(plugin_dir_path(__FILE__) . 'css/artist-image-generator-admin.css');
+
+        return $css;
+    }
+
+    private function aig_ajax_object(): array
+    {
+        $is_media_editor_page = $this->is_media_editor_page();
+
+        return array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'cropper_script_path' => plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin-cropper.js',
+            'drawing_tool_script_path' => plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin-drawing.js',
+            'is_media_editor' => $is_media_editor_page,
+            'variateLabel' => esc_attr__('Variate', 'artist-image-generator'),
+            'editLabel' => esc_attr__('Edit (Pro)', 'artist-image-generator'),
+            'publicLabel' => esc_attr__('Shortcodes', 'artist-image-generator'),
+            'generateLabel' => esc_attr__('Generate', 'artist-image-generator'),
+            'cropperCropLabel' => esc_attr__('Crop this zone', 'artist-image-generator'),
+            'cropperCancelLabel' => esc_attr__('Cancel the zoom', 'artist-image-generator'),
+            'cancelLabel' => esc_attr__('Cancel', 'artist-image-generator'),
+            'maskLabel' => esc_attr__('Create mask', 'artist-image-generator'),
+            'editLabel' => esc_attr__('Edit image', 'artist-image-generator'),
+            'valid_licence' => $this->check_license_validity(),
+        );
+    }
+
+    private function aig_data(): array
+    {
+        return array(
+            'error' => [],
+            'images' => [],
+            'model_input' => "", // dall-e-2
+            'prompt_input' => "",
+            'size_input' => $this->get_default_image_dimensions(),
+            'n_input' => 1
+        );
+    }
     /**
      * Hook : Enqueue JS scripts
      *
@@ -103,48 +148,21 @@ class Artist_Image_Generator_Admin
     {
         $is_media_editor_page = $this->is_media_editor_page();
         $is_plugin_page = $this->is_artist_image_generator_page();
-
-        // Enqueue scripts only on specific admin pages
         if ($is_plugin_page || $is_media_editor_page) {
             $dependencies = array('wp-util', 'jquery', 'underscore');
-            // Enqueue necessary scripts
             wp_enqueue_script('wp-util');
 
             if ($is_media_editor_page) {
                 $dependencies[] = 'media-editor';
                 wp_enqueue_media();
                 wp_enqueue_script('media-editor');
-
             }
 
             wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin.js', $dependencies, $this->version, true);
-            wp_localize_script($this->plugin_name, 'aig_ajax_object', array(
-                'ajax_url' => admin_url('admin-ajax.php'),
-                'cropper_script_path' => plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin-cropper.js',
-                'drawing_tool_script_path' => plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin-drawing.js',
-                'is_media_editor' => $is_media_editor_page,
-                'variateLabel' => esc_attr__('Variate', 'artist-image-generator'),
-                'editLabel' => esc_attr__('Edit (Pro)', 'artist-image-generator'),
-                'publicLabel' => esc_attr__('Shortcodes', 'artist-image-generator'),
-                'generateLabel' => esc_attr__('Generate', 'artist-image-generator'),
-                'cropperCropLabel' => esc_attr__('Crop this zone', 'artist-image-generator'),
-                'cropperCancelLabel' => esc_attr__('Cancel the zoom', 'artist-image-generator'),
-                'cancelLabel' => esc_attr__('Cancel', 'artist-image-generator'),
-                'maskLabel' => esc_attr__('Create mask', 'artist-image-generator'),
-                'valid_licence' => $this->check_license_validity(),
-            ));
+            wp_localize_script($this->plugin_name, 'aig_ajax_object', $this->aig_ajax_object());
 
             if ($is_media_editor_page) {
-                $data = [
-                    'error' => [],
-                    'images' => [],
-                    'prompt_input' => "",
-                    'size_input' => $this->get_default_image_dimensions(),
-                    'n_input' => 1
-                ];
-
-                // Pass the variable to the template
-                wp_localize_script($this->plugin_name, 'aig_data', $data);
+                wp_localize_script($this->plugin_name, 'aig_data', $this->aig_data());
             }
         }
     }
@@ -170,7 +188,7 @@ class Artist_Image_Generator_Admin
     {
         global $pagenow;
 
-        return ($pagenow === 'post.php' || $pagenow === 'post-new.php');
+        return ($pagenow === 'post.php' || $pagenow === 'post-new.php' || isset($_GET['fl_builder']));
     }
 
     /**
@@ -312,7 +330,7 @@ class Artist_Image_Generator_Admin
 
         add_settings_field(
             $this->prefix . '_openai_api_key_0', // id
-            'OPENAI_API_KEY', // title
+            'OPENAI_KEY', // title
             array($this, 'openai_api_key_0_callback'), // callback
             $this->prefix . '-admin', // page
             $this->prefix . '_setting_section' // section
@@ -320,7 +338,7 @@ class Artist_Image_Generator_Admin
 
         add_settings_field(
             $this->prefix . '_aig_licence_key_0', // id
-            'AIG_PREMIUM_LICENCE_KEY', // title
+            'AIG_KEY', // title
             array($this, 'aig_licence_key_0_callback'), // callback
             $this->prefix . '-admin', // page
             $this->prefix . '_setting_section' // section
@@ -441,8 +459,8 @@ class Artist_Image_Generator_Admin
             $prompt_input = isset($_POST['prompt']) ? sanitize_text_field($_POST['prompt']) : null;
             $size_input = isset($_POST['size']) ? sanitize_text_field($_POST['size']) : $this->get_default_image_dimensions();
             $n_input = isset($_POST['n']) ? sanitize_text_field($_POST['n']) : 1;
-            // DALL-E 3
-            $model = isset($_POST['model']) && sanitize_text_field($_POST['model']) === self::DALL_E_MODEL_3 ? self::DALL_E_MODEL_3 : null; 
+            // DALL·E 3
+            $model = isset($_POST['model']) && sanitize_text_field($_POST['model']) === self::DALL_E_MODEL_3 ? self::DALL_E_MODEL_3 : null;
 
             if ($is_generation) {
                 if (empty($prompt_input)) {
@@ -504,6 +522,7 @@ class Artist_Image_Generator_Admin
         $data = [
             'error' => $error,
             'images' => count($images) ? $images['data'] : [],
+            'model_input' => $model ?? '',
             'prompt_input' => $prompt_input ?? '',
             'size_input' => $size_input ?? $this->get_default_image_dimensions(),
             'n_input' => $n_input ?? 1
@@ -809,7 +828,7 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-variate">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
-                <div class="notice notice-info inline" style="margin-top:15px;">
+                <div hidden class="notice notice-info" style="margin-top:15px;">
                     <p><?php esc_attr_e('Heads up ! To make an image variation you need to submit a .png file less than 4MB in a 1:1 format (square). However, you can upload a non square .jpg or a .png file at full size, and use the "crop" functionnality to resize the area you want. You can also add a prompt input to describe the image. This value will be used to fill the image name and alternative text.', 'artist-image-generator'); ?></p>
                 </div>
                 <table class="form-table" role="presentation">
@@ -829,7 +848,7 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-edit">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
-                <div class="notice notice-info inline" style="margin-top:15px;">
+                <div hidden class="notice notice-info" style="margin-top:15px;">
                     <p><?php esc_attr_e('Heads up ! To make an image edition you need to submit a .png file less than 4MB in a 1:1 format (square). However, you can upload a non square .jpg or a .png file at full size, and use the "crop" functionnality to resize the area you want. 
                     You have to draw a mask (= some part who needs to be replaced) on the original image and provide a prompt text describring the full new image, not only the mask area.', 'artist-image-generator'); ?></p>
                 </div>
@@ -849,21 +868,20 @@ class Artist_Image_Generator_Admin
         ?>
         <script type="text/html" id="tmpl-artist-image-generator-edit-demo">
             <div class="card">
-                <h2 class="title">Provide full access to OpenAi Edit Image feature</h2>
-                <p>With Open AI Edit Image, you can upload an image, create a mask around the subject, enter your desired modifications within the mask, and generate various image variations.</p>
-                <p>By purchasing a unique license for just <strong>€29.99 (including 20% VAT)</strong>, you unlock this powerful functionality along with future updates.</p>
-                <p>1. you can transform your images like never before</p>
-                <p>2. in "Edit" tab, import any image and add a mask and an input to fill the mask with what you want</p>
-                <p>3. bring your imagination in a next level with image manipulation</p>
-                <p>Demo : <a href="https://youtu.be/zfK1yJk9gRc" target="_blank" title="Artist Image Generator - Image Edition feature">https://youtu.be/zfK1yJk9gRc</a></p>
-                <p>
-                    Don't miss out on this opportunity to elevate your image editing capabilities. Unlock your artistic potential today.
-                    <br /><br />
-
-                    <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button">
+                <h2 class="title">Provide full access to Artist Image Generator</h2>
+                <p>With Artist Image Generator Edit Image feature, you can compose, edit and generate full new images from Wordpress.</p>
+                <p>By purchasing a unique license, you unlock this powerful functionality along with new pro features, remove credits <strong>and help me to maintain this plugin</strong>.</p>
+                <p style="margin: 10px 0;">
+                    <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button button-primary" style="width :100%; text-align:center;">
                         Buy Artist Image Generator (Pro) - Licence Key
                     </a>
                 </p>
+                <p>Compatible with Block Builders like <strong>Elementor, Beaver Builder, WP Bakery.</strong></p>
+                <p>
+                    Official <a href="https://help.openai.com/en/articles/6516417-dall-e-editor-guide" target="_blank" title="OpenAI DALL·E Editor Guide">OpenAI DALL·E Editor Guide</a>
+                    - <a href="https://labs.openai.com/editor" target="_blank" title="OpenAI DALL·E Editor">Try OpenAI DALL·E Editor</a>
+                </p>
+                <iframe width="100%" height="315" src="https://www.youtube.com/embed/zfK1yJk9gRc" title="Artist Image Generator - Image Edition feature" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </script>
 
@@ -905,7 +923,7 @@ class Artist_Image_Generator_Admin
                     <h2 class="title"><?php esc_attr_e('Exemple: Rendering the shortcode into a page', 'artist-image-generator'); ?></h2>
                     <p><?php esc_attr_e('The shortcode:', 'artist-image-generator'); ?></p>
                     <div class="aig-code">
-                        [aig prompt="Painting of {public_prompt}, including following criterias: {topics}" 
+                        [aig prompt="Painting of {public_prompt}, including following criterias: {topics}"
                         topics="Impressionism, Surrealism, Portraits, Landscape Painting, Watercolor Techniques, Oil Painting, Street Art, Hyperrealism, Cat, Dog, Bird, Person"
                         download="manual" model="dall-e-3"]
                     </div>
@@ -916,142 +934,126 @@ class Artist_Image_Generator_Admin
             </div>
         </script>
 
-        <?php // Template for settings tab. 
+        <?php
+        if ($this->is_artist_image_generator_page()) :
+            // Template for settings tab. 
         ?>
-        <script type="text/html" id="tmpl-artist-image-generator-settings">
-            <h2><?php esc_attr_e('How to get your OpenAI API key ?', 'artist-image-generator'); ?></h2>
-            <ol>
-                <li>
-                    <?php esc_attr_e('Sign up / Log in into OpenAI developer portail', 'artist-image-generator'); ?> :
-                    <a target="_blank" title="OpenAI Developer Portail" href="https://openai.com/api/">https://openai.com/api/</a>
-                </li>
-                <li>
-                    <?php esc_attr_e('In User > View API keys, create a new secret key', 'artist-image-generator'); ?> :
-                    <a target="_blank" title="OpenAI - API keys" href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a>
-                </li>
-                <li>
-                    <?php esc_attr_e('Copy and paste the new secret key in the OPENAI_API_KEY field right here.', 'artist-image-generator'); ?>
-                </li>
-                <li>
-                    <?php esc_attr_e('Press "Save changes" and you are done.', 'artist-image-generator'); ?>
-                </li>
-            </ol>
-            <?php settings_errors(); ?>
-            <form method="post" action="options.php">
-                <?php
-                settings_fields($this->prefix . '_option_group');
-                do_settings_sections($this->prefix . '-admin');
-                submit_button();
-                ?>
-            </form>
+            <script type="text/html" id="tmpl-artist-image-generator-settings">
+                <div class="aig-container aig-container-3">
+                    <div class="card">
+                        <h2 class="title">
+                            <?php esc_attr_e('How to get your OpenAI API key ?', 'artist-image-generator'); ?>
+                        </h2>
+                        <p>
+                            1. <?php esc_attr_e('Log in into OpenAI developer portail', 'artist-image-generator'); ?> :
+                            <a target="_blank" title="OpenAI Developer Portail" href="https://openai.com/api/">https://openai.com/api/</a>
+                        </p>
+                        <p>
+                            2. <?php esc_attr_e('Create a new secret key', 'artist-image-generator'); ?> :
+                            <a target="_blank" title="OpenAI - API keys" href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a>
+                        </p>
+                        <p>
+                            3. <?php esc_attr_e('Copy/paste the secret key in the OPENAI_KEY field.', 'artist-image-generator'); ?>
+                        </p>
+                        <p>
+                            4. <?php esc_attr_e('Press "Save changes" and you are done.', 'artist-image-generator'); ?>
+                        </p>
+                        <hr/>
+                        <?php settings_errors(); ?>
+                        <form method="post" action="options.php">
+                            <?php
+                            settings_fields($this->prefix . '_option_group');
+                            do_settings_sections($this->prefix . '-admin');
+                            submit_button();
+                            ?>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h2 class="title">Provide full access to Artist Image Generator</h2>
+                        <p>With Artist Image Generator Edit Image feature, you can compose, edit and generate full new images from Wordpress.</p>
+                        <p>By purchasing a unique license, you unlock this powerful functionality along with new pro features, remove credits, <strong>and help me to maintain this plugin</strong>.</p>
+                        <p style="margin: 10px 0;">
+                            <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button button-primary" style="width :100%; text-align:center;">
+                                Buy Artist Image Generator (Pro) - Licence Key
+                            </a>
+                        </p>
+                        <p>Compatible width Block Builders like <strong>Elementor, Beaver Builder, WP Bakery.</strong></p>
+                        <p>
+                            Official <a href="https://help.openai.com/en/articles/6516417-dall-e-editor-guide" target="_blank" title="OpenAI DALL·E Editor Guide">OpenAI DALL·E Editor Guide</a>
+                            - <a href="https://labs.openai.com/editor" target="_blank" title="OpenAI DALL·E Editor">Try OpenAI DALL·E Editor</a>
+                        </p>
+                        <iframe width="100%" height="315" src="https://www.youtube.com/embed/zfK1yJk9gRc" title="Artist Image Generator - Image Edition feature" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+            </script>
 
-            <h2 class="title">
-                Upgrade to Pro feature
-            </h2>
-            <p>By purchasing a unique lifetime license, you help the developer and unlock powerful functionalities along with future updates.</p>
-            <p>1. Integration to the <strong>Elementor editor - Media Library</strong> like WP native Media Library</p>
-            <p>2. Edit function : create newely image from an existing source by using masks and prompt</p>
-            <p>Demo : <a href="https://youtu.be/zfK1yJk9gRc" target="_blank" title="Artist Image Generator - Image Edition feature">https://youtu.be/zfK1yJk9gRc</a></p>
-            <p>
-                Don't miss out on this opportunity to elevate your image editing capabilities. Unlock your artistic potential today by visiting our
-                <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank">
-                    sales page
-                </a>.
-            </p>
-            <p>
-                Thanks a lot for using my plugin !
-            </p>
-        </script>
+            <?php // Template for about tab. 
+            ?>
+            <script type="text/html" id="tmpl-artist-image-generator-about">
+                <div class="aig-container aig-container-3">
+                    <div class="card">
+                        <h2 class="title">
+                            <?php echo esc_attr($this->plugin_full_name); ?>
+                        </h2>
+                        <p>
+                            <strong>This plugin was created by me, <a href="https://www.pierrevieville.fr" title="Visit website" target="_blank">Pierre Viéville</a>.</strong>
+                        </p>
+                        <p>
+                            I have been a freelance developer for 10 years.
+                            <strong><?php echo esc_attr($this->plugin_full_name); ?></strong> is my first Wordpress plugin. I want to help the Wordpress community to improve the creativity of their content.
+                        </p>
+                        <p>
+                            That's why I made a plugin allowing you to generate <u>royalty-free images</u> that you can use anywhere on your site: media library, blog posts, pages, etc.
+                        </p>
+                        <p>
+                            I hope this plugin will be useful to you in the creation of your new content. If you have any question about this one, feel free to check out my web links.
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h2 class="title">
+                            How is it working ?
+                        </h2>
+                        <p>
+                            <strong>This plugin is an integration of OpenAI API with the new AI system <a target="_blank" title="Visit DALL·E 2" href="https://openai.com/dall-e-2/">DALL·E 2</a></strong>
+                        </p>
+                        <p>
+                            DALL·E 2 can create original, realistic images and art from a text description. It can combine concepts, attributes, and styles.
+                            This AI has learned the relationship between images and the text used to describe them.
+                        </p>
+                        <p>
+                            Basically the user input some text describing the images he wants. 1-10 images are generated.
+                            Then the user can select some images and add them to the Wordpress medias library, ready to use
+                            for a page or a post blog.
+                        </p>
+                        <p>
+                            The images generated are licenced free for any kind of usage. That are YOUR creations.
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h2 class="title">
+                            Wanna help to improve this plugin ?
+                        </h2>
+                        <p>
+                            <strong>This plugin is free-to-use and generate royalty-free images for you. If you want to support my work, feel free to :</strong>
+                        </p>
+                        <p>1. share your issues</p>
+                        <p>2. submit your pull request (PR)</p>
+                        <p>3. support the developer by a donation</p>
+                        <p>
+                            Theses things can be done on the
+                            <a href="https://github.com/Immolare/<?php echo esc_attr($this->plugin_name); ?>" title="Visit Github" target="_blank">
+                                <?php echo esc_attr($this->plugin_full_name); ?>'s Github page
+                            </a>.
+                        </p>
+                        <p>
+                            Thanks a lot for using my plugin !
+                        </p>
+                    </div>
+                </div>
+            </script>
 
-        <?php // Template for about tab. 
-        ?>
-        <script type="text/html" id="tmpl-artist-image-generator-about">
-            <div class="aig-container aig-container-3">
-                <div class="card">
-                    <h2 class="title">
-                        <?php echo esc_attr($this->plugin_full_name); ?>
-                    </h2>
-                    <p>
-                        <strong>This plugin was created by me, <a href="https://www.pierrevieville.fr" title="Visit website" target="_blank">Pierre Viéville</a>.</strong>
-                    </p>
-                    <p>
-                        I have been a freelance developer for 10 years.
-                        <strong><?php echo esc_attr($this->plugin_full_name); ?></strong> is my first Wordpress plugin. I want to help the Wordpress community to improve the creativity of their content.
-                    </p>
-                    <p>
-                        That's why I made a plugin allowing you to generate <u>royalty-free images</u> that you can use anywhere on your site: media library, blog posts, pages, etc.
-                    </p>
-                    <p>
-                        I hope this plugin will be useful to you in the creation of your new content. If you have any question about this one, feel free to check out my web links.
-                    </p>
-                </div>
-                <div class="card">
-                    <h2 class="title">
-                        How is it working ?
-                    </h2>
-                    <p>
-                        <strong>This plugin is an integration of OpenAI API with the new AI system <a target="_blank" title="Visit DALL·E 2" href="https://openai.com/dall-e-2/">DALL·E 2</a></strong>
-                    </p>
-                    <p>
-                        DALL·E 2 can create original, realistic images and art from a text description. It can combine concepts, attributes, and styles.
-                        This AI has learned the relationship between images and the text used to describe them.
-                    </p>
-                    <p>
-                        Basically the user input some text describing the images he wants. 1-10 images are generated.
-                        Then the user can select some images and add them to the Wordpress medias library, ready to use
-                        for a page or a post blog.
-                    </p>
-                    <p>
-                        The images generated are licenced free for any kind of usage. That are YOUR creations.
-                    </p>
-                </div>
-                <div class="card">
-                    <h2 class="title">
-                        Wanna help to improve this plugin ?
-                    </h2>
-                    <p>
-                        <strong>This plugin is free-to-use and generate royalty-free images for you. If you want to support my work, feel free to :</strong>
-                    </p>
-                    <p>1. share your issues</p>
-                    <p>2. submit your pull request (PR)</p>
-                    <p>3. support the developer by a donation</p>
-                    <p>
-                        Theses things can be done on the
-                        <a href="https://github.com/Immolare/<?php echo esc_attr($this->plugin_name); ?>" title="Visit Github" target="_blank">
-                            <?php echo esc_attr($this->plugin_full_name); ?>'s Github page
-                        </a>.
-                    </p>
-                    <p>
-                        Thanks a lot for using my plugin !
-                    </p>
-                </div>
-                <div class="card">
-                    <h2 class="title">
-                        Pro feature
-                    </h2>
-                    <p>
-                        <strong>Artist Image Generator can provide you full access to OpenAi Edit Image feature</strong>
-                    </p>
-                    <p>With Open AI Edit Image, you can upload an image, create a mask around the subject, enter your desired modifications within the mask, and generate various image variations.</p>
-                    <p>By purchasing a unique license for just <strong>€29.99 (including 20% VAT)</strong>, you unlock this powerful functionality along with future updates.</p>
-                    <p>1. you can transform your images like never before <strong>including from Elementor Media Library</strong></p>
-                    <p>2. in "Edit" tab, import any image and add a mask and an input to fill the mask with what you want</p>
-                    <p>3. bring your imagination in a next level with image manipulation</p>
-                    <p>Demo : <a href="https://youtu.be/zfK1yJk9gRc" target="_blank" title="Artist Image Generator - Image Edition feature">https://youtu.be/zfK1yJk9gRc</a></p>
-                    <p>
-                        Don't miss out on this opportunity to elevate your image editing capabilities. Unlock your artistic potential today by visiting our
-                        <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank">
-                            sales page
-                        </a>.
-                    </p>
-                    <p>
-                        Thanks a lot for using my plugin !
-                    </p>
-                </div>
-            </div>
-        </script>
-
-        <?php // Child template for notice block (notice-container). 
+        <?php
+        endif;
+        // Child template for notice block (notice-container). 
         ?>
         <script type="text/html" id="tmpl-artist-image-generator-notice">
             <# if ( data.error && data.error.msg ) { #>
@@ -1078,8 +1080,8 @@ class Artist_Image_Generator_Admin
                                 <?php esc_attr_e('Add to media library', 'artist-image-generator'); ?>
                             </a>
                         </div>
-                    <# }) #>
-                <# } #>
+                        <# }) #>
+                            <# } #>
             </div>
         </script>
 
@@ -1089,6 +1091,7 @@ class Artist_Image_Generator_Admin
             <tr>
                 <th scope="row">
                     <label for="image"><?php esc_attr_e('File (.png, .jpg)', 'artist-image-generator'); ?></label>
+                    <p class="description"><?php esc_attr_e('Upload a file and crop it.', 'artist-image-generator'); ?></p>
                 </th>
                 <td>
                     <input type="file" name="image" id="image" class="regular-text aig_handle_cropper" accept=".png,.jpg" />
@@ -1108,15 +1111,16 @@ class Artist_Image_Generator_Admin
             <tr>
                 <th scope="row">
                     <label for="n"><?php esc_attr_e('Number of images', 'artist-image-generator'); ?></label>
+                    <p class="description"><?php esc_attr_e('Depends of the model used.', 'artist-image-generator'); ?></p>
                 </th>
                 <td>
                     <select name="n" id="n">
-                        <# for (var i=1; i <=10; i++) { #>
-                            <# var is_selected=(data.n_input && data.n_input==i) ? 'selected' : '' ; #>
-                                <option value="<?php echo esc_attr('{{ i }}'); ?>" <?php echo esc_attr('{{ is_selected }}'); ?>>
-                                    <?php echo esc_attr('{{ i }}'); ?>
+                        <# _.each(data.n, function(n) { #>
+                            <# var is_selected=(data.n_input && data.n_input==n) ? 'selected' : '' ; #>
+                                <option value="{{ n }}" {{ is_selected }}>
+                                    {{ n }}
                                 </option>
-                        <# } #>
+                                <# }); #>
                     </select>
                 </td>
             </tr>
@@ -1127,10 +1131,14 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-form-prompt">
             <tr>
                 <th scope="row">
-                    <label for="prompt"><?php esc_attr_e('Prompt', 'artist-image-generator'); ?></label>
+                    <label for="prompt">
+                        <?php esc_attr_e('Prompt', 'artist-image-generator'); ?>
+                        <?php esc_attr_e(' / Alt text', 'artist-image-generator'); ?>
+                    </label>
+                    <p class="description"><?php esc_attr_e('Describe the full new image you want to generate with DALL·E.', 'artist-image-generator'); ?></p>
                 </th>
                 <td>
-                    <input type="text" id="prompt" name="prompt" class="regular-text" placeholder="<?php esc_attr_e('Ex: A bowl of soup as a planet in the universe as digital art', 'artist-image-generator'); ?>" value="<?php echo esc_attr('{{ data.prompt_input }}'); ?>" />
+                    <textarea id="prompt" name="prompt" class="regular-text" placeholder="<?php esc_attr_e('Ex: a sunlit indoor lounge area with a pool containing a flamingo', 'artist-image-generator'); ?>"><?php echo esc_textarea('{{ data.prompt_input }}'); ?></textarea>
                 </td>
             </tr>
         </script>
@@ -1139,47 +1147,40 @@ class Artist_Image_Generator_Admin
         ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-model">
             <# var is_selected_dalle2=(data.model && data.model=='' ) ? 'selected' : '' ; #>
-            <# var is_selected_dalle3=(data.model && data.model=='dall-e-3' ) ? 'selected' : '' ; #>
-            <tr>
-                <th scope="row">
-                    <label for="model"><?php esc_attr_e('Model', 'artist-image-generator'); ?></label>
-                </th>
-                <td>
-                    <select name="model" id="model">
-                        <option value="" <?php echo esc_attr('{{ is_selected_dalle2 }}'); ?>><?php echo self::DALL_E_MODEL_2; ?></option>
-                        <option value="<?php echo self::DALL_E_MODEL_3; ?>" <?php echo esc_attr('{{ is_selected_dalle3 }}'); ?>><?php echo self::DALL_E_MODEL_3; ?></option>
-                    </select>
-                </td>
-            </tr>
+                <# var is_selected_dalle3=(data.model && data.model=='dall-e-3' ) ? 'selected' : '' ; #>
+                    <tr>
+                        <th scope="row">
+                            <label for="model"><?php esc_attr_e('Model to use', 'artist-image-generator'); ?></label>
+                            <p class="description">
+                                <a href="https://openai.com/dall-e-3" target="_blank" rel="noopener noreferrer" title="More about DALL·E 3"><?php esc_attr_e('More about DALL·E 3 model.', 'artist-image-generator'); ?></a>
+                            </p>
+                        </th>
+                        <td>
+                            <select name="model" id="model">
+                                <option value="" <?php echo esc_attr('{{ is_selected_dalle2 }}'); ?>><?php echo self::DALL_E_MODEL_2; ?></option>
+                                <option value="<?php echo self::DALL_E_MODEL_3; ?>" <?php echo esc_attr('{{ is_selected_dalle3 }}'); ?>><?php echo self::DALL_E_MODEL_3; ?></option>
+                            </select>
+                        </td>
+                    </tr>
         </script>
 
         <?php // Child template for form/size block (tbody-container). 
         ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-size">
-            <# var is_selected_dalle2=(data.model && data.model=='' ) ? 'selected' : '' ; #>
-            <# var is_selected_dalle3=(data.model && data.model=='dall-e-3' ) ? 'selected' : '' ; #>
-            <# var is_selected_256=(is_selected_dalle2 && data.size_input && data.size_input=='256x256' ) ? 'selected' : '' ; #>
-            <# var is_selected_512=(is_selected_dalle2 && data.size_input && data.size_input=='512x512' ) ? 'selected' : '' ; #>
-            <# var is_selected_1024=(
-                is_selected_dalle2 && (!data.size_input || (data.size_input && data.size_input=='1024x1024' )) ||
-                is_selected_dalle3 && (!data.size_input || (data.size_input && data.size_input=='1024x1024' ))
-            ) ? 'selected' : '' ; #>
-            <# var is_selected_1792h=(data.size_input && data.size_input=='1024x1792' ) ? 'selected' : '' ; #>
-            <# var is_selected_1792v=(data.size_input && data.size_input=='1792x1024' ) ? 'selected' : '' ; #>
-                <tr>
-                    <th scope="row">
-                        <label for="size"><?php esc_attr_e('Size in pixels', 'artist-image-generator'); ?></label>
-                    </th>
-                    <td>
-                        <select name="size" id="size" >
-                            <option data-dalle="2" value="256x256" <?php echo esc_attr('{{ is_selected_256 }}'); ?>>256x256</option>
-                            <option data-dalle="2" value="512x512" <?php echo esc_attr('{{ is_selected_512 }}'); ?>>512x512</option>
-                            <option data-dalle="23" value="1024x1024" <?php echo esc_attr('{{ is_selected_1024 }}'); ?>>1024x1024</option>
-                            <option data-dalle="3" value="1024x1792" <?php echo esc_attr('{{ is_selected_1792h }}'); ?>>1024x1792</option>
-                            <option data-dalle="3" value="1792x1024" <?php echo esc_attr('{{ is_selected_1792v }}'); ?>>1792x1024</option>
-                        </select>
-                    </td>
-                </tr>
+            <tr>
+                <th scope="row">
+                    <label for="size"><?php esc_attr_e('Size in pixels', 'artist-image-generator'); ?></label>
+                    <p class="description"><?php esc_attr_e('Depends of the model used.', 'artist-image-generator'); ?></p>
+                </th>
+                <td>
+                    <select name="size" id="size">
+                        <# _.each(data.sizes, function(size) { #>
+                            <# var is_selected=(data.size_input && data.size_input==size) ? 'selected' : '' ; #>
+                                <option value="{{ size }}" {{ is_selected }}>{{ size }}</option>
+                                <# }); #>
+                    </select>
+                </td>
+            </tr>
         </script>
 
 <?php

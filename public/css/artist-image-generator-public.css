@@ -108,6 +108,23 @@
     position: relative;
 }
 
+.aig-form-container hr {
+    margin: 30px 0;
+}
+
+.aig-form-container .btn-primary {
+    width: 100%;
+}
+
+#aig-credits * {
+    display: inline-block !important;
+    visibility: visible !important;
+}
+#aig-credits, #aig-credits a {
+    color: rgba(0, 0, 0, 0.5) !important;
+    font-size: 10px !important;
+}
+
 /* Styles pour le champ de description */
 .aig-textarea {
     width: 100%;

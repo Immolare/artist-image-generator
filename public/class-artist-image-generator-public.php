@@ -183,7 +183,7 @@ class Artist_Image_Generator_Public
          */
 
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/artist-image-generator-public.js', array('jquery'), $this->version, false);
-        wp_localize_script($this->plugin_name, 'aig_ajax_object', array(
+        /*wp_localize_script($this->plugin_name, 'aig_ajax_object_public', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             //'cropper_script_path' => plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin-cropper.js',
             //'drawing_tool_script_path' => plugin_dir_url(__FILE__) . 'js/artist-image-generator-admin-drawing.js',
@@ -197,7 +197,7 @@ class Artist_Image_Generator_Public
             //'cancelLabel' => esc_attr__('Cancel', 'artist-image-generator'),
             //'maskLabel' => esc_attr__('Create mask', 'artist-image-generator'),
             //'valid_licence' => $this->check_license_validity(),
-        ));
+        ));*/
     }
 
     // Ajoutez la fonction pour générer le shortcode
@@ -215,6 +215,8 @@ class Artist_Image_Generator_Public
             $atts
         );
 
+        $plugin_admin = new Artist_Image_Generator_Admin($this->plugin_name, $this->version);
+
         // Si le modèle est 'dall-e-3', ajustez la valeur de 'n' à 1
         if ($atts['model'] === 'dall-e-3') {
             $atts['n'] = '1';
@@ -226,7 +228,9 @@ class Artist_Image_Generator_Public
         ob_start(); // Commence la mise en mémoire tampon du contenu HTML
 ?>
         <div class="aig-form-container">
-            <form method="post" class="aig-form" data-action="generate_image" data-n="<?php echo esc_attr($atts['n']); ?>" data-size="<?php echo esc_attr($atts['size']); ?>" data-model="<?php echo esc_attr($atts['model']); ?>" data-download="<?php echo esc_attr($atts['download']); ?>" action="<?php echo admin_url('admin-ajax.php'); ?>">
+            <form method="post" class="aig-form" data-action="generate_image" data-n="<?php echo esc_attr($atts['n']); ?>" 
+            data-size="<?php echo esc_attr($atts['size']); ?>" data-model="<?php echo esc_attr($atts['model']); ?>" 
+            data-download="<?php echo esc_attr($atts['download']); ?>" action="<?php echo admin_url('admin-ajax.php'); ?>">
                 <input type="hidden" name="aig_prompt" value="<?php echo esc_attr($atts['prompt']); ?>" />
                 <input type="hidden" name="action" value="generate_image" />
                 <?php echo wp_nonce_field('generate_image'); ?>
@@ -262,6 +266,10 @@ class Artist_Image_Generator_Public
                 <div class="aig-results"></div>
                 <hr />
                 <button type="submit" class="btn btn-primary">Generate Image / Retry</button>
+                <?php if (!$plugin_admin->check_license_validity()): ?>
+                    <p><small id="aig-credits">Powered by <a title="About the plugin" href="https://artist-image-generator.com/" target="_blank">Artist Image Generator</a> - 
+                    <a href="https://pierrevieville.fr" title="Visit creator's website" target="_blank">© Pierre V.</a></small></p>
+                <?php endif; ?>
             </form>
         </div>
 <?php

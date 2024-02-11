@@ -15,8 +15,8 @@
  * @wordpress-plugin
  * Plugin Name:       Artist Image Generator
  * Plugin URI:        https://github.com/Immolare/artist-image-generator
- * Description:       A WordPress AI image creation plugin that integrates OpenAI's DALL·E 2 and DALL·E 3 to create and edit royalty-free images, pictures, and avatars.
- * Version:           1.0.15
+ * Description:       Illustrate posts with Ai images (DALL·E). Text-to-Image, variation, editing. Public image generator & Ai avatars by topics.
+ * Version:           1.0.16
  * Author:            Pierre Viéville
  * Author URI:        https://www.pierrevieville.fr
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'ARTIST_IMAGE_GENERATOR_VERSION', '1.0.15' );
+define( 'ARTIST_IMAGE_GENERATOR_VERSION', '1.0.16' );
 
 /**
  * The code that runs during plugin activation.
