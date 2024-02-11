@@ -8,6 +8,7 @@
     let data = { ...aig_data }; // defaultData is the constant data
     let maskFabricCanvas;
     let editFabricCanvas;
+    let needMediaListRefresh = false;
 
     // aig_data is the default data
     const SCRIPT_CACHE = {}; // cache librairies
@@ -111,7 +112,23 @@
                     events.forEach(function (event) {
                         self.on(event, self[key + 'ContentRender'], self);
                     });
+                });
 
+                const eventsRefresh = [
+                    'content:render',
+                    'content:activate:browse',
+                ];
+                
+                eventsRefresh.forEach(function (event) {
+                    self.on(event, function () {
+                        if (needMediaListRefresh && self.content) {
+                            const content = self.content.get();
+                            if (content && content.collection) {
+                                content.collection.props.set({ ignore: (+ new Date()) });
+                                needMediaListRefresh = false;
+                            }
+                        }
+                    });
                 });
             },
             browseRouter: function (routerView) {
@@ -795,6 +812,8 @@
                         $parent.find('h2 > .spinner').removeClass('is-active').remove();
                         $parent.find('h2 > .dashicons').addClass('is-active');
                     });
+
+                    needMediaListRefresh = true;
                 }
             });
 
