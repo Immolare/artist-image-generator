@@ -22,7 +22,7 @@
     display: block;
 }
 
-#aig_cropper_preview button {
+#aig_cropper_preview_inner button {
     display: block;
     margin: 15px auto 0 auto;
 }
@@ -37,15 +37,34 @@
 
 #aig_cropper_preview .button-container {
     display: grid;
-    grid-template-columns: auto auto;
-    grid-gap: 10px;
+    grid-template-columns: 1fr auto auto;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+        "input input input"
+        "button1 . button2-3";
+    gap: 10px;
     align-items: center;
     margin-top: 15px;
 }
 
-#aig_cropper_preview .button-container .button-link {
-    text-decoration: none;
-    margin: 0;
+#aig_brush_size_input {
+    grid-area: input;
+}
+
+#aig_cropper_preview .button:nth-child(2) {
+    grid-area: button1;
+    justify-self: start;
+    width: 100%;
+}
+
+#aig_cropper_preview .button-link:nth-child(3),
+#aig_cropper_preview .button-link:nth-child(4) {
+    grid-area: button2-3;
+    justify-self: end;
+}
+
+#aig_cropper_preview .button-container .button .dashicons {
+    line-height: 26px;
 }
 
 .aig_cancel_button {
@@ -53,9 +72,9 @@
     color: red !important;
 }
 
-#tab-container-generate,
-#tab-container-variate,
-#tab-container-edit {
+.tab-container-aig-generate,
+.tab-container-aig-variate,
+.tab-container-aig-edit {
     padding: 0 16px;
 }
 
@@ -96,43 +115,77 @@
     visibility: visible;
 }
 
-/* Pour #tab-container-edit */
-.elementor-editor-active #tab-container-generate input,
-.elementor-editor-active #tab-container-variate input,
-.elementor-editor-active #tab-container-edit input {
+/* Pour .tab-container-aig-edit */
+.elementor-editor-active .tab-container-aig-generate input,
+.elementor-editor-active .tab-container-aig-variate input,
+.elementor-editor-active .tab-container-aig-edit input,
+.fl-builder-edit .tab-container-aig-generate input,
+.fl-builder-edit .tab-container-aig-variate input,
+.fl-builder-edit .tab-container-aig-variate input {
     width: initial !important;
 }
 
+.fl-builder-edit .tab-container-aig-edit #submit,
+.fl-builder-edit .tab-container-aig-generate #submit,
+.fl-builder-edit .tab-container-aig-variate #submit {
+    color: #fff;
+}
 
-/* Pour #tab-container-generate */
-.elementor-editor-active #tab-container-generate input:not([type="submit"]),
-.elementor-editor-active #tab-container-variate input:not([type="submit"]),
-.elementor-editor-active #tab-container-edit input:not([type="submit"]):not(#aig_brush_size_input) {
+/* Pour .tab-container-aig-generate */
+.elementor-editor-active .tab-container-aig-generate input:not([type="submit"]),
+.elementor-editor-active .tab-container-aig-variate input:not([type="submit"]),
+.elementor-editor-active .tab-container-aig-edit input:not([type="submit"]):not(#aig_brush_size_input),
+.fl-builder-edit .tab-container-aig-generate input:not([type="submit"]),
+.fl-builder-edit .tab-container-aig-variate input:not([type="submit"]),
+.fl-builder-edit .tab-container-aig-edit input:not([type="submit"]):not(#aig_brush_size_input) {
     width: 25em !important;
 }
 
-.elementor-editor-active #tab-container-edit select,
-.elementor-editor-active #tab-container-edit textarea,
-.elementor-editor-active #tab-container-variate select,
-.elementor-editor-active #tab-container-variate textarea,
-.elementor-editor-active #tab-container-generate select,
-.elementor-editor-active #tab-container-generate textarea {
+.elementor-editor-active .tab-container-aig-edit select,
+.elementor-editor-active .tab-container-aig-edit textarea,
+.elementor-editor-active .tab-container-aig-variate select,
+.elementor-editor-active .tab-container-aig-variate textarea,
+.elementor-editor-active .tab-container-aig-generate select,
+.elementor-editor-active .tab-container-aig-generate textarea,
+.fl-builder-edit .tab-container-aig-edit select,
+.fl-builder-edit .tab-container-aig-edit textarea,
+.fl-builder-edit .tab-container-aig-variate select,
+.fl-builder-edit .tab-container-aig-variate textarea,
+.fl-builder-edit .tab-container-aig-generate select,
+.fl-builder-edit .tab-container-aig-generate textarea {
     width: auto !important;
     padding-inline: 10px 22px !important;
 }
 
-.elementor-editor-active #tab-container-generate .form-table,
-.elementor-editor-active #tab-container-variate .form-table,
-.elementor-editor-active #tab-container-edit .form-table {
+.elementor-editor-active .tab-container-aig-generate textarea,
+.elementor-editor-active .tab-container-aig-variate textarea,
+.elementor-editor-active .tab-container-aig-edit textarea,
+.fl-builder-edit .tab-container-aig-generate textarea,
+.fl-builder-edit .tab-container-aig-variate textarea,
+.fl-builder-edit .tab-container-aig-edit textarea {
+    max-width: 450px;
+    width: 100% !important;
+    margin-top: 15px;
+}
+
+.elementor-editor-active .tab-container-aig-generate .form-table,
+.elementor-editor-active .tab-container-aig-variate .form-table,
+.elementor-editor-active .tab-container-aig-edit .form-table,
+.fl-builder-edit .tab-container-aig-generate .form-table,
+.fl-builder-edit .tab-container-aig-variate .form-table,
+.fl-builder-edit .tab-container-aig-edit .form-table {
     border-collapse: collapse;
-    margin-top: .5em;
+    margin-top: 0.5em;
     width: 100%;
     clear: both;
 }
 
-.elementor-editor-active #tab-container-generate .form-table th,
-.elementor-editor-active #tab-container-variate .form-table th,
-.elementor-editor-active #tab-container-edit .form-table th {
+.elementor-editor-active .tab-container-aig-generate .form-table th,
+.elementor-editor-active .tab-container-aig-variate .form-table th,
+.elementor-editor-active .tab-container-aig-edit .form-table th,
+.fl-builder-edit .tab-container-aig-generate .form-table th,
+.fl-builder-edit .tab-container-aig-variate .form-table th,
+.fl-builder-edit .tab-container-aig-edit .form-table th {
     vertical-align: top;
     text-align: left;
     padding: 20px 10px 20px 0;
@@ -141,9 +194,21 @@
     font-weight: 600;
 }
 
-.elementor-editor-active #tab-container-generate p.submit,
-.elementor-editor-active #tab-container-variate p.submit,
-.elementor-editor-active #tab-container-edit p.submit {
+.elementor-editor-active .tab-container-aig-generate .form-table #aig_cropper_preview,
+.elementor-editor-active .tab-container-aig-variate .form-table #aig_cropper_preview,
+.elementor-editor-active .tab-container-aig-edit .form-table #aig_cropper_preview,
+.fl-builder-edit .tab-container-aig-generate .form-table #aig_cropper_preview,
+.fl-builder-edit .tab-container-aig-variate .form-table #aig_cropper_preview,
+.fl-builder-edit .tab-container-aig-edit .form-table #aig_cropper_preview {
+    padding-top: 0;
+}
+
+.elementor-editor-active .tab-container-aig-generate p.submit,
+.elementor-editor-active .tab-container-aig-variate p.submit,
+.elementor-editor-active .tab-container-aig-edit p.submit,
+.fl-builder-edit .tab-container-aig-generate p.submit,
+.fl-builder-edit .tab-container-aig-variate p.submit,
+.fl-builder-edit .tab-container-aig-edit p.submit {
     padding: 1.5em 0;
     margin: 5px 0;
     border-bottom-left-radius: 3px;
@@ -151,75 +216,105 @@
     border: none;
 }
 
-.elementor-editor-active #tab-container-generate hr,
-.elementor-editor-active #tab-container-variate hr,
-.elementor-editor-active #tab-container-edit hr {
+.elementor-editor-active .tab-container-aig-generate hr,
+.elementor-editor-active .tab-container-aig-variate hr,
+.elementor-editor-active .tab-container-aig-edit hr,
+.fl-builder-edit .tab-container-aig-generate hr,
+.fl-builder-edit .tab-container-aig-variate hr,
+.fl-builder-edit .tab-container-aig-edit hr {
     border: 0;
     border-top: 1px solid #dcdcde;
     border-bottom: 1px solid #f6f7f7;
     margin: 10px 0;
 }
 
-.elementor-editor-active #tab-container-generate .card,
-.elementor-editor-active #tab-container-variate .card,
-.elementor-editor-active #tab-container-edit .card {
+.elementor-editor-active .tab-container-aig-generate .card,
+.elementor-editor-active .tab-container-aig-variate .card,
+.elementor-editor-active .tab-container-aig-edit .card,
+.fl-builder-edit .tab-container-aig-generate .card,
+.fl-builder-edit .tab-container-aig-variate .card,
+.fl-builder-edit .tab-container-aig-edit .card {
     position: relative;
     margin-top: 20px;
-    padding: .7em 2em 1em;
+    padding: 0.7em 2em 1em;
     min-width: 255px;
     max-width: 520px;
     border: 1px solid #c3c4c7;
-    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
     background: #fff;
     box-sizing: border-box;
 }
 
-.elementor-editor-active #tab-container-generate h2,
-.elementor-editor-active #tab-container-variate h2,
-.elementor-editor-active #tab-container-edit h2 {
+.elementor-editor-active .tab-container-aig-generate .card p,
+.elementor-editor-active .tab-container-aig-variate .card p,
+.elementor-editor-active .tab-container-aig-edit .card p,
+.fl-builder-edit .tab-container-aig-generate .card p,
+.fl-builder-edit .tab-container-aig-variate .card p,
+.fl-builder-edit .tab-container-aig-edit .card  p{
+    margin: 0.5em 0;
+    padding: 2px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.elementor-editor-active .tab-container-aig-generate h2,
+.elementor-editor-active .tab-container-aig-variate h2,
+.elementor-editor-active .tab-container-aig-edit h2,
+.fl-builder-edit .tab-container-aig-generate .h2,
+.fl-builder-edit .tab-container-aig-variate .h2,
+.fl-builder-edit .tab-container-aig-edit .h2 {
     margin: 1em 0;
 }
 
-.elementor-editor-active #tab-container-generate .notice,
-.elementor-editor-active #tab-container-variate .notice,
-.elementor-editor-active #tab-container-edit .notice {
+.elementor-editor-active .tab-container-aig-generate .notice,
+.elementor-editor-active .tab-container-aig-variate .notice,
+.elementor-editor-active .tab-container-aig-edit .notice,
+.fl-builder-edit .tab-container-aig-generate .notice,
+.fl-builder-edit .tab-container-aig-variate .notice,
+.fl-builder-edit .tab-container-aig-edit .notice {
     margin: 5px 0 15px;
-}
-
-.elementor-editor-active #tab-container-generate .notice,
-.elementor-editor-active #tab-container-variate .notice,
-.elementor-editor-active #tab-container-edit .notice {
     background: #fff;
     border: 1px solid #c3c4c7;
     border-left-width: 4px;
-    box-shadow: 0 1px 1px rgba(0,0,0,.04);
-    margin: 5px 15px 2px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
     padding: 1px 12px;
 }
 
-.elementor-editor-active #tab-container-generate .notice-error,
-.elementor-editor-active #tab-container-variate .notice-error,
-.elementor-editor-active #tab-container-edit .notice-error {
+.elementor-editor-active .tab-container-aig-generate .notice-error,
+.elementor-editor-active .tab-container-aig-variate .notice-error,
+.elementor-editor-active .tab-container-aig-edit .notice-error,
+.fl-builder-edit .tab-container-aig-generate .notice-error,
+.fl-builder-edit .tab-container-aig-variate .notice-error,
+.fl-builder-edit .tab-container-aig-edit .notice-error {
     border-left-color: #d63638;
 }
 
-.elementor-editor-active #tab-container-generate .notice-info,
-.elementor-editor-active #tab-container-variate .notice-info,
-.elementor-editor-active #tab-container-edit .notice-info {
+.elementor-editor-active .tab-container-aig-generate .notice-info,
+.elementor-editor-active .tab-container-aig-variate .notice-info,
+.elementor-editor-active .tab-container-aig-edit .notice-info,
+.fl-builder-edit .tab-container-aig-generate .notice-info,
+.fl-builder-edit .tab-container-aig-variate .notice-info,
+.fl-builder-edit .tab-container-aig-edit .notice-info {
     border-left-color: #72aee6;
 }
 
-.elementor-editor-active #tab-container-generate .notice p::before,
-.elementor-editor-active #tab-container-variate .notice p::before,
-.elementor-editor-active #tab-container-edit .notice p::before{
+.elementor-editor-active .tab-container-aig-generate .notice p::before,
+.elementor-editor-active .tab-container-aig-variate .notice p::before,
+.elementor-editor-active .tab-container-aig-edit .notice p::before,
+.fl-builder-edit .tab-container-aig-generate .notice p::before,
+.fl-builder-edit .tab-container-aig-variate .notice p::before,
+.fl-builder-edit .tab-container-aig-edit .notice p::before {
     margin-right: 6px;
 }
 
-.elementor-editor-active #tab-container-generate .notice p,
-.elementor-editor-active #tab-container-variate .notice p,
-.elementor-editor-active #tab-container-edit .notice p{
-	margin: .5em 0;
-	padding: 2px;
+.elementor-editor-active .tab-container-aig-generate .notice p,
+.elementor-editor-active .tab-container-aig-variate .notice p,
+.elementor-editor-active .tab-container-aig-edit .notice p,
+.fl-builder-edit .tab-container-aig-generate .notice p,
+.fl-builder-edit .tab-container-aig-variate .notice p,
+.fl-builder-edit .tab-container-aig-edit .notice p {
+    margin: 0.5em 0;
+    padding: 2px;
     font-size: 13px;
     line-height: 1.5;
 }
@@ -227,6 +322,18 @@
 #aig_cropper_canvas_area canvas {
     display: block;
     max-width: 100%;
+}
+#aig_cropper_canvas_area .canvas-container.aig-canvas-locked,
+#aig_cropper_canvas_area canvas[hidden]{
+    display: none;
+}
+
+.aig-canvas-locked {
+    pointer-events: none !important;
+}
+
+#tab-container-aig-settings #submit {
+    width: 100%;
 }
 
 @media screen and (max-width: 960px) {

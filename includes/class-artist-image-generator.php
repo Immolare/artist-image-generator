@@ -224,12 +224,22 @@ class Artist_Image_Generator {
         if (!function_exists('is_plugin_active')) {
             include_once(ABSPATH . 'wp-admin/includes/plugin.php');
         }
-        if (function_exists('is_plugin_active') && 
-            is_plugin_active('elementor/elementor.php') && 
-            $plugin_admin->check_license_validity()) {
-            $this->loader->add_action( 'elementor/editor/after_enqueue_styles', $plugin_admin, 'enqueue_styles' );
-            $this->loader->add_action( 'elementor/editor/after_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-            $this->loader->add_action( 'elementor/editor/footer', $plugin_admin, 'print_tabs_templates' );
+        if (function_exists('is_plugin_active')) {
+            // Vérifiez si Beaver Builder Lite ou Pro est actif
+            $elementor_active = is_plugin_active('elementor/elementor.php');
+            if ($elementor_active && isset( $_GET['action'] ) && $_GET['action'] === 'elementor') {
+                $this->loader->add_action( 'elementor/editor/after_enqueue_styles', $plugin_admin, 'enqueue_styles' );
+                $this->loader->add_action( 'elementor/editor/after_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+                $this->loader->add_action( 'elementor/editor/footer', $plugin_admin, 'print_tabs_templates' );
+            }
+            // Vérifiez si Beaver Builder Lite ou Pro est actif
+            $bb_lite_active = is_plugin_active('beaver-builder-lite-version/fl-builder.php');
+            $bb_pro_active = is_plugin_active('beaver-builder/fl-builder.php');
+            if (($bb_lite_active || $bb_pro_active) && isset($_GET['fl_builder'])) {
+                $this->loader->add_action('wp_enqueue_scripts', $plugin_admin, 'enqueue_styles');
+                $this->loader->add_action('wp_enqueue_scripts', $plugin_admin, 'enqueue_scripts', 1);
+                $this->loader->add_action('wp_footer', $plugin_admin, 'print_tabs_templates', 15);
+            }
         }
 	}
 
@@ -254,9 +264,15 @@ class Artist_Image_Generator {
         $this->loader->add_action('wp_ajax_change_wc_avatar', $plugin_public, 'change_wc_avatar');
         $this->loader->add_action('wp_ajax_nopriv_change_wc_avatar', $plugin_public, 'change_wc_avatar');
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
+        $bb_lite_active = is_plugin_active('beaver-builder-lite-version/fl-builder.php');
+        $bb_pro_active = is_plugin_active('beaver-builder/fl-builder.php');
+        if (($bb_lite_active || $bb_pro_active) && isset($_GET['fl_builder'])) {
+            
+        } else {
+            $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles', 20);
+            $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts', 20);
+        }
+        
         $this->loader->add_filter('get_avatar', $plugin_public, 'get_avatar_filter', 1, 5);
 	}
 

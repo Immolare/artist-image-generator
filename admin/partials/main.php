@@ -23,7 +23,7 @@
     </h2>
     <?php foreach ( $this->admin_actions as $action ) : ?>
         <?php if ( $this->is_tab_active( $action ) ) : ?>
-            <div id="tab-container-<?php echo esc_attr( $action ); ?>"></div>
+            <div id="tab-container-aig-<?php echo esc_attr( $action ); ?>" class="tab-container-aig-<?php echo esc_attr( $action ); ?>"></div>
         <?php endif; ?>
     <?php endforeach; ?>
 </div>
