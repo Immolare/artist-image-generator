@@ -71,30 +71,21 @@ class Artist_Image_Generator_Public
             wp_send_json($data);
             wp_die();
         }
-
-        // Pass the variable to the template
-        //wp_localize_script($this->plugin_name, 'aig_data', $data);
     }
 
     // Définissez la fonction de filtre
     public function get_avatar_filter($avatar, $id_or_email, $size, $default, $alt)
     {
-        // Vérifiez si c'est un objet utilisateur
         if (is_object($id_or_email) && property_exists($id_or_email, 'user_id')) {
             $user_id = $id_or_email->user_id;
         } else {
-            // Sinon, essayez de récupérer l'ID d'utilisateur à partir de l'argument
             $user_id = is_numeric($id_or_email) ? $id_or_email : 0;
         }
 
-        // Vérifiez si c'est un avatar pour un utilisateur
         if ($user_id > 0) {
-            // Récupérez l'URL de l'avatar personnalisé à partir des métadonnées de l'utilisateur
             $custom_avatar_id = get_user_meta($user_id, '_aig_user_avatar', true);
 
-            // Si un avatar personnalisé est défini, utilisez-le
             if ($custom_avatar_id) {
-                // Récupérez l'URL de l'attachement à partir de l'ID
                 $custom_avatar_url = wp_get_attachment_url($custom_avatar_id);
 
                 if ($custom_avatar_url) {
@@ -108,34 +99,43 @@ class Artist_Image_Generator_Public
 
     public function change_wp_avatar()
     {
-        //check_ajax_referer('generate_image', 'nonce');
-
-        // Vérifiez si l'utilisateur est connecté
-        if (is_user_logged_in()) {
-            $user_id = get_current_user_id();
-
-            // Récupérez l'URL de l'image depuis la requête POST
-            $image_url = esc_url_raw($_POST['image_url']);
-
-            try {
-                // Téléchargez l'image manuellement et obtenez l'ID de l'attachement
-                $attachment_id = media_sideload_image($image_url, 0, null, 'id');
-
-                if ($attachment_id) {
-                    // Mettez à jour l'avatar de l'utilisateur WordPress connecté
-                    update_user_meta($user_id, '_aig_user_avatar', $attachment_id);
-                    wp_send_json(array('success' => true, 'message' => 'WordPress profile picture changed successfully.'));
-                } else {
-                    throw new Exception('Error downloading the image.');
-                }
-            } catch (Exception $e) {
-                // Ajoutez une sortie pour vérifier les erreurs éventuelles
-                error_log('Exception: ' . $e->getMessage());
-
-                wp_send_json_error($e->getMessage());
-            }
-        } else {
+        if (!is_user_logged_in()) {
             wp_send_json_error('User not logged in.');
+            return;
+        }
+
+        $current_user_id = get_current_user_id();
+        $image_url = esc_url_raw($_POST['image_url']);
+
+        try {
+            $attachment_id = media_sideload_image($image_url, 0, null, 'id');
+
+            if (!$attachment_id) {
+                throw new Exception('Error downloading the image.');
+            }
+
+            update_user_meta($current_user_id, '_aig_user_avatar', $attachment_id);
+            $this->update_avatar($attachment_id, $current_user_id);
+
+            wp_send_json(array('success' => true, 'message' => 'Your profile picture changed successfully.'));
+        } catch (Exception $e) {
+            error_log('Exception: ' . $e->getMessage());
+            wp_send_json_error($e->getMessage());
+        }
+    }
+
+    private function update_avatar($attachment_id, $current_user_id)
+    {
+        $simple_local_avatar_active = is_plugin_active('simple-local-avatars/simple-local-avatars.php');
+        $one_user_avatar_active = is_plugin_active('one-user-avatar/one-user-avatar.php');
+
+        if ($simple_local_avatar_active) {
+            $simple_local_avatars = new Simple_Local_Avatars();
+            $simple_local_avatars->assign_new_user_avatar($attachment_id, $current_user_id);
+        } else if ($one_user_avatar_active) {
+            global $wp_user_avatar;
+            $_POST['wp-user-avatar'] = $attachment_id;
+            $wp_user_avatar::wpua_action_process_option_update($current_user_id);
         }
     }
 
@@ -228,9 +228,7 @@ class Artist_Image_Generator_Public
         ob_start(); // Commence la mise en mémoire tampon du contenu HTML
 ?>
         <div class="aig-form-container">
-            <form method="post" class="aig-form" data-action="generate_image" data-n="<?php echo esc_attr($atts['n']); ?>" 
-            data-size="<?php echo esc_attr($atts['size']); ?>" data-model="<?php echo esc_attr($atts['model']); ?>" 
-            data-download="<?php echo esc_attr($atts['download']); ?>" action="<?php echo admin_url('admin-ajax.php'); ?>">
+            <form method="post" class="aig-form" data-action="generate_image" data-n="<?php echo esc_attr($atts['n']); ?>" data-size="<?php echo esc_attr($atts['size']); ?>" data-model="<?php echo esc_attr($atts['model']); ?>" data-download="<?php echo esc_attr($atts['download']); ?>" action="<?php echo admin_url('admin-ajax.php'); ?>">
                 <input type="hidden" name="aig_prompt" value="<?php echo esc_attr($atts['prompt']); ?>" />
                 <input type="hidden" name="action" value="generate_image" />
                 <?php echo wp_nonce_field('generate_image'); ?>
@@ -266,9 +264,9 @@ class Artist_Image_Generator_Public
                 <div class="aig-results"></div>
                 <hr />
                 <button type="submit" class="btn btn-primary">Generate Image / Retry</button>
-                <?php if (!$plugin_admin->check_license_validity()): ?>
-                    <p><small id="aig-credits">Powered by <a title="About the plugin" href="https://artist-image-generator.com/" target="_blank">Artist Image Generator</a> - 
-                    <a href="https://pierrevieville.fr" title="Visit creator's website" target="_blank">© Pierre V.</a></small></p>
+                <?php if (!$plugin_admin->check_license_validity()) : ?>
+                    <p><small id="aig-credits">Powered by <a title="About the plugin" href="https://artist-image-generator.com/" target="_blank">Artist Image Generator</a> -
+                            <a href="https://pierrevieville.fr" title="Visit creator's website" target="_blank">© Pierre V.</a></small></p>
                 <?php endif; ?>
             </form>
         </div>

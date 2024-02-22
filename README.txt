@@ -1,11 +1,11 @@
 === Artist Image Generator - Ai Image & Avatar (DALL·E)  ===
 Contributors: Immolare
-Tags: AI, openai, DALLE, image, avatar, image generator
-Donate link: https://github.com/Immolare/artist-image-generator#make-a-donation-to-support-this-plugin-development
+Tags: AI, openai, DALLE, SORA, image, avatar, video
+Donate link: https://artist-image-generator.com/#donate
 Requires at least: 5.3
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.16
+Stable tag: 1.0.18
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,13 +15,25 @@ Illustrate posts with Ai images (DALL·E). Text-to-Image, variation, editing. Co
 
 Artist Image Generator is an artificial intelligence image generation Wordpress plugin based on OpenAI DALL·E. The plugin allows you not only **create images**, but also **make variations of existing images** or **modifications (pro)** in order to create unique and royalty-free images.
 
-**The plugin can be used directly from the Wordpress Popup Media Manager, and is compatible with the most popular block builders such as Gutenberg, Elementor, Beaver Builder, WP Bakery.**
+**The plugin can be used directly from the Wordpress Popup Media Manager. It is compatible with the most popular block builders such as Gutenberg, Elementor, Beaver Builder, WP Bakery. And also Woocommerce compatible too.**
 
 It also offers a shortcode system that allows you to place a **publicly accessible topic image generation tool on any page**. Your visitors can thus generate, via a form, a series of images of their choice according to a topic and options that you have predefined (eg: tattoos, professions, etc.)
 
 Finally, if you're looking for an easy way for your Wordpress users to **generate custom avatars**, the shortcode feature also allows to generate and set their Wordpress profile photo. This feature is a nice **alternative to Gravatar, WP Avatar and native Wordpress system**. Particularly if you want to harmonize your authors' avatars according to topics.
 
+### Artist Image Generator will include next SORA features
+
+The SORA video generator by OpenAI hasn't been released yet, but once it's available, I'll incorporate those functionalities into the Artist Image Generator. Stay tuned for updates!
+
+To support theses developments you can :
+- [Make a donation](https://artist-image-generator.com/#donate)
+- [Purchase a licence key](https://artist-image-generator.com/product/licence-key/) 
+
+**Note:** Donors will be credited on the Artist Image Generator WordPress plugin page & official GitHub channel. A premium license will be given for donations surpassing the regular license key price.
+
 ### All free features of Artist Image Generator:
+
+Artist Image Generator supports all DALL·E lab features and params. [Visit our website to stay tuned](https://artist-image-generator.com/about/).
 
 - **Image Generation**: Text-to-image - Create unique images from scratch based on a text prompt.
 - **Image Variations**: Image-to-image - Create variations of a given image to add diversity and creativity to your designs.
@@ -32,13 +44,30 @@ Finally, if you're looking for an easy way for your Wordpress users to **generat
 
 - **Image Edit**: Edit and extend existing images by drawing a mask and ask DALL·E a brand new image.
 - **Image Composition**: Compose your main image by uploading other images into it, draw a mask and ask DALL·E a brand new image.
+- **Credits removal**: remove credits on shortcodes
+
+### Compatibilities :
+
+Artist Image Generator core features are compatible with :
+- Gutenberg
+- Elementor
+- WP Bakery
+- Beaver Builder (FL Builder)
+- Woocommerce products
+- And many others block builders / plugins
+
+AI Avatar by topics can be used with :
+- Simple Local Avatars
+- One User Avatar
+
+**Note:** to utilize AI avatars with these plugins, include the [aig download="wp_avatar"] shortcode on a user page. Once users generate and set their avatars, AIG will detect if these plugins are activated and automatically trigger their native update function.
 
 ### Why buy a license?
 
-By purchasing a one-time license for Artist Image Generator, you help maintain the plugin and grow it.
+By purchasing a premium license for Artist Image Generator, you help maintain the plugin and grow it.
 You benefit from exclusive support as well as all the new features that will be available in the future:
 
-[Purchase pro version licence key](https://developpeur-web.site/produit/artist-image-generator-pro/) 
+[Purchase pro version licence key](https://artist-image-generator.com/product/licence-key/) 
 
 ### Why use the plugin:
 
@@ -151,6 +180,32 @@ Yes. Read the rates limits on the official documentation : [OpenAI - Rate Limits
 - If you need to do an image variation, your uploaded file needs to be a .png file <= 4MB and at format 1:1.
 
 == Changelog ==
+1.0.18 - 2024-02-22
+- Fix and migrate licence key
+- Launch official website
+- Add quality / style for dall-e-3 settings
+- Compatibility with Simple Local Avatars 
+- Compatibility with One User Avatar
+- Minor improvements
+
+1.0.17 - 2024-02-15
+- Add plugin to 'gallery' media popup controller
+- Improve display when switching between popup controller
+- Add display to customize, profile, term, widgets medias managers
+- Add tab labels (UX)
+- Update translations EN / FR
+
+1.0.16.2 - 2024-02-12
+----------------------------------------------------------------------
+- FLBuilder fix open modal, default refresh
+- FLBuilder change script hook to wp_enqueue_media (sometimes tabs not appearing)
+- Remove AIG tabs when controller != library, image-featured, insert
+- Woocommerce compatibility
+- Fix licencing
+
+1.0.16.1 - 2024-02-11
+----------------------------------------------------------------------
+- Bugfixes
 
 1.0.16 - 2024-02-11
 ----------------------------------------------------------------------

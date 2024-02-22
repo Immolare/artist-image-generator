@@ -78,44 +78,6 @@ class Artist_Image_Generator {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-        // Initialize the license SDK
-        $this->initialize_license_sdk();
-	}
-
-    /**
-	 * Initialize the license SDK.
-	 *
-	 * Create an instance of the license SDK and set the necessary configuration.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function initialize_license_sdk() {
-		// Set the license server URL, customer key, customer secret, and product IDs
-		$license_server = 'https://developpeur-web.site'; // Replace with your license server URL
-		$customer_key = 'ck_cd59905ed7072a7f07ff8a028031743ec657661c'; // Replace with your customer key
-		$customer_secret = 'cs_52543ce45eb75c518aa939a480539e9a226026e1'; // Replace with your customer secret
-		$product_ids = [26733]; // Replace with your product IDs
-
-		// Create an instance of the license SDK
-		$license_sdk = new LMFW\SDK\License(
-			'Artist Image Generator (Pro)', // Replace with the name of your plugin
-			$license_server,
-			$customer_key,
-			$customer_secret,
-			$product_ids,
-			'plugin_license', // Replace with a unique value to avoid conflicts with other plugins
-			'plugin-is-valid', // Replace with a unique value to avoid conflicts with other plugins
-			5 // Replace with the number of days before checking the license validity
-		);
-
-		// Validate the license status
-		$valid_status = $license_sdk->validate_status();
-		if ($valid_status['is_valid']) {
-			// The license is valid, perform actions accordingly
-		} else {
-			// The license is not valid, handle it as needed
-		}
 	}
 
 	/**
@@ -237,7 +199,7 @@ class Artist_Image_Generator {
             $bb_pro_active = is_plugin_active('beaver-builder/fl-builder.php');
             if (($bb_lite_active || $bb_pro_active) && isset($_GET['fl_builder'])) {
                 $this->loader->add_action('wp_enqueue_scripts', $plugin_admin, 'enqueue_styles');
-                $this->loader->add_action('wp_enqueue_scripts', $plugin_admin, 'enqueue_scripts', 1);
+                $this->loader->add_action('wp_enqueue_media', $plugin_admin, 'enqueue_scripts', 20);
                 $this->loader->add_action('wp_footer', $plugin_admin, 'print_tabs_templates', 15);
             }
         }
@@ -273,7 +235,13 @@ class Artist_Image_Generator {
             $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts', 20);
         }
         
-        $this->loader->add_filter('get_avatar', $plugin_public, 'get_avatar_filter', 1, 5);
+        // Compatibility with Simple Local Avatars and One User Avatar
+        // We do nothing on filter and call plugin functions to handle users avatars
+        $simple_local_avatar_active = is_plugin_active('simple-local-avatars/simple-local-avatars.php');
+        $one_user_avatar_is_active = is_plugin_active('one-user-avatar/one-user-avatar.php');
+        if (!($simple_local_avatar_active || $one_user_avatar_is_active)) {
+            $this->loader->add_filter('get_avatar', $plugin_public, 'get_avatar_filter', 1, 5);
+        }
 	}
 
 	/**

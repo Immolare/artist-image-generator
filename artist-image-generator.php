@@ -14,9 +14,9 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Artist Image Generator
- * Plugin URI:        https://github.com/Immolare/artist-image-generator
+ * Plugin URI:        https://artist-image-generator.com/
  * Description:       Illustrate posts with Ai images (DALL·E). Text-to-Image, variation, editing. Public image generator & Ai avatars by topics.
- * Version:           1.0.16
+ * Version:           1.0.18
  * Author:            Pierre Viéville
  * Author URI:        https://www.pierrevieville.fr
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'ARTIST_IMAGE_GENERATOR_VERSION', '1.0.16' );
+define( 'ARTIST_IMAGE_GENERATOR_VERSION', '1.0.18' );
 
 /**
  * The code that runs during plugin activation.

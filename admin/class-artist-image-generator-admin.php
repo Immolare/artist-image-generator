@@ -2,6 +2,8 @@
 
 use Orhanerday\OpenAi\OpenAi;
 
+use function Crontrol\Event\get;
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -36,13 +38,17 @@ class Artist_Image_Generator_Admin
     private array $admin_actions;
     private array $admin_actions_labels;
 
-    // Set the license server URL, customer key, customer secret, and product IDs
-    const AIG_LICENCE_SERVER = 'https://developpeur-web.site';
-    const AIG_CUSTOMER_KEY = 'ck_cd59905ed7072a7f07ff8a028031743ec657661c';
-    const AIG_CUSTOMER_SECRET = 'cs_52543ce45eb75c518aa939a480539e9a226026e1';
-    const AIG_PRODUCT_IDS = [26733];
+
+    // Define system constants
+    const AIG_PLUGIN_NAME = "artist-image-generator";
+    const AIG_LICENSE_SERVER = 'https://artist-image-generator.com';
+    const AIG_CUSTOMER_KEY = 'ck_204741c9c2c41edb13767f951284d6c57360e0d7';
+    const AIG_CUSTOMER_SECRET = 'cs_3f2d6cf0fb6e046e69ef629923a3866716cbad17';
+    const AIG_PRODUCT_IDS = [21, 1282];
+    const AIG_DAYS = 0;
 
     private $options;
+    private $sdk_license;
 
     public function __construct(string $plugin_name, string $version)
     {
@@ -68,19 +74,44 @@ class Artist_Image_Generator_Admin
             self::ACTION_ABOUT
         ];
         $this->admin_actions_labels = [
-            self::ACTION_GENERATE => __('Variate', 'artist-image-generator'),
-            self::ACTION_VARIATE => __('Generate', 'artist-image-generator'),
-            self::ACTION_EDIT => __('Edit (Pro)', 'artist-image-generator'),
-            self::ACTION_PUBLIC => __('Shortcode', 'artist-image-generator'),
-            self::ACTION_SETTINGS => __('Settings', 'artist-image-generator'),
-            self::ACTION_ABOUT => __('About', 'artist-image-generator')
+            self::ACTION_GENERATE => esc_attr__('Generate', 'artist-image-generator'),
+            self::ACTION_VARIATE => esc_attr__('Variate', 'artist-image-generator'),
+            self::ACTION_EDIT => esc_attr__('Edit (Pro)', 'artist-image-generator'),
+            self::ACTION_PUBLIC => esc_attr__('Shortcodes', 'artist-image-generator'),
+            self::ACTION_SETTINGS => esc_attr__('Settings', 'artist-image-generator'),
+            self::ACTION_ABOUT => esc_attr__('About', 'artist-image-generator')
         ];
 
+        //delete_option('plugin_license');
+        //delete_option('plugin-is-valid');
+        //delete_option($this->prefix . '_aig_licence_key_0');
+        //delete_option($this->prefix . '_aig_licence_object_0');   
+        
+        $this->sdk_license = new LMFW\SDK\License(
+            self::AIG_PLUGIN_NAME,
+            self::AIG_LICENSE_SERVER,
+            self::AIG_CUSTOMER_KEY,
+            self::AIG_CUSTOMER_SECRET,
+            self::AIG_PRODUCT_IDS,
+            [
+                'settings_key' => $this->prefix . '_option_name',
+                'option_key' => $this->prefix . '_aig_licence_key_0'
+            ],
+            $this->prefix . '_aig_licence_object_0',
+            self::AIG_DAYS
+        );
+
+        //var_dump($this->sdk_license);die;
+
         // Schedule license validity check event
-        if (!wp_next_scheduled($this->prefix . '_license_validity')) {
-            wp_schedule_event(time(), 'daily', $this->prefix . '_license_validity');
+        if (!wp_next_scheduled('artist_image_generator_license_validity')) {
+            wp_schedule_event(time(), 'daily', 'artist_image_generator_license_validity');
         }
-        add_action($this->prefix . '_license_validity', [$this, 'validate_license']);
+
+        // Add validity function hook
+        add_action('artist_image_generator_license_validity', array($this, 'aig_check_license_validity'));
+        add_action('admin_notices', [$this, 'display_admin_notices']);
+        add_action('admin_init', [$this, 'hide_admin_notices']);
     }
 
     /**
@@ -136,7 +167,9 @@ class Artist_Image_Generator_Admin
             'model_input' => "", // dall-e-2
             'prompt_input' => "",
             'size_input' => $this->get_default_image_dimensions(),
-            'n_input' => 1
+            'n_input' => 1,
+            'quality_input' => "",
+            'style_input' => ""
         );
     }
     /**
@@ -188,7 +221,9 @@ class Artist_Image_Generator_Admin
     {
         global $pagenow;
 
-        return ($pagenow === 'post.php' || $pagenow === 'post-new.php' || isset($_GET['fl_builder']));
+        $allowedPages = ['post.php', 'post-new.php', 'customize.php', 'profile.php', 'term.php', 'widgets.php'];
+
+        return (in_array($pagenow, $allowedPages) || isset($_GET['fl_builder']));
     }
 
     /**
@@ -250,62 +285,89 @@ class Artist_Image_Generator_Admin
         );
     }
 
-    public function check_license_validity()
-    {
-        // Récupérer l'objet de licence depuis les options
-        $license_object = get_option($this->prefix . '_aig_licence_object_0', '');
+    public function check_license_validity() {
+        $options = get_option($this->prefix . '_option_name', array());
+        $keyField = $this->prefix . '_aig_licence_key_0';
 
-        // Vérifier si l'objet de licence existe et s'il est valide
-        if ($license_object && $license_object['status'] === 2) {
+        if (empty($options)) {
+            return false;
+        }
+
+        $license_key = array_key_exists($keyField, $options) ? $options[$keyField] : null;
+
+        if (!$license_key) {
+            return false;
+        }
+
+        $valid_result = $this->sdk_license->validate_status($license_key);
+
+        if ($valid_result['is_valid']) {
             return true;
         }
 
         return false;
     }
+    
+    public function aig_check_license_validity() {
+        $options = get_option($this->prefix . '_option_name', array());
+        $keyField = $this->prefix . '_aig_licence_key_0';
 
-    public function validate_license($license_key = null, $activate = false)
-    {
-        $license_key = is_null($license_key) ?
-            get_option($this->prefix . '_aig_licence_key_0', '') :
-            $license_key;
-
-        // Create an instance of the license SDK
-        $license_sdk = new LMFW\SDK\License(
-            'Artist Image Generator',
-            self::AIG_LICENCE_SERVER,
-            self::AIG_CUSTOMER_KEY,
-            self::AIG_CUSTOMER_SECRET,
-            self::AIG_PRODUCT_IDS,
-            $license_key,
-            'aig-is-valid',
-            2
-        );
-
-        // Validate the license first
-        $valid_status = $license_sdk->validate_status($license_key);
-
-        if (!$valid_status['is_valid']) {
-            // The license is not valid, return WP_Error
-            return new WP_Error('invalid_license', __('Invalid license key. Please enter a valid license key.', 'artist-image-generator'));
+        if (empty($options)) {
+            return false;
         }
 
-        if ($activate && !$this->check_license_validity()) {
-            try {
-                // Activate the license
-                $activated_license = $license_sdk->activate($license_key);
+        $license_key = array_key_exists($keyField, $options) ? $options[$keyField] : null;
 
-                // Store the license object on the database
-                update_option($this->prefix . '_aig_licence_object_0', $activated_license);
-
-                // Return true on success
-                return true;
-            } catch (Exception $e) {
-                // Exception occurred, return WP_Error
-                return new WP_Error('license_activation_failed', __('License activation failed.', 'artist-image-generator'));
+        if (!$license_key) {
+            return false;
+        }
+    
+        // Validate the license status with the retrieved key
+        $valid_status = $this->sdk_license->validate_status($license_key);
+        $valid_until = $this->sdk_license->valid_until();
+    
+        // Check if the license is valid
+        if ($valid_status['is_valid'] && $valid_until && $valid_until < (time() + 15 * DAY_IN_SECONDS)) {
+            if (get_option($this->prefix . '_aig_license_expiring_soon') != 'hidden') {
+                update_option($this->prefix . '_aig_license_expiring_soon', 'display');
             }
         }
+    
+        // Check if the license is expired or invalid
+        if (!$valid_status['is_valid']) {
+            if (get_option($this->prefix . '_aig_license_invalid_or_expired') != 'hidden') {
+                update_option($this->prefix . '_aig_license_invalid_or_expired', 'display');
+            }
+        }
+    
+        return $valid_status['is_valid'];
+    }
 
-        return true;
+    public function display_admin_notices() {
+        $icon = '<img width="20px" src="' . plugin_dir_url(__FILE__) . '/img/aig-icon.png' .'" alt="Artist Image Generator Icon" />';
+        if (get_option($this->prefix . '_aig_license_invalid_or_expired') == 'display') {
+            $hide_url = add_query_arg($this->prefix . '_hide_notice', 'invalid_or_expired');
+            echo '<div class="notice aig-notice notice-error is-dismissible">
+                <p>' . $icon . __('Your <strong>Artist Image Generator</strong> license key is expired or invalid. <a target="_blank" href="https://artist-image-generator.com/product/licence-key/">Renew your key now</a>.', 'artist-image-generator') . '</p>
+                <p><a href="' . esc_url($hide_url) . '">' . __('Hide this notice', 'artist-image-generator') . '</a></p>
+            </div>';
+            return;
+        }
+    
+        if (get_option($this->prefix . '_aig_license_expiring_soon') == 'display') {
+            $expire_date = date_i18n(get_option('date_format'), $this->sdk_license->valid_until());
+            $hide_url = add_query_arg($this->prefix . '_hide_notice', 'expiring_soon');
+            echo '<div class="notice aig-notice notice-warning is-dismissible">
+                <p>' . $icon . sprintf(__('Your <strong>Artist Image Generator</strong> license key is expiring on %s. <a target="_blank" href="%s">Renew your key now</a>.', 'artist-image-generator'), $expire_date, 'https://artist-image-generator.com/product/licence-key/') . '</p>
+                <p><a href="' . esc_url($hide_url) . '">' . __('Hide this notice', 'artist-image-generator') . '</a></p>
+            </div>';
+        }
+    }
+    
+    public function hide_admin_notices() {
+        if (isset($_GET[$this->prefix . '_hide_notice'])) {
+            update_option($this->prefix . '_aig_license_' . sanitize_text_field($_GET[$this->prefix . '_hide_notice']), 'hidden');
+        }
     }
 
     /**
@@ -354,34 +416,59 @@ class Artist_Image_Generator_Admin
     public function sanitize(array $input): array
     {
         $sanitizedValues = [];
-
+    
         if (isset($input[$this->prefix . '_openai_api_key_0'])) {
             $sanitizedValues[$this->prefix . '_openai_api_key_0'] = sanitize_text_field($input[$this->prefix . '_openai_api_key_0']);
         }
-
+    
         if (isset($input[$this->prefix . '_aig_licence_key_0'])) {
             $licence_key = sanitize_text_field($input[$this->prefix . '_aig_licence_key_0']);
 
-            if (!empty($licence_key)) {
-                // Validate the license
-                $is_valid_license = $this->validate_license($licence_key, true);
+            if (empty($licence_key)) {
+                return $sanitizedValues;
+            }
 
-                // If the license is valid, save it to the options
-                if ($is_valid_license === true) {
-                    $sanitizedValues[$this->prefix . '_aig_licence_key_0'] = $licence_key;
-                } else {
-                    // The license is not valid, reset the license key value
+            $is_valid_license = $this->sdk_license->validate_status($licence_key);
+
+            if (is_null($is_valid_license['is_valid']) && is_null($is_valid_license['error'])) {
+                add_settings_error(
+                    $this->prefix . '_option_name',
+                    'invalid_license',
+                    __("Invalid licence key", 'artist-image-generator'),
+                    'error'
+                );
+
+                return $sanitizedValues;
+            }
+
+            if ($is_valid_license['error']) {
+                add_settings_error(
+                    $this->prefix . '_option_name',
+                    'invalid_license',
+                    $is_valid_license['error'],
+                    'error'
+                );
+
+                return $sanitizedValues;
+            }
+
+            if ($is_valid_license['is_valid']) {
+                $is_licence_activated = get_option($this->prefix . '_aig_licence_key_activated_0');
+                if (!$is_licence_activated) {
+                    $this->sdk_license->activate($licence_key);
+                    update_option($this->prefix . '_aig_licence_key_activated_0', true);
                     add_settings_error(
                         $this->prefix . '_option_name',
-                        'invalid_license',
-                        $is_valid_license->get_error_message(),
-                        'error'
+                        'valid_license',
+                        __('License key is valid and was activated', 'artist-image-generator'),
+                        'updated'
                     );
-                    return $sanitizedValues;
                 }
-            }
-        }
 
+                $sanitizedValues[$this->prefix . '_aig_licence_key_0'] = $licence_key;
+            }            
+        }
+    
         return $sanitizedValues;
     }
 
@@ -461,6 +548,12 @@ class Artist_Image_Generator_Admin
             $n_input = isset($_POST['n']) ? sanitize_text_field($_POST['n']) : 1;
             // DALL·E 3
             $model = isset($_POST['model']) && sanitize_text_field($_POST['model']) === self::DALL_E_MODEL_3 ? self::DALL_E_MODEL_3 : null;
+            $quality_input = null;
+            $style_input = null;
+            if (isset($_POST['model']) && sanitize_text_field($_POST['model']) === self::DALL_E_MODEL_3) {
+                $quality_input = isset($_POST['quality']) ? sanitize_text_field($_POST['quality']) : 'standard';
+                $style_input = isset($_POST['style']) ? sanitize_text_field($_POST['style']) : 'vivid';
+            }
 
             if ($is_generation) {
                 if (empty($prompt_input)) {
@@ -468,7 +561,7 @@ class Artist_Image_Generator_Admin
                         'msg' => __('The Prompt input must be filled in order to generate an image.', 'artist-image-generator')
                     ];
                 } else {
-                    $response = $this->generate($prompt_input, $n_input, $size_input, $model);
+                    $response = $this->generate($prompt_input, $n_input, $size_input, $model, $quality_input, $style_input);
                 }
             } elseif ($is_variation) {
                 $errorMsg = __('A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', 'artist-image-generator');
@@ -525,7 +618,9 @@ class Artist_Image_Generator_Admin
             'model_input' => $model ?? '',
             'prompt_input' => $prompt_input ?? '',
             'size_input' => $size_input ?? $this->get_default_image_dimensions(),
-            'n_input' => $n_input ?? 1
+            'n_input' => $n_input ?? 1,
+            'quality_input' => $quality_input ?? '',
+            'style_input' => $style_input ?? ''
         ];
 
         return $data;
@@ -549,7 +644,14 @@ class Artist_Image_Generator_Admin
      * @param string $size_input
      * @return array
      */
-    private function generate(string $prompt_input, int $n_input, string $size_input, string $model = null): array
+    private function generate(
+        string $prompt_input, 
+        int $n_input, 
+        string $size_input, 
+        string $model = null,
+        string $quality_input = null,
+        string $style_input = null
+    ): array
     {
         $num_images = max(1, min(10, (int) $n_input));
         $open_ai = new OpenAi($this->options[$this->prefix . '_openai_api_key_0']);
@@ -562,7 +664,8 @@ class Artist_Image_Generator_Admin
         if (!is_null($model)) {
             $params['model'] = self::DALL_E_MODEL_3;
             $params['n'] = 1;
-            $params['quality'] = 'hd';
+            $params['quality'] = $quality_input ?? 'standard';
+            $params['style'] = $style_input ?? 'vivid';
         }
 
         $result = $open_ai->image($params);
@@ -811,15 +914,30 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-generate">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
-                <table class="form-table" role="presentation">
-                    <tbody class="tbody-container"></tbody>
-                </table>
-                <p class="submit">
-                    <input type="hidden" name="generate" value="1" />
-                    <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php esc_attr_e('Generate Image(s)', 'artist-image-generator'); ?>" />
-                </p>
-                <hr />
-                <div class="result-container"></div>
+                <div class="notice notice-info aig-notice">
+                    <p>
+                        <img width="20px" src="<?php echo plugin_dir_url(__FILE__) . '/img/aig-icon.png'; ?>" alt="Artist Image Generator Icon" />
+                        <strong><?php esc_attr_e('Generate', 'artist-image-generator'); ?>:</strong> 
+                        <?php esc_attr_e('Create images from text-to-image.', 'artist-image-generator'); ?>
+                        <a target="_blank" href="https://youtu.be/msd81YXw5J8" title="Video demo">
+                            <?php esc_attr_e('Watch the demo', 'artist-image-generator'); ?>
+                        </a>
+                    </p>
+                </div>
+                <div class="aig-container aig-container-2">
+                    <div class="aig-inner-left">
+                        <table class="form-table" role="presentation">
+                            <tbody class="tbody-container"></tbody>
+                        </table>
+                        <p class="submit">
+                            <input type="hidden" name="generate" value="1" />
+                            <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php esc_attr_e('Generate Image(s)', 'artist-image-generator'); ?>" />
+                        </p>
+                    </div>
+                    <div class="aig-inner-right">
+                        <div class="result-container"></div>
+                    </div>
+                </div>
             </form>
         </script>
 
@@ -828,8 +946,15 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-variate">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
-                <div hidden class="notice notice-info" style="margin-top:15px;">
-                    <p><?php esc_attr_e('Heads up ! To make an image variation you need to submit a .png file less than 4MB in a 1:1 format (square). However, you can upload a non square .jpg or a .png file at full size, and use the "crop" functionnality to resize the area you want. You can also add a prompt input to describe the image. This value will be used to fill the image name and alternative text.', 'artist-image-generator'); ?></p>
+                <div class="notice notice-info aig-notice">
+                    <p>
+                        <img width="20px" src="<?php echo plugin_dir_url(__FILE__) . '/img/aig-icon.png'; ?>" alt="Artist Image Generator Icon" />
+                        <strong><?php esc_attr_e('Variate', 'artist-image-generator'); ?>:</strong> 
+                        <?php esc_attr_e('Make image variations from an existing one.', 'artist-image-generator'); ?>
+                        <a target="_blank" href="https://youtu.be/FtGFMsLTxYw" title="Video demo">
+                            <?php esc_attr_e('Watch the demo', 'artist-image-generator'); ?>
+                        </a>
+                    </p>
                 </div>
                 <table class="form-table" role="presentation">
                     <tbody class="tbody-container"></tbody>
@@ -848,9 +973,15 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-edit">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
-                <div hidden class="notice notice-info" style="margin-top:15px;">
-                    <p><?php esc_attr_e('Heads up ! To make an image edition you need to submit a .png file less than 4MB in a 1:1 format (square). However, you can upload a non square .jpg or a .png file at full size, and use the "crop" functionnality to resize the area you want. 
-                    You have to draw a mask (= some part who needs to be replaced) on the original image and provide a prompt text describring the full new image, not only the mask area.', 'artist-image-generator'); ?></p>
+                <div class="notice notice-info aig-notice">
+                    <p>
+                        <img width="20px" src="<?php echo plugin_dir_url(__FILE__) . '/img/aig-icon.png'; ?>" alt="Artist Image Generator Icon" />
+                        <strong><?php esc_attr_e('Edit', 'artist-image-generator'); ?>:</strong> 
+                        <?php esc_attr_e('Customize existing images and generate a full new one.', 'artist-image-generator'); ?>
+                        <a target="_blank" href="https://youtu.be/zfK1yJk9gRc" title="Video demo">
+                            <?php esc_attr_e('Watch the demo', 'artist-image-generator'); ?>
+                        </a>
+                    </p>
                 </div>
                 <table class="form-table" role="presentation">
                     <tbody class="tbody-container"></tbody>
@@ -902,7 +1033,7 @@ class Artist_Image_Generator_Admin
                     <h2 class="title"><?php esc_attr_e('Shortcode (Bêta)', 'artist-image-generator'); ?></h2>
                     <p><?php esc_attr_e('To create a public AI image generation form in WordPress, you can use the following shortcode:', 'artist-image-generator'); ?></p>
                     <div class="aig-code">
-                        [aig prompt="Your custom description here with {topics} and {public_prompt}" topics="Comma-separated list of topics" n="3" size="1024x1024" model="dall-e-3" download="manual"]
+                        [aig prompt="Your custom description here with {topics} and {public_prompt}" topics="Comma-separated list of topics" n="3" size="1024x1024" model="dall-e-3" style="vivid" quality="hd" download="manual"]
                     </div>
                     <p><?php esc_attr_e('Replace "Your custom description here" with your own description, and specify the topics you want to offer as a comma-separated list. You can use the following placeholders in your description:', 'artist-image-generator'); ?></p>
                     <ul>
@@ -912,8 +1043,10 @@ class Artist_Image_Generator_Admin
                     <p><?php esc_attr_e('You can also use the following optional attributes in the shortcode:', 'artist-image-generator'); ?></p>
                     <ul>
                         <li>- n : <?php esc_attr_e('Number of images to generate (default is 3, maximum 10).', 'artist-image-generator'); ?></li>
-                        <li>- size : <?php esc_attr_e('The size of the images to generate (e.g., "256x256", "512x512", "1024x1024". Default is 1024x1024).', 'artist-image-generator'); ?></li>
+                        <li>- size : <?php esc_attr_e('The size of the images to generate (e.g., "256x256", "512x512", "1024x1024" for dall-e-2, "1024x1024", "1024x1792", "1792x1024" for dall-e-3. Default is 1024x1024).', 'artist-image-generator'); ?></li>
                         <li>- model : <?php esc_attr_e('OpenAi model to use (e.g., "dall-e-2", "dall-e-3". Default is "dall-e-2").', 'artist-image-generator'); ?></li>
+                        <li>- quality : <?php esc_attr_e('Quality of the image to generate (e.g., "standard", "hd". Default is "standard". Only with dall-e-3).', 'artist-image-generator'); ?></li>
+                        <li>- style : <?php esc_attr_e('Style of the image to generate (e.g., "natural", "vivid". Default is "vivid". Only with dall-e-3).', 'artist-image-generator'); ?></li>
                         <li>- download : <?php esc_attr_e('Download an image or use it as WP profile picture (e.g., "manual", "wp_avatar". Default is "manual").', 'artist-image-generator'); ?></li>
                     </ul>
                     <p><?php esc_attr_e('Once you have the shortcode ready, you can add it to any page or post in WordPress to display the public AI image generation form.', 'artist-image-generator'); ?></p>
@@ -968,6 +1101,7 @@ class Artist_Image_Generator_Admin
                             ?>
                         </form>
                     </div>
+                    <?php if (!$this->check_license_validity()) : ?>
                     <div class="card">
                         <h2 class="title">Provide full access to Artist Image Generator</h2>
                         <p>With Artist Image Generator Edit Image feature, you can compose, edit and generate full new images from Wordpress.</p>
@@ -984,6 +1118,7 @@ class Artist_Image_Generator_Admin
                         </p>
                         <iframe width="100%" height="315" src="https://www.youtube.com/embed/zfK1yJk9gRc" title="Artist Image Generator - Image Edition feature" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
+                    <?php endif; ?>
             </script>
 
             <?php // Template for about tab. 
@@ -1146,22 +1281,29 @@ class Artist_Image_Generator_Admin
         <?php // Child template for form/model block (tbody-container). 
         ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-model">
-            <# var is_selected_dalle2=(data.model && data.model=='' ) ? 'selected' : '' ; #>
-                <# var is_selected_dalle3=(data.model && data.model=='dall-e-3' ) ? 'selected' : '' ; #>
-                    <tr>
-                        <th scope="row">
-                            <label for="model"><?php esc_attr_e('Model to use', 'artist-image-generator'); ?></label>
-                            <p class="description">
-                                <a href="https://openai.com/dall-e-3" target="_blank" rel="noopener noreferrer" title="More about DALL·E 3"><?php esc_attr_e('More about DALL·E 3 model.', 'artist-image-generator'); ?></a>
-                            </p>
-                        </th>
-                        <td>
-                            <select name="model" id="model">
-                                <option value="" <?php echo esc_attr('{{ is_selected_dalle2 }}'); ?>><?php echo self::DALL_E_MODEL_2; ?></option>
-                                <option value="<?php echo self::DALL_E_MODEL_3; ?>" <?php echo esc_attr('{{ is_selected_dalle3 }}'); ?>><?php echo self::DALL_E_MODEL_3; ?></option>
-                            </select>
-                        </td>
-                    </tr>
+            <# 
+            // Définir la valeur par défaut de data.model si elle n'est pas définie
+            if (typeof data.model === 'undefined' || data.model === '') {
+                data.model = '';
+            }
+
+            var is_selected_dalle2 = (data.model === '') ? 'selected' : '';
+            var is_selected_dalle3 = (data.model === 'dall-e-3') ? 'selected' : '';
+            #>
+            <tr>
+                <th scope="row">
+                    <label for="model"><?php esc_attr_e('Model to use', 'artist-image-generator'); ?></label>
+                    <p class="description">
+                        <a href="https://openai.com/dall-e-3" target="_blank" rel="noopener noreferrer" title="More about DALL·E 3"><?php esc_attr_e('More about DALL·E 3 model.', 'artist-image-generator'); ?></a>
+                    </p>
+                </th>
+                <td>
+                    <select name="model" id="model">
+                        <option value="" {{ is_selected_dalle2 }}><?php echo self::DALL_E_MODEL_2; ?></option>
+                        <option value="dall-e-3" {{ is_selected_dalle3 }}><?php echo self::DALL_E_MODEL_3; ?></option>
+                    </select>
+                </td>
+            </tr>
         </script>
 
         <?php // Child template for form/size block (tbody-container). 
@@ -1177,6 +1319,50 @@ class Artist_Image_Generator_Admin
                         <# _.each(data.sizes, function(size) { #>
                             <# var is_selected=(data.size_input && data.size_input==size) ? 'selected' : '' ; #>
                                 <option value="{{ size }}" {{ is_selected }}>{{ size }}</option>
+                                <# }); #>
+                    </select>
+                </td>
+            </tr>
+        </script>
+
+        <?php // Child template for form/quality block (tbody-container). 
+        ?>
+        <script type="text/html" id="tmpl-artist-image-generator-form-quality">
+            <tr>
+                <th scope="row">
+                    <label for="quality"><?php esc_attr_e('Quality', 'artist-image-generator'); ?></label>
+                    <p class="description">
+                        <?php esc_attr_e('HD creates images with finer details.', 'artist-image-generator'); ?>
+                        <a href="https://platform.openai.com/docs/api-reference/images/create" target="_blank" rel="noopener noreferrer" title="Specs DALL·E 3"><?php esc_attr_e('Specs DALL·E 3 model.', 'artist-image-generator'); ?></a>
+                    </p>
+                </th>
+                <td>
+                    <select name="quality" id="quality">
+                        <# _.each(data.qualities, function(quality) { #>
+                            <# var is_selected=(data.quality_input && data.quality_input==quality) ? 'selected' : '' ; #>
+                                <option value="{{ quality }}" {{ is_selected }}>{{ quality }}</option>
+                                <# }); #>
+                    </select>
+                </td>
+            </tr>
+        </script>
+
+        <?php // Child template for form/style block (tbody-container). 
+        ?>
+        <script type="text/html" id="tmpl-artist-image-generator-form-style">
+            <tr>
+                <th scope="row">
+                    <label for="style"><?php esc_attr_e('Style', 'artist-image-generator'); ?></label>
+                    <p class="description">
+                        <?php esc_attr_e('Vivid for hyper-real and dramatic images.', 'artist-image-generator'); ?>
+                        <a href="https://platform.openai.com/docs/api-reference/images/create" target="_blank" rel="noopener noreferrer" title="Specs DALL·E 3"><?php esc_attr_e('Specs DALL·E 3 model.', 'artist-image-generator'); ?></a>
+                    </p>
+                </th>
+                <td>
+                    <select name="style" id="style">
+                        <# _.each(data.styles, function(style) { #>
+                            <# var is_selected=(data.style_input && data.style_input==style) ? 'selected' : '' ; #>
+                                <option value="{{ style }}" {{ is_selected }}>{{ style }}</option>
                                 <# }); #>
                     </select>
                 </td>

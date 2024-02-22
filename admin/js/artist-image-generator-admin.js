@@ -21,8 +21,8 @@
     const CROPPED_FILE_TYPE = 'image/png';
     const IMAGE_QUALITY = 1;
     const MODEL_CONFIG = {
-        "": { sizes: ["256x256", "512x512", "1024x1024"], nValues: [1, 2, 3, 4, 5, 6, 7, 8,  9, 10] },
-        "dall-e-3": { sizes: ["1024x1024", "1024x1792", "1792x1024"], nValues: [1] },
+        "": { sizes: ["256x256", "512x512", "1024x1024"], nValues: [1, 2, 3, 4, 5, 6, 7, 8,  9, 10], qualities:[], styles:[] },
+        "dall-e-3": { sizes: ["1024x1024", "1024x1792", "1792x1024"], nValues: [1], qualities:['standard','hd'], styles:['vivid','natural'] },
     };
     const TABS = ['generate', 'public', 'settings', 'variate', 'edit', 'about'];
 
@@ -53,6 +53,8 @@
         formPrompt: wp.template('artist-image-generator-form-prompt'),
         formModel: wp.template('artist-image-generator-form-model'),
         formSize: wp.template('artist-image-generator-form-size'),
+        formQuality: wp.template('artist-image-generator-form-quality'),
+        formStyle: wp.template('artist-image-generator-form-style'),
         formN: wp.template('artist-image-generator-form-n'),
     };
 
@@ -65,64 +67,55 @@
                 className: TAB_CONTAINERS[action.toLowerCase()],
                 template: template,
                 action: action,
-                active: false,
-                iframe: true
+                toolbar: null,
+                frame: null,
+                selectable: false
             });
         }
     }
 
     function extendFrame(mediaFrame, views, labels) {
+        const keys = Object.keys(views);
+        //  waitForContentToBeReady get keys as keys and set a value to false
+        let waitForContentToBeReady = Object.fromEntries(keys.map(key => [key, false]));
+
         return mediaFrame.extend({
             initialize: function () {
                 mediaFrame.prototype.initialize.apply(this, arguments);
                 // setup states
-                /*const that = this;
-                this.createStates = function () {
-                    Object.keys(views).forEach(function (key) {
-                        that.states.add([
-                            new wp.media.controller.Library({
-                                id: key,
-                                title: labels[key],
-                                priority: 20
-                            })
-                        ]);
-                    });
-                };
-                this.createStates();*/
-            },
-            bindHandlers: function () {
-                mediaFrame.prototype.bindHandlers.apply(this, arguments);
-                // setup render event listeners
                 const self = this;
-                Object.keys(views).forEach(function (key) {
-                    // Depends on FLBuilder events, dunno
-                    const events = [
-                        'ready',
-                        //'attach',
-                        //'detach',
-                        //'dispose',
-                        'content:render',
-                        'content:activate:' + key,
-                        //'menu:render:' + key,
-                        //'toolbar:render:' + key,
-                        'update',
-                        //'selection:toggle'
-                    ];
-                    
-                    events.forEach(function (event) {
-                        self.on(event, self[key + 'ContentRender'], self);
+                var State = wp.media.controller.State.extend({});
+
+                 // Créer une promesse qui résout une fois que tous les états ont été ajoutés
+                 keys.forEach(function (key, index) {
+                    self.states.add([
+                        new State({
+                            id: key,
+                            title: labels[key],
+                            priority: index * 10
+                        })
+                    ]);
+
+                    self.on('content:render:' + key, self[key + 'ContentRender'], self);
+                    // fix FlBuiler refresh default tab
+                    self.on('menu:activate:default', function () { 
+                        const mode = self?.state()?.get('content');
+                        if (mode && mode === key) {
+                            waitForContentToBeReady[key] = true;
+                        }
                     });
                 });
 
                 const eventsRefresh = [
-                    'content:render',
+                    'content:render:browse',
                     'content:activate:browse',
                 ];
-                
+                // refresh media library when an image was added through the plugin
                 eventsRefresh.forEach(function (event) {
                     self.on(event, function () {
                         if (needMediaListRefresh && self.content) {
                             const content = self.content.get();
+                            
                             if (content && content.collection) {
                                 content.collection.props.set({ ignore: (+ new Date()) });
                                 needMediaListRefresh = false;
@@ -133,40 +126,57 @@
             },
             browseRouter: function (routerView) {
                 mediaFrame.prototype.browseRouter.apply(this, arguments);
-                Object.keys(views).forEach(function (key) {
-                    routerView.set(key, { text: labels[key], priority: 200 });
-                });
-            },
-            ...Object.fromEntries(Object.keys(views).map(key => [key + "ContentRender", function () {
-                // if the view is currently active, do the code below
-                const currentView = this.router.get();
 
-                if (currentView) {
-                    const currentViewBtn = currentView.$el.find('.media-menu-item.active');
-                    const currentViewId = currentViewBtn.attr('id').split('-').pop();
-                    
-                    if (currentViewId === key) {
-                        // create new wp.media.view and set it to the content
-                        const view = new VIEWS[key];
+                var currentState = wp.media.frame.state();
+                console.log(currentState.id);
 
-                        this.content.set(view);
-                                
-                        let viewTemplate = TEMPLATES[view.action];
-                        if(view.action === "edit" && !aig_ajax_object.valid_licence) {
-                            viewTemplate = TEMPLATES.editDemo;
-                        }
-                                
-                        buildTab(view.$el, viewTemplate, data);
-                                    
-                        view.$el.on('submit', 'form', function (e) {
-                            handleFormSubmit(e, this).then(function (data) {
-                                //buildTab(view.$el, viewTemplate, data);
-                                view.$el.find('.notice-container').empty().append(TEMPLATES.notice(data));
-                                view.$el.find('.result-container').empty().append(TEMPLATES.result(data));
-                                addMediaHandler();
-                            }.bind(this));
-                        });
+                if (currentState.id === 'insert' ||
+                    currentState.id === 'library' ||
+                    currentState.id === 'featured-image' ||
+                    currentState.id === 'gallery') {
+                    keys.forEach(function (key, index ) {
+                        routerView.set(key, { text: labels[key], priority: 200+index });
+                    });
+                } else {
+                    // If the current state is not 'insert', 'library' or 'featured-image' and the content is one of yours, force the view to 'browse'
+                    const mode = this?.state()?.get('content');
+                    if (keys.includes(mode)) {
+                        this.state().set('content', 'browse');
                     }
+                }
+            },
+            ...Object.fromEntries(keys.map(key => [key + "ContentRender", function () {
+                // create new wp.media.view and set it to the content
+                const view = new VIEWS[key];
+
+                this.content.set(view);
+                        
+                let viewTemplate = TEMPLATES[view.action];
+                if(view.action === "edit" && !aig_ajax_object.valid_licence) {
+                    viewTemplate = TEMPLATES.editDemo;
+                }
+
+                const initTab = function () {
+                    buildTab(view.$el, viewTemplate, data);
+                            
+                    // l'événement se declenche une seule fois
+                    view.$el.off('submit').on('submit', 'form', function (e) {
+                        handleFormSubmit(e, this).then(function (data) {
+                            //buildTab(view.$el, viewTemplate, data);
+                            view.$el.find('.notice-container').empty().append(TEMPLATES.notice(data));
+                            view.$el.find('.result-container').empty().append(TEMPLATES.result(data));
+                            addMediaHandler();
+                        }.bind(this));
+                    });
+                }
+
+                if (waitForContentToBeReady[key]) {
+                    this.content.get().on('ready', function () {
+                        initTab();
+                        waitForContentToBeReady[key] = false;
+                    });
+                } else {
+                    initTab();
                 }
             }]))
         });
@@ -270,9 +280,22 @@
             tabClass !== TAB_CONTAINERS.settings &&
             tabClass !== TAB_CONTAINERS.about) {    
             $tbodyContainer.append(TEMPLATES.formModel(data));
+            $tbodyContainer.append(TEMPLATES.formStyle({
+                style: MODEL_CONFIG[data.model_input].styles,
+                style_input: data.style_input
+            }));
+            $tbodyContainer.append(TEMPLATES.formQuality({
+                quality: MODEL_CONFIG[data.model_input].qualities,
+                quality_input: data.quality_input
+            }));
+
+            const $modelElParent = $tab.find("#model").closest("tr");
+            const $styleElParent = $tab.find("#style").closest("tr");
+            const $qualityElParent = $tab.find("#quality").closest("tr");
             if (tabClass !== TAB_CONTAINERS.generate) {
-                const $modelElParent = $tab.find("#model").closest("tr");
                 $modelElParent.attr('hidden', true);
+                $styleElParent.attr('hidden', true);
+                $qualityElParent.attr('hidden', true);
             }
 
             $tbodyContainer.append(TEMPLATES.formPrompt(data));
@@ -280,6 +303,7 @@
                 sizes: MODEL_CONFIG[data.model_input].sizes,
                 size_input: data.size_input
             }));
+            
             $tbodyContainer.append(TEMPLATES.formN({
                 n: MODEL_CONFIG[data.model_input].nValues,
                 n_input: data.n_input
@@ -300,6 +324,8 @@
         const $modelSelect = $tab.find("#model");
         const $sizeSelect = $tab.find("#size");
         const $nSelect = $tab.find("#n");
+        const $styleSelect = $tab.find("#style");
+        const $qualitySelect = $tab.find("#quality");
     
         // Récupérer la valeur sélectionnée dans le champ "Model"
         const selectedModel = $modelSelect.find(':selected').val();
@@ -310,14 +336,29 @@
         // Vider les options actuelles des champs "Size" et "N"
         $sizeSelect.empty();
         $nSelect.empty();
+        $styleSelect.empty();
+        $qualitySelect.empty();
     
         // Ajouter les nouvelles options en fonction de la configuration du modèle
         config.sizes.forEach(size => $sizeSelect.append(new Option(size, size)));
         config.nValues.forEach(n => $nSelect.append(new Option(n, n)));
+        config.styles.forEach(style => $styleSelect.append(new Option(style, style)));
+        config.qualities.forEach(quality => $qualitySelect.append(new Option(quality, quality)));
+
+        if (selectedModel !== 'dall-e-3') {
+            $qualitySelect.closest('tr').attr('hidden', true);
+            $styleSelect.closest('tr').attr('hidden', true);
+        }
+        else {
+            $qualitySelect.closest('tr').removeAttr('hidden');
+            $styleSelect.closest('tr').removeAttr('hidden');
+        }
     
         // Sélectionner la première option si elle est disponible
         $sizeSelect.prop('selectedIndex', 0);
         $nSelect.prop('selectedIndex', 0);
+        $styleSelect.prop('selectedIndex', 0);
+        $qualitySelect.prop('selectedIndex', 0);
     }
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
