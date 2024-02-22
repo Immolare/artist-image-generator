@@ -304,8 +304,8 @@
 					$this->valid_status['nextValidation'] = strtotime( gmdate( 'Y-m-d' ) . "+ {$ttl} days" );
 					$this->valid_status['is_valid']       = $valid_result['is_valid'];
 					$this->valid_status['error']          = $valid_result['error'];
+
 					update_option( $this->valid_object, $this->valid_status );
-					
 				}
 				
 				return $valid_result;
