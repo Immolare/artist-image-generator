@@ -4,10 +4,10 @@ Developed by [Pierre Viéville](https://www.pierrevieville.fr/) for the [Wordpre
 
 Explore the limitless possibilities of visual content with Artist Image Generator, an AI-driven image creation plugin tailored for WordPress. Seamlessly incorporating OpenAI's state-of-the-art technologies, DALL·E 2 and DALL·E 3, this versatile plugin empowers you to harness the full potential of artificial intelligence for image generation and editing.
 
-![Explore documentation and tutorials](https://artist-image-generator.com/blog/)
+[Explore documentation and tutorials](https://artist-image-generator.com/blog/)
 
-- ![Create featured image on WordPress blog posts using DALL-E](https://artist-image-generator.com/ia-featured-images/)
-- ![Build a Wordpress Tatoo AI Generator with Artist Image Generator shortcode feature](https://artist-image-generator.com/tatoo-ai-generator-tool-wordpress/)
+- [Create featured image on WordPress blog posts using DALL-E](https://artist-image-generator.com/ia-featured-images/)
+- [Build a Wordpress Tatoo AI Generator with Artist Image Generator shortcode feature](https://artist-image-generator.com/tatoo-ai-generator-tool-wordpress/)
 
 ![Artist Image Generator](https://user-images.githubusercontent.com/11742929/218420318-66f0c7e5-eddb-41e4-831c-4b582b82f193.png)
 
