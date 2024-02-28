@@ -1,4 +1,4 @@
-# Artist Image Generator – AI Image Creation Plugin for WordPress. OpenAI DALL·E 2 & DALL·E 3 Integration (ChatGPT Image Generator).
+# Artist Image Generator: DALL·E AI-Driven Image & Avatar Creator for WordPress
 
 Developed by [Pierre Viéville](https://www.pierrevieville.fr/) for the [Wordpress](https://fr.wordpress.org/plugins/artist-image-generator/) community.
 
