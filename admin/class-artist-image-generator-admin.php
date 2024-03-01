@@ -1,8 +1,7 @@
 <?php
 
 use Orhanerday\OpenAi\OpenAi;
-
-use function Crontrol\Event\get;
+use LMFW\SDK\License as LMFWLicense;
 
 /**
  * The admin-specific functionality of the plugin.
@@ -27,6 +26,7 @@ class Artist_Image_Generator_Admin
     const LAYOUT_MAIN = 'main';
     const DALL_E_MODEL_3 = "dall-e-3";
     const DALL_E_MODEL_2 = "dall-e-2";
+    const DEFAULT_SIZE = '1024x1024';
 
     private string $plugin_name;
     private string $plugin_full_name = "Artist Image Generator";
@@ -45,7 +45,7 @@ class Artist_Image_Generator_Admin
     const AIG_CUSTOMER_KEY = 'ck_204741c9c2c41edb13767f951284d6c57360e0d7';
     const AIG_CUSTOMER_SECRET = 'cs_3f2d6cf0fb6e046e69ef629923a3866716cbad17';
     const AIG_PRODUCT_IDS = [21, 1282];
-    const AIG_DAYS = 0;
+    const AIG_DAYS = 5;
 
     private $options;
     private $sdk_license;
@@ -80,14 +80,9 @@ class Artist_Image_Generator_Admin
             self::ACTION_PUBLIC => esc_attr__('Shortcodes', 'artist-image-generator'),
             self::ACTION_SETTINGS => esc_attr__('Settings', 'artist-image-generator'),
             self::ACTION_ABOUT => esc_attr__('About', 'artist-image-generator')
-        ];
-
-        //delete_option('plugin_license');
-        //delete_option('plugin-is-valid');
-        //delete_option($this->prefix . '_aig_licence_key_0');
-        //delete_option($this->prefix . '_aig_licence_object_0');   
+        ];  
         
-        $this->sdk_license = new LMFW\SDK\License(
+        $this->sdk_license = new LMFWLicense(
             self::AIG_PLUGIN_NAME,
             self::AIG_LICENSE_SERVER,
             self::AIG_CUSTOMER_KEY,
@@ -100,8 +95,6 @@ class Artist_Image_Generator_Admin
             $this->prefix . '_aig_licence_object_0',
             self::AIG_DAYS
         );
-
-        //var_dump($this->sdk_license);die;
 
         // Schedule license validity check event
         if (!wp_next_scheduled('artist_image_generator_license_validity')) {
@@ -121,20 +114,7 @@ class Artist_Image_Generator_Admin
      */
     public function enqueue_styles(): void
     {
-        //wp_enqueue_style('wp-admin');
         wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/artist-image-generator-admin.css', array(), $this->version, 'all');
-    }
-
-    /**
-     * Filter Beaver Builder CSS
-     *
-     * @return void
-     */
-    public function enqueue_bb_styles($css, $nodes, $global_settings)
-    {
-        $css .= file_get_contents(plugin_dir_path(__FILE__) . 'css/artist-image-generator-admin.css');
-
-        return $css;
     }
 
     private function aig_ajax_object(): array
@@ -164,14 +144,16 @@ class Artist_Image_Generator_Admin
         return array(
             'error' => [],
             'images' => [],
+            'images_history' => [],
             'model_input' => "", // dall-e-2
             'prompt_input' => "",
-            'size_input' => $this->get_default_image_dimensions(),
+            'size_input' => self::DEFAULT_SIZE,
             'n_input' => 1,
             'quality_input' => "",
             'style_input' => ""
         );
     }
+    
     /**
      * Hook : Enqueue JS scripts
      *
@@ -325,19 +307,29 @@ class Artist_Image_Generator_Admin
         // Validate the license status with the retrieved key
         $valid_status = $this->sdk_license->validate_status($license_key);
         $valid_until = $this->sdk_license->valid_until();
+        $licence_key_about_to_expire = $valid_status['is_valid'] && $valid_until && $valid_until < (time() + 15 * DAY_IN_SECONDS);
+        $license_key_is_expired = !$valid_status['is_valid'];
     
         // Check if the license is valid
-        if ($valid_status['is_valid'] && $valid_until && $valid_until < (time() + 15 * DAY_IN_SECONDS)) {
+        if ($licence_key_about_to_expire) {
             if (get_option($this->prefix . '_aig_license_expiring_soon') != 'hidden') {
                 update_option($this->prefix . '_aig_license_expiring_soon', 'display');
             }
         }
     
         // Check if the license is expired or invalid
-        if (!$valid_status['is_valid']) {
+        if (!$license_key_is_expired) {
             if (get_option($this->prefix . '_aig_license_invalid_or_expired') != 'hidden') {
                 update_option($this->prefix . '_aig_license_invalid_or_expired', 'display');
             }
+        }
+
+        // If ok, hide the notices
+        if (
+            $valid_status['is_valid'] && 
+            !$licence_key_about_to_expire &&
+            get_option($this->prefix . '_aig_license_invalid_or_expired') == 'display') {
+            update_option($this->prefix . '_aig_license_invalid_or_expired', 'hidden');
         }
     
         return $valid_status['is_valid'];
@@ -544,7 +536,7 @@ class Artist_Image_Generator_Admin
             $is_variation = isset($_POST['variate']) && sanitize_text_field($_POST['variate']);
             $is_edit = isset($_POST['edit']) && sanitize_text_field($_POST['edit']);
             $prompt_input = isset($_POST['prompt']) ? sanitize_text_field($_POST['prompt']) : null;
-            $size_input = isset($_POST['size']) ? sanitize_text_field($_POST['size']) : $this->get_default_image_dimensions();
+            $size_input = isset($_POST['size']) ? sanitize_text_field($_POST['size']) : self::DEFAULT_SIZE;
             $n_input = isset($_POST['n']) ? sanitize_text_field($_POST['n']) : 1;
             // DALL·E 3
             $model = isset($_POST['model']) && sanitize_text_field($_POST['model']) === self::DALL_E_MODEL_3 ? self::DALL_E_MODEL_3 : null;
@@ -617,7 +609,7 @@ class Artist_Image_Generator_Admin
             'images' => count($images) ? $images['data'] : [],
             'model_input' => $model ?? '',
             'prompt_input' => $prompt_input ?? '',
-            'size_input' => $size_input ?? $this->get_default_image_dimensions(),
+            'size_input' => $size_input ?? self::DEFAULT_SIZE,
             'n_input' => $n_input ?? 1,
             'quality_input' => $quality_input ?? '',
             'style_input' => $style_input ?? ''
@@ -809,14 +801,60 @@ class Artist_Image_Generator_Admin
         }
     }
 
-    /**
-     * Utility function to define default image dimensions
-     *
-     * @return string
-     */
-    public function get_default_image_dimensions(): string
+    public function get_from_url(): mixed
     {
-        return "1024x1024";
+        require_once ABSPATH . "/wp-admin/includes/image.php";
+        require_once ABSPATH . "/wp-admin/includes/file.php";
+        require_once ABSPATH . "/wp-admin/includes/media.php";
+
+        $url = sanitize_url($_POST['url']);
+
+        // Download url to a temp file
+        $tmp = download_url($url);
+        if (is_wp_error($tmp)) {
+            return false;
+        }
+
+        // Get the filename and extension ("photo.png" => "photo", "png")
+        $filename = pathinfo($url, PATHINFO_FILENAME);
+        $extension = pathinfo($url, PATHINFO_EXTENSION);
+
+        // An extension is required or else WordPress will reject the upload
+        if (!$extension) {
+            // Look up mime type, example: "/photo.png" -> "image/png"
+            $mime = mime_content_type($tmp);
+            $mime = is_string($mime) ? sanitize_mime_type($mime) : false;
+
+            // Only allow certain mime types because mime types do not always end in a valid extension (see the .doc example below)
+            $mime_extensions = array(
+                'image/jpg'  => 'jpg',
+                'image/jpeg' => 'jpeg',
+                'image/gif'  => 'gif',
+                'image/png'  => 'png'
+            );
+
+            $extension = $mime_extensions[$mime] ?? false;
+
+            if (!$extension) {
+                // Could not identify extension
+                @unlink($tmp);
+                return false;
+            }
+        }
+
+        require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+        require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+        $filesystem = new WP_Filesystem_Direct(true);
+        $imageData = $filesystem->get_contents($tmp);
+                
+        // Cleanup temp file
+        @unlink($tmp);
+        
+        wp_send_json_success(['base_64' => base64_encode($imageData)]);
+
+        if (defined('DOING_AJAX') && DOING_AJAX) {
+            wp_die();
+        }
     }
 
     /**
@@ -875,9 +913,9 @@ class Artist_Image_Generator_Admin
 
         return esc_url(
             add_query_arg(
-                [
+                array(
                     self::QUERY_FIELD_ACTION => $action
-                ],
+                ),
                 admin_url('upload.php?page=' . $this->prefix)
             )
         );
@@ -909,8 +947,7 @@ class Artist_Image_Generator_Admin
     public function print_tabs_templates()
     {
 ?>
-        <?php // Template for generate tab. 
-        ?>
+        <?php // Template for generate tab. ?>
         <script type="text/html" id="tmpl-artist-image-generator-generate">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
@@ -941,8 +978,7 @@ class Artist_Image_Generator_Admin
             </form>
         </script>
 
-        <?php // Template for variate tab. 
-        ?>
+        <?php // Template for variate tab. ?>
         <script type="text/html" id="tmpl-artist-image-generator-variate">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
@@ -956,20 +992,25 @@ class Artist_Image_Generator_Admin
                         </a>
                     </p>
                 </div>
-                <table class="form-table" role="presentation">
-                    <tbody class="tbody-container"></tbody>
-                </table>
-                <p class="submit">
-                    <input type="hidden" name="variate" value="1" />
-                    <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php esc_attr_e('Generate Image(s)', 'artist-image-generator'); ?>" />
-                </p>
-                <hr />
-                <div class="result-container"></div>
+                <div class="history-container"></div>
+                <div class="aig-container aig-container-2">
+                    <div class="aig-inner-left">
+                        <table class="form-table" role="presentation">
+                            <tbody class="tbody-container"></tbody>
+                        </table>
+                        <p class="submit">
+                            <input type="hidden" name="variate" value="1" />
+                            <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php esc_attr_e('Generate Image(s)', 'artist-image-generator'); ?>" />
+                        </p>
+                    </div>
+                    <div class="aig-inner-right">
+                        <div class="result-container"></div>
+                    </div>
+                </div>
             </form>
         </script>
 
-        <?php // Template for edit tab. 
-        ?>
+        <?php // Template for edit tab. ?>
         <script type="text/html" id="tmpl-artist-image-generator-edit">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
@@ -983,27 +1024,32 @@ class Artist_Image_Generator_Admin
                         </a>
                     </p>
                 </div>
-                <table class="form-table" role="presentation">
-                    <tbody class="tbody-container"></tbody>
-                </table>
-                <p class="submit">
-                    <input type="hidden" name="edit" value="1" />
-                    <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php esc_attr_e('Generate Image(s)', 'artist-image-generator'); ?>" />
-                </p>
-                <hr />
-                <div class="result-container"></div>
+                <div class="history-container"></div>
+                <div class="aig-container aig-container-2">
+                    <div class="aig-inner-left">
+                        <table class="form-table" role="presentation">
+                            <tbody class="tbody-container"></tbody>
+                        </table>
+                        <p class="submit">
+                            <input type="hidden" name="edit" value="1" />
+                            <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php esc_attr_e('Generate Image(s)', 'artist-image-generator'); ?>" />
+                        </p>
+                    </div>
+                    <div class="aig-inner-right">
+                        <div class="result-container"></div>
+                    </div>
+                </div>
             </form>
         </script>
 
-        <?php // Template for edit demo tab. 
-        ?>
+        <?php // Template for edit demo tab. ?>
         <script type="text/html" id="tmpl-artist-image-generator-edit-demo">
             <div class="card">
                 <h2 class="title">Provide full access to Artist Image Generator</h2>
                 <p>With Artist Image Generator Edit Image feature, you can compose, edit and generate full new images from Wordpress.</p>
                 <p>By purchasing a unique license, you unlock this powerful functionality along with new pro features, remove credits <strong>and help me to maintain this plugin</strong>.</p>
                 <p style="margin: 10px 0;">
-                    <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button button-primary" style="width :100%; text-align:center;">
+                    <a href="https://artist-image-generator.com/product/licence-key/" title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button button-primary" style="width :100%; text-align:center;">
                         Buy Artist Image Generator (Pro) - Licence Key
                     </a>
                 </p>
@@ -1016,8 +1062,7 @@ class Artist_Image_Generator_Admin
             </div>
         </script>
 
-        <?php // Template for public tab. 
-        ?>
+        <?php // Template for public tab. ?>
         <script type="text/html" id="tmpl-artist-image-generator-public">
             <div class="aig-container aig-container-3">
                 <style>
@@ -1107,7 +1152,7 @@ class Artist_Image_Generator_Admin
                         <p>With Artist Image Generator Edit Image feature, you can compose, edit and generate full new images from Wordpress.</p>
                         <p>By purchasing a unique license, you unlock this powerful functionality along with new pro features, remove credits, <strong>and help me to maintain this plugin</strong>.</p>
                         <p style="margin: 10px 0;">
-                            <a href="https://developpeur-web.site/produit/artist-image-generator-pro/" title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button button-primary" style="width :100%; text-align:center;">
+                            <a href="https://artist-image-generator.com/product/licence-key/" title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button button-primary" style="width :100%; text-align:center;">
                                 Buy Artist Image Generator (Pro) - Licence Key
                             </a>
                         </p>
@@ -1121,8 +1166,7 @@ class Artist_Image_Generator_Admin
                     <?php endif; ?>
             </script>
 
-            <?php // Template for about tab. 
-            ?>
+            <?php // Template for about tab. ?>
             <script type="text/html" id="tmpl-artist-image-generator-about">
                 <div class="aig-container aig-container-3">
                     <div class="card">
@@ -1198,8 +1242,7 @@ class Artist_Image_Generator_Admin
                 <# } #>
         </script>
 
-        <?php // Child template for result block (result-container). 
-        ?>
+        <?php // Child template for result block (result-container). ?>
         <script type="text/html" id="tmpl-artist-image-generator-result">
             <div class="aig-container">
                 <# if ( data.images ) { #>
@@ -1215,13 +1258,30 @@ class Artist_Image_Generator_Admin
                                 <?php esc_attr_e('Add to media library', 'artist-image-generator'); ?>
                             </a>
                         </div>
-                        <# }) #>
-                            <# } #>
+                    <# }) #>
+                <# } #>
             </div>
         </script>
 
-        <?php // Child template for form/image block (tbody-container). 
-        ?>
+        <?php // Child template for form/history block (tbody-container). ?>
+        <script type="text/html" id="tmpl-artist-image-generator-history">
+            <button role="button" class="button" id="toggle-history-button"><?php esc_attr_e('Toggle history', 'artist-image-generator'); ?></button>
+            <div class="aig-container aig-container-history" hidden>
+                <# if (data.images_history) { #>
+                    <# _.each(data.images_history, function(image, k) { #>
+                        <div class="thumbnail">
+                            <img src="{{ image.url }}" width="100%" height="auto" alt="{{ image.alt }}">
+                            <a class="add_history_as_media" href="javascript:void(0);">
+                                <div class="spinner" style="margin-top: 0;"></div>
+                                <span class="dashicons dashicons-database-add" title="<?php esc_attr_e('Add to media library', 'artist-image-generator'); ?>"></span>
+                            </a>
+                        </div>
+                    <# }) #>
+                <# } #>
+            </div>
+        </script>
+
+        <?php // Child template for form/image block (tbody-container). ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-image">
             <tr>
                 <th scope="row">
@@ -1240,13 +1300,20 @@ class Artist_Image_Generator_Admin
             </tr>
         </script>
 
-        <?php // Child template for form/n block (tbody-container). 
-        ?>
+        <?php // Child template for form/n block (tbody-container). ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-n">
             <tr>
                 <th scope="row">
                     <label for="n"><?php esc_attr_e('Number of images', 'artist-image-generator'); ?></label>
-                    <p class="description"><?php esc_attr_e('Depends of the model used.', 'artist-image-generator'); ?></p>
+                    <p class="description">
+                        <?php if (!$this->check_license_validity()) : ?>
+                        <a href="https://artist-image-generator.com/product/licence-key/" target="_blank">
+                            <?php esc_attr_e('Buy Licence key to generate up to 10 images at once with DALL·E 3.', 'artist-image-generator'); ?>
+                        </a>
+                        <?php else : ?>
+                            <?php esc_attr_e('New: Up to 10 images at once with DALL·E 3!', 'artist-image-generator'); ?>
+                        <?php endif; ?>
+                    </p>
                 </th>
                 <td>
                     <select name="n" id="n">
@@ -1261,8 +1328,7 @@ class Artist_Image_Generator_Admin
             </tr>
         </script>
 
-        <?php // Child template for form/prompt block (tbody-container). 
-        ?>
+        <?php // Child template for form/prompt block (tbody-container). ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-prompt">
             <tr>
                 <th scope="row">
@@ -1278,8 +1344,7 @@ class Artist_Image_Generator_Admin
             </tr>
         </script>
 
-        <?php // Child template for form/model block (tbody-container). 
-        ?>
+        <?php // Child template for form/model block (tbody-container). ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-model">
             <# 
             // Définir la valeur par défaut de data.model si elle n'est pas définie
@@ -1306,8 +1371,7 @@ class Artist_Image_Generator_Admin
             </tr>
         </script>
 
-        <?php // Child template for form/size block (tbody-container). 
-        ?>
+        <?php // Child template for form/size block (tbody-container). ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-size">
             <tr>
                 <th scope="row">
@@ -1325,8 +1389,7 @@ class Artist_Image_Generator_Admin
             </tr>
         </script>
 
-        <?php // Child template for form/quality block (tbody-container). 
-        ?>
+        <?php // Child template for form/quality block (tbody-container). ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-quality">
             <tr>
                 <th scope="row">
@@ -1347,8 +1410,7 @@ class Artist_Image_Generator_Admin
             </tr>
         </script>
 
-        <?php // Child template for form/style block (tbody-container). 
-        ?>
+        <?php // Child template for form/style block (tbody-container). ?>
         <script type="text/html" id="tmpl-artist-image-generator-form-style">
             <tr>
                 <th scope="row">
@@ -1368,7 +1430,6 @@ class Artist_Image_Generator_Admin
                 </td>
             </tr>
         </script>
-
 <?php
     }
 }

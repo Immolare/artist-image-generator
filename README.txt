@@ -1,96 +1,82 @@
-=== Artist Image Generator - Ai Image & Avatar (DALL·E)  ===
+=== Artist Image Generator: AI-Driven Image & Avatar Creator for WordPress - Powered by DALL·E ===
 Contributors: Immolare
-Tags: AI, openai, DALLE, SORA, image, avatar, video
-Donate link: https://artist-image-generator.com/#donate
+Tags: AI, openai, DALL·E, image, avatar
 Requires at least: 5.3
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.18
+Stable tag: 1.0.19
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Illustrate posts with Ai images (DALL·E). Text-to-Image, variation, editing. Compatible block builders. Public image generator & Ai avatars by topics.
-
 == Description ==
 
-Artist Image Generator is an artificial intelligence image generation Wordpress plugin based on OpenAI DALL·E. The plugin allows you not only **create images**, but also **make variations of existing images** or **modifications (pro)** in order to create unique and royalty-free images.
+Artist Image Generator is an AI-powered image and avatar creator plugin for WordPress, utilizing OpenAI's DALL·E technology. With this plugin, you can easily create unique, royalty-free images, variations, and avatars for your website. The plugin is compatible with popular page builders like Gutenberg, Elementor, Beaver Builder, WP Bakery, and Woocommerce.
 
-**The plugin can be used directly from the Wordpress Popup Media Manager. It is compatible with the most popular block builders such as Gutenberg, Elementor, Beaver Builder, WP Bakery. And also Woocommerce compatible too.**
+### Key Features
 
-It also offers a shortcode system that allows you to place a **publicly accessible topic image generation tool on any page**. Your visitors can thus generate, via a form, a series of images of their choice according to a topic and options that you have predefined (eg: tattoos, professions, etc.)
+- **AI-Powered Image Generation**: Generate unique images from scratch based on text prompts using DALL·E technology.
+- **Image Variations**: Create variations of existing images or make modifications (pro) to generate unique and royalty-free images.
+- **Seamless Integration**: Use the plugin directly from the WordPress Popup Media Manager and enjoy compatibility with popular block builders and Woocommerce.
+- **Publicly Accessible Image Generation Tool**: Place a topic-based image generation tool on any page using shortcodes, allowing visitors to generate images according to predefined topics and options.
+- **Custom AI Avatars**: Allow WordPress users to generate and set custom avatars using the shortcode feature, providing an alternative to Gravatar, WP Avatar, and the native WordPress system. Compatible with One User Avatar, Simple Local Avatars. It works similarly to the Publicly Accessible Image Generation Tool but is dedicated to avatars.
 
-Finally, if you're looking for an easy way for your Wordpress users to **generate custom avatars**, the shortcode feature also allows to generate and set their Wordpress profile photo. This feature is a nice **alternative to Gravatar, WP Avatar and native Wordpress system**. Particularly if you want to harmonize your authors' avatars according to topics.
+### Free Features
 
-### Artist Image Generator will include next SORA features
+- **Text-to-Image Generation**: Easily create unique images from text prompts, giving you endless possibilities for your website's visual content.
+- **Image Variations**: Generate diverse versions of your existing images, adding creativity and variety to your designs.
+- **AI Topic Images**: Create topic-based image generation forms on public pages, enabling users to generate and download images based on their preferences.
+- **AI Avatar**: Let users generate custom avatars and set them as their WordPress profile pictures, creating a harmonious look for your authors' avatars according to specific topics.
+- **Generation History**: All generated images are stored in local storage for 1 hour, during which time you have the option to save them for later use or to utilize them as a basis for creating variations or edits.
 
-The SORA video generator by OpenAI hasn't been released yet, but once it's available, I'll incorporate those functionalities into the Artist Image Generator. Stay tuned for updates!
+### Premium Features
 
-To support theses developments you can :
-- [Make a donation](https://artist-image-generator.com/#donate)
-- [Purchase a licence key](https://artist-image-generator.com/product/licence-key/) 
+- **Image Edit**: Edit and extend existing images by drawing a mask and asking DALL·E to generate a new image based on your modifications. This powerful feature allows you to fine-tune your images and create truly unique visuals.
+- **Image Composition**: Compose your main image by uploading other images into it, drawing masks, and asking DALL·E to generate a new image that combines the uploaded images with your original. This feature enables you to create complex and creative designs with ease.
+- **Credits Removal**: Remove Artist Image Generator credits from the shortcodes, giving you full control over the branding and appearance of your generated images and avatars.
+- **Multiple Image Generation with DALL·E 3**: Generate up to 10 images simultaneously using the DALL·E 3 model. This feature allows you to quickly produce multiple images based on a single prompt, saving you time and increasing your productivity. Available for shortcodes too.
 
-**Note:** Donors will be credited on the Artist Image Generator WordPress plugin page & official GitHub channel. A premium license will be given for donations surpassing the regular license key price.
+### Compatibility
 
-### All free features of Artist Image Generator:
+Artist Image Generator is compatible with:
 
-Artist Image Generator supports all DALL·E lab features and params. [Visit our website to stay tuned](https://artist-image-generator.com/about/).
-
-- **Image Generation**: Text-to-image - Create unique images from scratch based on a text prompt.
-- **Image Variations**: Image-to-image - Create variations of a given image to add diversity and creativity to your designs.
-- **Shortcodes - AI Topic Images**: Create a topic form on public pages and allow users to generate and download images.
-- **Shortcodes - AI Avatar**: Create a topic form on public pages. Allow authors to generate images and set it as WP User profile picture.
-
-### All premium features of Artist Image Generator:
-
-- **Image Edit**: Edit and extend existing images by drawing a mask and ask DALL·E a brand new image.
-- **Image Composition**: Compose your main image by uploading other images into it, draw a mask and ask DALL·E a brand new image.
-- **Credits removal**: remove credits on shortcodes
-
-### Compatibilities :
-
-Artist Image Generator core features are compatible with :
 - Gutenberg
 - Elementor
 - WP Bakery
 - Beaver Builder (FL Builder)
 - Woocommerce products
-- And many others block builders / plugins
-
-AI Avatar by topics can be used with :
 - Simple Local Avatars
 - One User Avatar
+- And many other block builders/plugins
 
-**Note:** to utilize AI avatars with these plugins, include the [aig download="wp_avatar"] shortcode on a user page. Once users generate and set their avatars, AIG will detect if these plugins are activated and automatically trigger their native update function.
+### Why Buy a License?
 
-### Why buy a license?
+By purchasing a premium license for Artist Image Generator, you help maintain and grow the plugin. You'll also benefit from exclusive support and all the new features that will be available in the future:
 
-By purchasing a premium license for Artist Image Generator, you help maintain the plugin and grow it.
-You benefit from exclusive support as well as all the new features that will be available in the future:
+[Purchase a pro version license key](https://artist-image-generator.com/product/licence-key/)
 
-[Purchase pro version licence key](https://artist-image-generator.com/product/licence-key/) 
+### Why Use Artist Image Generator?
 
-### Why use the plugin:
-
-- Create royalty-free images via text-to-image or from an existing image
-- Illustrate pages, articles and any other image functionality of your Wordpress site
-- Avoid searching for the perfect image on the web which are usually licensed/copyrighted
-- Gives an original and modern style to your publications and your site
-- Uses the AI ​​OpenAi DALL·E, and therefore its future improvements
-- A lightweight, distraction-free plugin natively integrated into the Wordpress library
+- Create royalty-free images via text-to-image or from existing images
+- Illustrate pages, articles, and other image functionalities on your WordPress site
+- Avoid using licensed/copyrighted images from the web
+- Give an original and modern style to your publications and website
+- Utilize AI OpenAi DALL·E and its future improvements
+- A lightweight, distraction-free plugin natively integrated into the WordPress library
 - Translatable into several languages
-- Use it everywhere through block builders and so on.
-- Compatible modern browsers and others Media Manager modules
+- Use it everywhere through block builders and more
+- Compatible with modern browsers and other Media Manager modules
 
-#### Artist Image Generator Demo
+### Artist Image Generator Demo
 
-**Note:** Some videos need to be updated.
+[Watch the dedicated playlist](https://www.youtube.com/playlist?list=PL1w41bJBr1vJ_ufgPMdqgBe6nNEA2FI0j)
 
-https://youtu.be/msd81YXw5J8?si=DEMA0j876UwdYm7j
+https://youtube.com/playlist?list=PL1w41bJBr1vJ_ufgPMdqgBe6nNEA2FI0j&si=WQIO27Fi-Us3lEVd
 
+**Note**: Some videos need to be updated.
 
 ### Privacy Policy
 
-We take your privacy seriously at Artist Image Generator. Rest assured that we don't collect any data from you when you use our plugin. Your file or description is only sent to the DALL·E 2 API for generating images, and we don't store or share any of that information. The API responds with the generated images, which are then used by the plugin to fill in image metadata and rename files in a way that's optimized for SEO. We value your privacy and aim to provide a safe and secure experience for all our users.
+We take your privacy seriously at Artist Image Generator. We don't collect any data from you when you use our plugin. Your file or description is only sent to the DALL·E API for generating images, and we don't store or share any of that information. The API responds with the generated images, which are then used by the plugin to fill in image metadata and rename files in a way that's optimized for SEO. We value your privacy and aim to provide a safe and secure experience for all our users.
 
 ### Credits
 
@@ -109,77 +95,131 @@ We take your privacy seriously at Artist Image Generator. Rest assured that we d
 
 
 == Installation ==
-### Install the plugin
 
-The Artist Image Generator plugin's installation is easy :
+### Install the Plugin
 
-- Search the Artist Image Generator plugin in the Wordpress extensions library and click "Install"
-- Or download the zip archive file and upload it through the "upload plugin" tools
-- Click on "Activate" and the plugin is ready to configure
+Installing the Artist Image Generator plugin is a simple process:
 
-Globally install and activate the plugin like any other Wordpress extension. Then click on the "Settings" page link under the plugin name. The plugin is available in the Wordpress menu. Click under **Media Library > Image Generator > Settings tab** to configure.
+1. Search for the "Artist Image Generator" plugin in the WordPress plugin library and click "Install."
+2. Alternatively, download the zip archive file and upload it using the "upload plugin" tool.
+3. Click "Activate" to activate the plugin.
 
-### Configure the plugin
+To configure the plugin, navigate to the "Settings" page found under the plugin name in the WordPress menu. You can access it by clicking on **Media Library > Image Generator > Settings tab**.
 
-The plugin use an artificial intelligence called **DALL·E 2**, a tier service provided by OpenAI. To use it, you have to **generate a OpenAI API Key**. Don't worry, its easy !
+### Configure the Plugin
 
-Once you are on the plugin's "Settings" tab, you'll have all the instructions to create an OpenAI API key :
+The Artist Image Generator plugin utilizes an artificial intelligence called DALL·E, a service provided by OpenAI that supports both DALL·E 2 and DALL·E 3. To use the plugin, you'll need to generate an OpenAI API key. A free basic API key is sufficient to use the plugin, and you can later upgrade to OpenAI's paid service if needed.
 
-- Sign up / Log in into OpenAI developer portail : [https://openai.com/api/](https://openai.com/api/)
-- In **User > View API keys, create a new secret key** : [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)
-- Copy and paste the new secret key in the **OPENAI_API_KEY** field.
-- Press "Save changes" and **you are ready to use the plugin**.
+Follow these steps to create an OpenAI API key and configure the plugin:
 
+1. Visit the OpenAI developer portal and sign up or log in: [https://openai.com/api/](https://openai.com/api/)
+2. Go to **User > View API keys** and create a new secret key: [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)
+3. Copy and paste the new secret key into the **OPENAI\_API\_KEY** field in the plugin's settings.
+4. If you have an Artist Image Generator license key, enter it in the **AIG\_LICENSE\_KEY** field.
+5. Click "Save changes" to save your settings and start using the plugin.
+
+For more information on using and installing the Artist Image Generator plugin, please visit our blog: [https://artist-image-generator.com/blog/](https://artist-image-generator.com/blog/).
+
+== Screenshots ==
+1. Fill your OpenAI API Key here in "Settings" tab.
+2. Create new images in the "Generate" tab.
+3. Create image variations in the "Variate" tab.
+4. Pro - Create image edition in the "Edit" tab.
+5. The public shortcode avatar and image creator functionnality.
+6. Pro - Create image composition in the "Edit" tab.
+7. Generated images which are not saved are available for 1h
+8. Pro - Generate up to 10 images using DALL·E 3 model
 
 == Frequently Asked Questions ==
 
 = How does Artist Image Generator work? =
-Artist Image Generator is an AI image creation plugin that uses OpenAI's advanced artificial intelligence service, DALL·E 2, to generate high-quality images based on your text descriptions. Simply provide a text description, choose your preferred image style, and our AI technology will generate up to 10 images for you to choose from.
+Artist Image Generator is an AI-powered image creation plugin that utilizes OpenAI's advanced DALL·E service (supporting both DALL·E 2 and DALL·E 3) to generate high-quality images based on your text descriptions. Simply provide a text prompt, choose your preferred image style, and our AI technology will generate multiple images for you to choose from. For inspiration, check out our [30 prompt examples to try DALL-E AI image generation](https://artist-image-generator.com/30-prompt-examples-to-try-dall-e-ai-image-generation/).
 
 = Can I use the images I generate with Artist Image Generator on my website? =
-Yes, you own the images you create with Artist Image Generator and can use them on your website without worrying about licensing issues.
+Yes, you own the images you create with Artist Image Generator and can use them on your website without worrying about licensing issues. The images are public domain, and you can license them as you see fit under the [CC0 1.0 Universal Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/).
 
 = Do I need any programming skills to use Artist Image Generator? =
 No, Artist Image Generator is designed to be beginner-friendly and lightweight, with an easy-to-use interface that requires no programming skills. It's perfect for non-developer WordPress users who want a simple tool to generate images.
 
 = Is Artist Image Generator compatible with my WordPress theme? =
-Yes, Artist Image Generator is fully compatible with any WordPress theme. It also provides SEO-friendly names and tags for the generated images to help improve your website's SEO.
+Yes, Artist Image Generator is fully compatible with any WordPress theme. It also provides SEO-friendly names and tags for the generated images to help improve your website's SEO. Learn more about using Artist Image Generator as a [WordPress AI featured image generator](https://artist-image-generator.com/ia-featured-images/).
 
 = What types of image styles can I create with Artist Image Generator? =
-Artist Image Generator allows you to create images in various styles, including art, painting, and realistic images.
+Artist Image Generator allows you to create images in various styles, including art, painting, and realistic images. With the integration of [DALL·E-3 features](https://artist-image-generator.com/dalle-3-features/), you can now create even more diverse and creative images.
 
-= Can I generate variations of an existing image with Artist Image Generator? = 
-Yes, you can generate up to 10 variations of an existing .png or .jpg image by uploading it to Artist Image Generator and providing a description of the image.
+= Can I generate variations of an existing image with Artist Image Generator? =
+Yes, you can generate variations of an existing .png or .jpg image by uploading it to Artist Image Generator and providing a description of the image. Keep in mind that the uploaded file must be a square PNG image less than 4MB in size.
 
-= How can I get an OpenAI API key? = 
-You can sign up for an API key on the OpenAI website (https://openai.com).
+= How can I get an OpenAI API key? =
+You can sign up for an API key on the OpenAI website (<https://openai.com>). A free basic API key is sufficient to use the plugin, and you can later upgrade to OpenAI's paid service if needed.
 
 = What image sizes are supported for generation? =
-With DALL·E 2 : 256x256, 512x512, or 1024x1024 pixels. With DALL·E 3 : 1024x1024, 1792x1024, 1024x1792.
+With DALL·E 2: 256x256, 512x512, or 1024x1024 pixels. With DALL·E 3: 1024x1024, 1792x1024, 1024x1792 pixels. Note that all generated images will be in a 1:1 (square) ratio.
+
+= Can I generate more than 1 image using DALL·E 3 ? =
+Now yes, the plugin support multitask.
+
+= I forgot to save a generated image how can I do ? =
+Now the plugin save all image generated through a local storage history (not saving in DB). You can retrieve the image and save it. It expires after 1H 
 
 = Are there any limitations on image uploads? =
 Yes, both the uploaded image and mask must be square PNG images less than 4MB in size.
 
-= How do I install and use Artist Image Generator? =
-To install Artist Image Generator, simply download the plugin from the WordPress plugin repository, install and activate it. Then, follow the instructions provided in the plugin's settings page to generate images from text descriptions or upload existing images for variations.
-
-= What is the copyright license of images I create? =
-All generated images you create are public domain and are yours to license as you see fit. We retain no rights to them. Because the public domain is not a unified concept across legal jurisdictions, the specific license of generated images is that of the [CC0 1.0 Universal Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/).
-
-= What restrictions are there for image generation ? =
-Yes. We provide just a tool to use DALL·E 2/3 service so we are not responsible of what you generate. Keep in mind DALL·E 2/3 have restrictions on image creation and variations so please respect  that to use correctly the service. 
-For an up to date list of **what you can't do using DALL·E 2/3 service**, please read theses official links :
-
+= Are there any restrictions on image generation? =
+Yes, DALL·E 2 and DALL·E 3 have restrictions on image creation and variations. It's essential to respect these restrictions when using the service. For an up-to-date list of what you can't do using DALL·E 2/3 service, please read the official links:
 - [OpenAI - Blog post about restrictions](https://help.openai.com/en/articles/6338764-are-there-any-restrictions-to-how-i-can-use-dall-e-2-is-there-a-content-policy)
 - [OpenAI - Content Policy](https://labs.openai.com/policies/content-policy)
 
-= Is there a rate limitation for using the API =
-Yes. Read the rates limits on the official documentation : [OpenAI - Rate Limits](https://platform.openai.com/docs/guides/rate-limits/overview)
+= Are there any rate limitations for using the API? =
+Yes, there are rate limits when using the OpenAI API. For more information, please read our article on [DALL-E and Artist Image Generator rate limits](https://artist-image-generator.com/dall-e-rate-limits/).
 
-- The AI generate only 3 images dimensions. All generated image will be on ratio format 1:1 (square).
-- If you need to do an image variation, your uploaded file needs to be a .png file <= 4MB and at format 1:1.
+= How can I access Artist Image Generator from the WordPress Popup Media Manager? =
+Artist Image Generator is seamlessly integrated with the WordPress Popup Media Manager. You can access it directly when editing pages, posts, or products. Simply click on the 'Add Media' button, and you'll find the Artist Image Generator option available for you to create or generate images on the spot.
+
+= Can I use Artist Image Generator to illustrate pages, posts, and products? =
+Yes, Artist Image Generator is a versatile tool that allows you to create unique and royalty-free images for various purposes. You can use it to illustrate pages, posts, products, or any other image-related functionality on your WordPress site.
+
+= Can I generate custom avatars for users with Artist Image Generator? =
+Yes, Artist Image Generator offers a shortcode feature that allows you to generate and set custom avatars for WordPress users. This feature serves as an alternative to Gravatar, WP Avatar, and the native WordPress avatar system. You can create a topic-based form on any page, allowing users to generate images and set them as their profile pictures.
+
+= Is Artist Image Generator compatible with popular page builders like Elementor, Gutenberg, and Beaver Builder? =
+Yes, Artist Image Generator is compatible with popular page builders such as Elementor, Gutenberg, Beaver Builder, WP Bakery, and more. This ensures a smooth user experience when creating and editing your WordPress site.
+
+= Can I use Artist Image Generator with WooCommerce? =
+Yes, Artist Image Generator is compatible with WooCommerce. You can use the plugin to generate unique product images, illustrate your online store, and enhance your customers' shopping experience.
+
+= How can I stay updated on new features and improvements for Artist Image Generator? =
+To stay updated on new features, improvements, and announcements related to Artist Image Generator, you can visit [our blog](https://artist-image-generator.com/blog/). We regularly publish articles on various topics, including tutorials, use cases, and tips for using Artist Image Generator effectively.
+
+= Can I build a specific AI image generator tool with Artist Image Generator? =
+Yes, you can build specific AI image generator tools using Artist Image Generator. For example, you can create a [Tattoo AI Generator tool on WordPress](https://artist-image-generator.com/tatoo-ai-generator-tool-wordpress/). The possibilities are endless, so feel free to explore and create.
+
+= Is Artist Image Generator suitable for content creators, authors, and writers? =
+Yes, Artist Image Generator is an ideal tool for content creators, authors, and writers who want to create unique and engaging visuals for their content. The plugin simplifies the process of generating relevant images based on text descriptions, making it easy for non-designers to enhance their content with AI-generated images.
+
+= Can I use Artist Image Generator to create images for social media posts? =
+Yes, you can use Artist Image Generator to create unique and eye-catching images for your social media posts. The plugin offers various image styles and dimensions, allowing you to create visuals that suit different social media platforms and their requirements.
+
+= Can I generate images in bulk using Artist Image Generator? =
+Artist Image Generator is primarily designed to generate images one at a time based on your text descriptions. However, you can quickly generate multiple images by providing different text prompts or variations, allowing you to create a diverse set of images for your content needs.
+
+= How does Artist Image Generator benefit content creators and authors? =
+Artist Image Generator helps content creators and authors by providing an easy-to-use, AI-powered solution for generating unique and relevant images for their content. This saves time and effort in searching for suitable images online and ensures that the visuals are royalty-free and tailored to the content.
+
+= Can I use Artist Image Generator for creating visuals for my blog and articles? =
+Yes, Artist Image Generator is perfect for creating visuals for your blog and articles. You can generate images that accurately represent your content, making it more engaging and visually appealing to your readers.
+
+= Can I use Artist Image Generator to create images for print materials? =
+While Artist Image Generator is primarily designed for digital content, you can use the generated images for print materials as well. However, please be aware that the image quality and resolution might not be optimal for high-quality print purposes. It is recommended to test the images before using them in print projects.
 
 == Changelog ==
+1.0.19 - 2024-03-01
+- Add dall-e-3 multi image generation
+- Add history of generated images (expire 1h)
+- Allow saving from history
+- Minor improvements
+- Code refactoring
+
 1.0.18 - 2024-02-22
 - Fix and migrate licence key
 - Launch official website
