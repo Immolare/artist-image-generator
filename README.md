@@ -8,6 +8,7 @@ Explore the limitless possibilities of visual content with Artist Image Generato
 
 - [Create featured image on WordPress blog posts using DALL-E](https://artist-image-generator.com/ia-featured-images/)
 - [Build a Wordpress Tatoo AI Generator with Artist Image Generator shortcode feature](https://artist-image-generator.com/tatoo-ai-generator-tool-wordpress/)
+- [Generate more than 1 image using DALL-E 3 model](https://artist-image-generator.com/how-to-generate-more-than-1-image-using-dall-e-3/)
 
 ![Artist Image Generator](https://user-images.githubusercontent.com/11742929/218420318-66f0c7e5-eddb-41e4-831c-4b582b82f193.png)
 
@@ -62,7 +63,9 @@ With this extension, you can save the generated images directly into the WordPre
 
 ![realistic-astronaut-in-space-repairing-space-battleship](https://github.com/Immolare/artist-image-generator/assets/11742929/9aa147de-2a68-487b-adf7-e20c9cdefb36)
 ![img-odTY4q8GA5WGRiHXSw84uTgz](https://github.com/Immolare/artist-image-generator/assets/11742929/5e26f12a-894a-49cf-a0a1-ef39bbfa6b48)
-
+![screenshot-6](https://github.com/Immolare/artist-image-generator/assets/11742929/1054836e-f341-4484-929c-19f16523d27f)
+![screenshot-9](https://github.com/Immolare/artist-image-generator/assets/11742929/a4ebc402-d63c-408d-8732-ba9629af4f31)
+![godzilla-11](https://github.com/Immolare/artist-image-generator/assets/11742929/8c0e0ec5-8c61-4227-99fb-45c501cac832)
 
 ## About the Royalty-Free Images Generated
 
@@ -117,6 +120,20 @@ Allow user to generate / customize a profile picture through topics and set it a
 ![AI User Profile Picture](https://github.com/Immolare/artist-image-generator/assets/11742929/a4d6e8e5-c3a2-4775-987d-b7d8e9b9ff90)
 
 Demo : https://youtu.be/oxpKZtFnJLs
+
+### 5. Generation History
+
+Allow users to retrieve, use and save previous generated images for 1H. Available in Variate and Edit tabs.
+
+Demo: https://youtu.be/HZ964wJ8TZQ
+
+### 6. Multiple image generation at once using DALL-E 3 model (pro)
+
+Allow users to generate up to 10 images at once using DALL-E 3.
+
+Demo: https://youtu.be/-fZTfc64Wak
+
+
 
 ## Advantages
 
