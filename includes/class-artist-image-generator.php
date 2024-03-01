@@ -1,18 +1,4 @@
 <?php
-
-/**
- * The file that defines the core plugin class
- *
- * A class definition that includes attributes and functions used across both the
- * public-facing side of the site and the admin area.
- *
- * @link       https://pierrevieville.fr
- * @since      1.0.0
- *
- * @package    Artist_Image_Generator
- * @subpackage Artist_Image_Generator/includes
- */
-
 /**
  * The core plugin class.
  *
@@ -22,6 +8,7 @@
  * Also maintains the unique identifier of this plugin as well as the current
  * version of the plugin.
  *
+ * @link       https://pierrevieville.fr
  * @since      1.0.0
  * @package    Artist_Image_Generator
  * @subpackage Artist_Image_Generator/includes
@@ -97,42 +84,14 @@ class Artist_Image_Generator {
 	 * @access   private
 	 */
 	private function load_dependencies() {
-
-        /**
-         * Load the vendor/autoload.php
-         */
-        require plugin_dir_path( dirname( __FILE__ ) ) . 'vendor/autoload.php';
-
-        /**
-		 * The class responsible for orchestrating the licence keys
-		 */
-        require plugin_dir_path( dirname( __FILE__ ) ) . 'libraries/license-sdk/License.php';
-
-		/**
-		 * The class responsible for orchestrating the actions and filters of the
-		 * core plugin.
-		 */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'vendor/autoload.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'libraries/license-sdk/License.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-artist-image-generator-loader.php';
-
-		/**
-		 * The class responsible for defining internationalization functionality
-		 * of the plugin.
-		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-artist-image-generator-i18n.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-artist-image-generator-admin.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-artist-image-generator-public.php';
 
 		$this->loader = new Artist_Image_Generator_Loader();
-
 	}
 
 	/**
@@ -145,11 +104,9 @@ class Artist_Image_Generator {
 	 * @access   private
 	 */
 	private function set_locale() {
-
 		$plugin_i18n = new Artist_Image_Generator_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
 	}
 
 	/**
@@ -160,12 +117,10 @@ class Artist_Image_Generator {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-
 		$plugin_admin = new Artist_Image_Generator_Admin( $this->get_plugin_name(), $this->get_version() );
         // Styles and Scripts
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-
         // Admin Settings Page
         $this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_menu' );
         $this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init' );
@@ -173,28 +128,28 @@ class Artist_Image_Generator {
         $this->loader->add_action( 'wp_ajax_admin_page', $plugin_admin, 'admin_page' );
         $this->loader->add_action( 'wp_ajax_nopriv_add_to_media', $plugin_admin, 'add_to_media' );
         $this->loader->add_action( 'wp_ajax_add_to_media', $plugin_admin, 'add_to_media' );
-        # Add meta links to plugin page
+        $this->loader->add_action( 'wp_ajax_nopriv_get_from_url', $plugin_admin, 'get_from_url' );
+        $this->loader->add_action( 'wp_ajax_get_from_url', $plugin_admin, 'get_from_url' );
+        // Add meta links to plugin page
         $this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'plugin_row_meta', 10, 2 );
-        # Add link to plugin settings
+        // Add link to plugin settings
         $this->loader->add_filter( 'plugin_action_links', $plugin_admin, 'plugin_action_links', 10, 2 );
-        # Add underscore.js's templates
+        // Add underscore.js's templates
         $this->loader->add_action( 'admin_footer', $plugin_admin, 'print_tabs_templates' );
         $this->loader->add_action( 'customize_controls_print_footer_scripts', $plugin_admin, 'print_tabs_templates' );
-
-
-        # Check if Elementor is active
+        // Check if Elementor is active
         if (!function_exists('is_plugin_active')) {
             include_once(ABSPATH . 'wp-admin/includes/plugin.php');
         }
         if (function_exists('is_plugin_active')) {
-            // Vérifiez si Beaver Builder Lite ou Pro est actif
+            // Elementor Free or Pro
             $elementor_active = is_plugin_active('elementor/elementor.php');
             if ($elementor_active && isset( $_GET['action'] ) && $_GET['action'] === 'elementor') {
                 $this->loader->add_action( 'elementor/editor/after_enqueue_styles', $plugin_admin, 'enqueue_styles' );
                 $this->loader->add_action( 'elementor/editor/after_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
                 $this->loader->add_action( 'elementor/editor/footer', $plugin_admin, 'print_tabs_templates' );
             }
-            // Vérifiez si Beaver Builder Lite ou Pro est actif
+            // Beaver Builder Lite or Pro
             $bb_lite_active = is_plugin_active('beaver-builder-lite-version/fl-builder.php');
             $bb_pro_active = is_plugin_active('beaver-builder/fl-builder.php');
             if (($bb_lite_active || $bb_pro_active) && isset($_GET['fl_builder'])) {
@@ -213,28 +168,26 @@ class Artist_Image_Generator {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-
 		$plugin_public = new Artist_Image_Generator_Public( $this->get_plugin_name(), $this->get_version() );
 
         $this->loader->add_action('wp_ajax_generate_image', $plugin_public, 'generate_image');
         $this->loader->add_action('wp_ajax_nopriv_generate_image', $plugin_public, 'generate_image');
-
-        // Ajoutez ces actions pour change_wp_avatar et change_wc_avatar
+        // ajax change_wp_avatar et change_wc_avatar handle
         $this->loader->add_action('wp_ajax_change_wp_avatar', $plugin_public, 'change_wp_avatar');
         $this->loader->add_action('wp_ajax_nopriv_change_wp_avatar', $plugin_public, 'change_wp_avatar');
-
-        $this->loader->add_action('wp_ajax_change_wc_avatar', $plugin_public, 'change_wc_avatar');
-        $this->loader->add_action('wp_ajax_nopriv_change_wc_avatar', $plugin_public, 'change_wc_avatar');
-
+        // Check if is_plugin is defined
+        if (!function_exists('is_plugin_active')) {
+            include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+        }
+        // Beaver Builder Lite or Pro
         $bb_lite_active = is_plugin_active('beaver-builder-lite-version/fl-builder.php');
         $bb_pro_active = is_plugin_active('beaver-builder/fl-builder.php');
         if (($bb_lite_active || $bb_pro_active) && isset($_GET['fl_builder'])) {
-            
+            // todo
         } else {
             $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles', 20);
             $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts', 20);
         }
-        
         // Compatibility with Simple Local Avatars and One User Avatar
         // We do nothing on filter and call plugin functions to handle users avatars
         $simple_local_avatar_active = is_plugin_active('simple-local-avatars/simple-local-avatars.php');

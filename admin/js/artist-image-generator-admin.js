@@ -20,10 +20,17 @@
     const CROPPED_FILE_NAME = 'cropped.png';
     const CROPPED_FILE_TYPE = 'image/png';
     const IMAGE_QUALITY = 1;
+
     const MODEL_CONFIG = {
-        "": { sizes: ["256x256", "512x512", "1024x1024"], nValues: [1, 2, 3, 4, 5, 6, 7, 8,  9, 10], qualities:[], styles:[] },
-        "dall-e-3": { sizes: ["1024x1024", "1024x1792", "1792x1024"], nValues: [1], qualities:['standard','hd'], styles:['vivid','natural'] },
+        "": { sizes: ["256x256", "512x512", "1024x1024"], nValues: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], qualities:[], styles:[] },
+        "dall-e-3": { 
+            sizes: ["1024x1024", "1024x1792", "1792x1024"], 
+            nValues: aig_ajax_object.valid_licence ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] : [1], 
+            qualities:['standard','hd'], 
+            styles:['vivid','natural'] 
+        },
     };
+
     const TABS = ['generate', 'public', 'settings', 'variate', 'edit', 'about'];
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +63,7 @@
         formQuality: wp.template('artist-image-generator-form-quality'),
         formStyle: wp.template('artist-image-generator-form-style'),
         formN: wp.template('artist-image-generator-form-n'),
+        history: wp.template('artist-image-generator-history'),
     };
 
     const VIEWS = createTabObject(tab => createView(TEMPLATES[tab], tab));
@@ -194,20 +202,73 @@
         const spinner = '<div class="spinner is-active" style="margin-top: 0; margin-left:15px; float:none;"></div>';
         $(spinner).insertAfter($form.find('input[type="submit"]'));
 
-        // Submit the form using AJAX
-        return jQuery.ajax({
-            url: aig_ajax_object.ajax_url,
-            type: 'post',
-            processData: false,
-            contentType: false,
-            data: formData
-        }).then(function (response) {
+        let requests = [];
+        if (formData.get('model') === 'dall-e-3' && formData.get('n') > 1) {
+            requests = Array.from({ length: formData.get('n') }, () => {
+                return jQuery.ajax({
+                    url: aig_ajax_object.ajax_url,
+                    type: 'post',
+                    processData: false,
+                    contentType: false,
+                    data: formData
+                });
+            });
+        } else {
+            requests.push(jQuery.ajax({
+                url: aig_ajax_object.ajax_url,
+                type: 'post',
+                processData: false,
+                contentType: false,
+                data: formData
+            }));
+        }
+
+         // Wait for all requests to complete
+         return Promise.all(requests)
+             .then(responses => {
+                const errors = [];
+             // Merge all responses
+             const mergedResponse = responses.reduce((acc, response) => {
+                if (response.error && response.error.msg) {
+                    errors.push(response.error.msg);
+                }
+                 if (response.images && response.images.length > 0) {
+                     acc.images = acc.images.concat(response.images);
+                 }
+                 return acc;
+             }, {images: []});
+
             $form.find('.spinner').remove();
-            return response;
-        }).catch(function (jqXHR, textStatus, errorThrown) {
-            console.error('Error: ' + textStatus, errorThrown);
-            throw errorThrown;
-        });
+                 
+            if (mergedResponse.images && mergedResponse.images.length > 0) {
+                cleanImageHistory();
+
+                let imageHistory = localStorage.getItem('aig-image-history');
+                imageHistory = imageHistory ? JSON.parse(imageHistory) : [];
+            
+                const imagesWithAlt = mergedResponse.images.map(function(image) {
+                    return {
+                        url: image.url,
+                        alt: formData.get('prompt'),
+                        expiry: Date.now() + 1 * 60 * 60 * 1000 // 1 hours from now
+                    };
+                });
+            
+                imageHistory = imageHistory.concat(imagesWithAlt);
+            
+                while (imageHistory.length > 12) {
+                    imageHistory.shift();
+                }
+            
+                localStorage.setItem('aig-image-history', JSON.stringify(imageHistory));
+            }
+ 
+            return mergedResponse;
+         })
+         .catch(function (jqXHR, textStatus, errorThrown) {
+             console.error('Error: ' + textStatus, errorThrown);
+             throw errorThrown;
+         });
     }
 
     function initAdminMediaModal() {
@@ -244,24 +305,31 @@
 
         for (let key of tabKeys) {
             if ($(TAB_SELECTORS[key]).length) {
-                let template = TEMPLATES[key];
+                let viewTemplate = TEMPLATES[key];
 
                 if (key === 'edit' && !aig_ajax_object.valid_licence) {
-                    template = TEMPLATES.editDemo;
+                    viewTemplate = TEMPLATES.editDemo;
                 }
 
-                buildTab($(TAB_SELECTORS[key]), template, aig_data);
-
-                if (key === 'variate' || key === 'edit') {
-                    addInputFileCropperHandler();
+                const initTab = function () {
+                    buildTab($(TAB_SELECTORS[key]), viewTemplate, data);
+                            
+                    if (key === 'generate' ||
+                        key === 'variate' ||
+                        (key === 'edit' && aig_ajax_object.valid_licence)){
+                        $(TAB_SELECTORS[key]).off('submit').on('submit', 'form', function (e) {
+                            handleFormSubmit(e, this).then(function (data) {
+                                $(TAB_SELECTORS[key]).find('.notice-container').empty().append(TEMPLATES.notice(data));
+                                $(TAB_SELECTORS[key]).find('.result-container').empty().append(TEMPLATES.result(data));
+                                addMediaHandler();
+                            }.bind(this));
+                        });
+                    }
                 }
 
-                // Exit the loop once we've found a match
-                break;
+                initTab();
             }
         }
-
-        addMediaHandler();
     }
 
     function buildTab($tab, template, data) {
@@ -272,7 +340,17 @@
     
         if (tabClass === TAB_CONTAINERS.variate ||
             tabClass === TAB_CONTAINERS.edit) {
+            // Add the history
+            cleanImageHistory();
+            let imageHistory = localStorage.getItem('aig-image-history');
+            imageHistory = imageHistory ? JSON.parse(imageHistory) : [];
+            data.images_history = imageHistory;
+
+            $tab.find('.history-container').append(TEMPLATES.history(data)); 
+            
             $tbodyContainer.append(TEMPLATES.formImage(data));
+
+            addMediaHistoryHandler();
         }
     
         if (
@@ -310,7 +388,12 @@
             }));
     
             $tab.find("#model").on('change', () => handleModelChange($tab)).trigger('change');
-    
+            $tab.find("#toggle-history-button").on('click', function (e) {
+                e.preventDefault();
+                const $historyContainer = $tab.find('.aig-container-history');
+                const isHidden = $historyContainer.prop('hidden');
+                $historyContainer.prop('hidden', !isHidden);
+            });
             $tab.find('.notice-container').append(TEMPLATES.notice(data));
             $tab.find('.result-container').append(TEMPLATES.result(data));
     
@@ -833,6 +916,78 @@
         $(cropperContainer).append(croppedCanvasMask);
     }
 
+    function addMediaHistoryHandler() {
+        $('.thumbnail').off('click').on('click', function (e) {
+            e.preventDefault();
+
+            const $thumbnail = $(this);
+            const description = $thumbnail.find('img').attr('alt');
+            const url = $thumbnail.find('img').attr('src');
+            const data = {
+                action: 'get_from_url',
+                url: url
+            }
+
+            jQuery.post(aig_ajax_object.ajax_url, data, (response) => {
+                const base64Image = response.data?.base_64;
+
+                // Convert base64 to blob
+                const byteCharacters = atob(base64Image);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'image/png' });
+
+                const file = new File([blob], "image.png", {
+                    type: 'image/png',
+                    lastModified: new Date().getTime()
+                });
+
+                let container = new DataTransfer();
+                container.items.add(file);
+                $('#image')[0].files = container.files;
+                $('#prompt').text(description);
+
+                // Trigger the change event
+                const event = new Event('change');
+                $('#image')[0].dispatchEvent(event);
+                $('#toggle-history-button').trigger('click');
+            })
+                .catch(error => console.error(error));
+            
+            return false;
+        });
+
+        $('.add_history_as_media').off('click').on('click', function (e) {
+            e.preventDefault();
+
+            const $button = $(this);
+            const $parent = $button.parent();
+            const data = {
+                action: 'add_to_media',
+                url: $parent.find('img').attr('src'),
+                description: $parent.find('img').attr('alt')
+            };
+
+            $button.find('.dashicons-database-add').remove();
+            $button.find('.spinner').addClass('is-active');
+
+            jQuery.post(aig_ajax_object.ajax_url, data, (response) => {
+                if (response.success) {
+                    $button.hide("slow", () => {
+                        $button.find('.spinner').remove();
+                    });
+
+                    needMediaListRefresh = true;
+                }
+            });
+
+            return false;
+        });
+    }
+
     function addMediaHandler() {
         $('.add_as_media').off('click').on('click', function (e) {
             e.preventDefault();
@@ -862,6 +1017,17 @@
         });
     }
 
+    function cleanImageHistory() {
+        let imageHistory = localStorage.getItem('aig-image-history');    
+        imageHistory = imageHistory ? JSON.parse(imageHistory) : [];
+
+        const validImages = imageHistory.filter(image => Date.now() < image.expiry);
+
+        validImages.sort((a, b) => b.expiry - a.expiry);
+
+        localStorage.setItem('aig-image-history', JSON.stringify(validImages));
+    }
+    
     async function addInputFileCropperHandler(refresh) {
         refresh = refresh || false;
         const inputSelector = '#image';
@@ -869,24 +1035,27 @@
 
         async function loadImage(fileInput) {
             if (fileInput[0].files && fileInput[0].files[0]) {
-                //console.log('File to load:', fileInput[0].files[0]);
                 const file = fileInput[0].files[0];
-
                 try {
                     return new Promise((resolve, reject) => {
                         const reader = new FileReader();
-
+        
                         reader.onload = async () => {
                             const dataUrl = reader.result;
+                            console.log("dataurl", dataUrl);
                             const image = new Image();
                             image.src = dataUrl;
-
+        
                             image.onload = () => resolve(image);
-                            image.onerror = () => reject(new Error("Error loading image."));
+                            image.onerror = error => {
+                                reject(new Error(error, 'Error loading image'));
+                            };
                         };
-
-                        reader.onerror = () => reject(new Error("Error reading file."));
-
+        
+                        reader.onerror = error => {
+                            reject(new Error(error, 'Error reading file'));
+                        };
+        
                         reader.readAsDataURL(file);
                     });
                 } catch (error) {

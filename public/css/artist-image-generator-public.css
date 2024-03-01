@@ -5,7 +5,6 @@
     --aig-border-radius: 5px;
 }
 
-/* Styles pour l'overlay */
 .aig-overlay {
     position: absolute;
     top: 0;
@@ -19,7 +18,6 @@
     z-index: 999;
 }
 
-/* Styles pour l'animation de chargement */
 .aig-loading-animation {
     border: 8px solid #f3f3f3;
     border-top: 8px solid var(--aig-primary-color);
@@ -34,7 +32,6 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Styles pour les résultats (images) */
 .aig-image-container {
     display: flex;
     flex-wrap: wrap;
@@ -42,14 +39,12 @@
     align-items: flex-start;
 }
 
-/* Ajoutez ces classes pour gérer la mise en page responsive */
 .aig-image {
     max-width: 100%;
     height: auto;
     margin: 10px;
 }
 
-/* Créez une classe pour la rangée (row) personnalisée */
 .aig-results {
     margin-bottom: 25px;
 }
@@ -59,7 +54,6 @@
     margin: 0 -15px;
 }
 
-/* Créez une classe pour les colonnes personnalisées (col-md-4) */
 .custom-col {
     flex: 0 0 33.3333%;
     max-width: 33.3333%;
@@ -67,7 +61,6 @@
     box-sizing: border-box;
 }
 
-/* Styles pour les images à l'intérieur des colonnes */
 .custom-col .aig-image {
     max-width: 100%;
     height: auto;
@@ -80,7 +73,6 @@
     }
 }
 
-/* Styles pour les boutons de téléchargement */
 .aig-download-button {
     display: block;
     margin-top: 5px;
@@ -98,7 +90,6 @@
     background-color: var(--aig-secondary-color);
 }
 
-/* Styles pour le formulaire de génération d'images */
 .aig-form-container {
     background-color: #f8f8f8;
     border: 1px solid var(--aig-border-color);
@@ -125,7 +116,6 @@
     font-size: 10px !important;
 }
 
-/* Styles pour le champ de description */
 .aig-textarea {
     width: 100%;
     padding: 10px;
@@ -133,13 +123,11 @@
     border-radius: var(--aig-border-radius);
 }
 
-/* Styles pour les cases à cocher en ligne */
 .aig-topic-buttons .form-check-inline {
     display: inline-block;
     margin-right: 10px;
 }
 
-/* Style pour le bouton "Generate Image" */
 .aig-button {
     background-color: var(--aig-primary-color);
     color: #fff;
