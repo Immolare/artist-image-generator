@@ -130,6 +130,17 @@ class Artist_Image_Generator_Public
             $atts['n'] = 1;    
         }
 
+        $nonce_field = wp_nonce_field(esc_attr($atts['action']), '_wpnonce', true, false);
+
+        $allowed_html = array(
+            'input' => array(
+                'type' => array(),
+                'id' => array(),
+                'name' => array(),
+                'value' => array()
+            )
+        );
+
         ob_start();
 
         ?>
@@ -142,13 +153,13 @@ class Artist_Image_Generator_Public
                 data-style="<?php echo esc_attr($atts['style']); ?>"
                 data-model="<?php echo esc_attr($atts['model']); ?>" 
                 data-download="<?php echo esc_attr($atts['download']); ?>" 
-                action="<?php echo admin_url('admin-ajax.php'); ?>">
+                action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>">
                 <input type="hidden" name="aig_prompt" value="<?php echo esc_attr($atts['prompt']); ?>" />
                 <input type="hidden" name="action" value="<?php echo esc_attr($atts['action']); ?>" />
-                <?php echo wp_nonce_field(esc_attr($atts['action'])); ?>
+                <?php echo wp_kses($nonce_field, $allowed_html); ?>
                 <div class="form-group">
                     <fieldset class="aig-topic-buttons">
-                        <legend class="form-label"><?php echo __('Topics:', 'artist-image-generator'); ?></legend>
+                        <legend class="form-label"><?php esc_html_e('Topics:', 'artist-image-generator'); ?></legend>
                         <?php
                         $topics_string = $atts['topics'];
                         if (!empty($topics_string)) {
@@ -158,33 +169,29 @@ class Artist_Image_Generator_Public
                         ?>
                                 <div class="form-check form-check-inline">
                                     <input type="checkbox" name="aig_topics[]" value="<?php echo esc_attr($topic); ?>" class="form-check-input" id="aig_topic_<?php echo esc_attr($topic); ?>">
-                                    <label class="form-check-label" for="aig_topic_<?php echo esc_attr($topic); ?>"><?php echo esc_html($topic); ?></label>
+                                    <label class="form-check-label" for="aig_topic_<?php echo esc_attr($topic); ?>"><?php echo esc_html($topic, 'artist-image-generator'); ?></label>
                                 </div>
                         <?php
                             }
                         }
                         ?>
                     </fieldset>
-                    <small id="aig_topics_help" class="form-text text-muted"><?php echo __('Select one or more topics for image generation.', 'artist-image-generator'); ?></small>
+                    <small id="aig_topics_help" class="form-text text-muted"><?php esc_html_e('Select one or more topics for image generation.', 'artist-image-generator'); ?></small>
                 </div>
                 <hr />
                 <div class="form-group">
-                    <label for="aig_public_prompt" class="form-label"><?php echo __('Description:', 'artist-image-generator');?></label>
-                    <textarea name="aig_public_prompt" id="aig_public_prompt" class="form-control" placeholder="<?php echo __("Enter a description for the image generation (e.g., 'A beautiful cat').", 'artist-image-generator'); ?>"></textarea>
-                    <small id="aig_public_prompt_help" class="form-text text-muted"><?php echo __('Enter a brief description for the image generation.', 'artist-image-generator');?></small>
+                    <label for="aig_public_prompt" class="form-label"><?php esc_html_e('Description:', 'artist-image-generator');?></label>
+                    <textarea name="aig_public_prompt" id="aig_public_prompt" class="form-control" placeholder="<?php esc_html_e("Enter a description for the image generation (e.g., 'A beautiful cat').", 'artist-image-generator'); ?>"></textarea>
+                    <small id="aig_public_prompt_help" class="form-text text-muted"><?php esc_html_e('Enter a brief description for the image generation.', 'artist-image-generator');?></small>
                 </div>
                 <hr class="aig-results-separator" style="display:none" />
                 <div class="aig-errors"></div>
                 <div class="aig-results"></div>
                 <hr />
-                <button type="submit" class="btn btn-primary"><?php echo __('Generate Image / Retry'); ?></button>
-                <?php if (!$plugin_admin->check_license_validity()) : ?>
-                    <p><small id="aig-credits">Powered by <a title="About the plugin" href="https://artist-image-generator.com/" target="_blank">Artist Image Generator</a> -
-                            <a href="https://pierrevieville.fr" title="Visit creator's website" target="_blank">© Pierre V.</a></small></p>
-                <?php endif; ?>
+                <button type="submit" class="btn btn-primary"><?php esc_html_e('Generate Image / Retry'); ?></button>
             </form>
         </div>
-<?php
+    <?php
 
         return ob_get_clean();
     }

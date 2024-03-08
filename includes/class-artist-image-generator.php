@@ -88,6 +88,8 @@ class Artist_Image_Generator {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'libraries/license-sdk/License.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-artist-image-generator-loader.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-artist-image-generator-i18n.php';
+
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-artist-image-generator-notice.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-artist-image-generator-admin.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-artist-image-generator-public.php';
 

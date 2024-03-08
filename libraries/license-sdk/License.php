@@ -182,7 +182,7 @@
 					if ( 'rest_no_route' === $response['code'] ) {
 						$response['data']['status'] = 500;
 					}
-					throw new ErrorException( $response['message'], $response['data']['status'] );
+                    throw new ErrorException( esc_html($response['message']), esc_html($response['data']['status']) );
 				}
 			}
 			
@@ -207,7 +207,7 @@
 						$this->valid_status['error']          = $response['message'];
 						$this->valid_status['nextValidation'] = time();
 						update_option( $this->valid_object, $this->valid_status );
-						throw new ErrorException( $response['message'] );
+                        throw new ErrorException( esc_html($response['message']) );
 					}
 				}
 				
@@ -241,7 +241,7 @@
 				// Generic valid result
 				$valid_result = array(
 					'is_valid' => false,
-					'error'    => __( 'The license has not been activated yet', $this->plugin_name ),
+					'error'    => esc_html__( 'The license has not been activated yet', 'artist-image-generator' ),
 				);
 				
 				$current_time = time();
@@ -264,7 +264,7 @@
 					
 					// If there is no license
 					if ( empty( $license_key ) ) {
-						$valid_result['error'] = __( 'A license has not been submitted', $this->plugin_name );
+						$valid_result['error'] = esc_html__( 'A license has not been submitted', 'artist-image-generator' );
 					} else {
 						try {
 							$response = $this->call( "licenses/{$license_key}" );
@@ -277,12 +277,12 @@
 									! empty( $this->product_ids ) &&
 									! in_array( $response['data']['productId'], $this->product_ids, true )
 								) { // If license key does not belong to the Product id and if not Product id is defined, then this validation is omitted
-									$valid_result['error'] = __( 'The license entered does not belong to this plugin', $this->plugin_name );
+									$valid_result['error'] = esc_html__( 'The license entered does not belong to this plugin', 'artist-image-generator' );
 								} elseif ( // Check that the license has not reached the expiration date. If no expiration date is set, omit this
 									$this->valid_status['valid_until'] !== null &&
 									$this->valid_status['valid_until'] < $current_time
 								) {
-									$valid_result['error'] = __( 'The license expired', $this->plugin_name );
+									$valid_result['error'] = esc_html__( 'The license expired', 'artist-image-generator' );
 								} else {
 									$valid_result['is_valid'] = true;
 									$valid_result['error']    = '';

@@ -13,11 +13,11 @@
  */
 ?>
 <div class="wrap">
-    <h1><?php echo esc_html( __( 'Artist Image Generator', 'artist-image-generator' ) ); ?></h1>
+    <h1><?php echo esc_html__( 'Artist Image Generator', 'artist-image-generator' ); ?></h1>
     <h2 class="nav-tab-wrapper">
         <?php foreach ( $this->admin_actions as $action ) : ?>
             <a id="menu-item-<?php echo esc_attr( $action ); ?>" href="<?php echo esc_url( $this->get_admin_tab_url( $action ) ); ?>" class="nav-tab <?php echo esc_attr( $this->is_tab_active( $action, true ) ); ?>">
-                <?php echo __($this->admin_actions_labels[$action], 'artist-image-generator'); ?>
+                <?php echo esc_html($this->admin_actions_labels[$action]); ?>
             </a>
         <?php endforeach; ?>
     </h2>
