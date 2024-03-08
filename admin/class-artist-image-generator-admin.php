@@ -243,10 +243,11 @@ class Artist_Image_Generator_Admin
             return $links;
         }
 
-        array_unshift(
-            $links,
-            sprintf('<a href="%1$s">%2$s</a>', $this->get_admin_tab_url(self::ACTION_SETTINGS), esc_html__(ucfirst(self::ACTION_SETTINGS), 'artist-image-generator'))
-        );
+        $link = '<a href="' . esc_url($this->get_admin_tab_url(self::ACTION_SETTINGS)) . '">';
+        $link .= esc_html__('Settings', 'artist-image-generator');
+        $link .= '</a>';
+
+        array_unshift($links, $link);
 
         return $links;
     }
@@ -260,7 +261,7 @@ class Artist_Image_Generator_Admin
     {
         add_media_page(
             $this->plugin_full_name,
-            __('Image Generator', 'artist-image-generator'),
+            esc_html__('Image Generator', 'artist-image-generator'),
             'manage_options',
             $this->prefix,
             [$this, 'admin_page']
@@ -336,26 +337,29 @@ class Artist_Image_Generator_Admin
     }
 
     public function display_admin_notices() {
-        $icon = '<img width="20px" src="' . plugin_dir_url(__FILE__) . '/img/aig-icon.png' .'" alt="Artist Image Generator Icon" />';
-        if (get_option($this->prefix . '_aig_license_invalid_or_expired') == 'display') {
-            $hide_url = add_query_arg($this->prefix . '_hide_notice', 'invalid_or_expired');
-            echo '<div class="notice aig-notice notice-error is-dismissible">
-                <p>' . $icon . __('Your <strong>Artist Image Generator</strong> license key is expired or invalid. <a target="_blank" href="https://artist-image-generator.com/product/licence-key/">Renew your key now</a>.', 'artist-image-generator') . '</p>
-                <p><a href="' . esc_url($hide_url) . '">' . __('Hide this notice', 'artist-image-generator') . '</a></p>
-            </div>';
+        if (get_option($this->prefix . '_aig_license_invalid_or_expired') === 'display') {
+            $hide_url = esc_url(add_query_arg($this->prefix . '_hide_notice', 'invalid_or_expired'));
+            $message = __('Your Artist Image Generator license key is expired or invalid.');
+            $message.= ' <a target="_blank" href="'.esc_url('https://artist-image-generator.com/product/licence-key/').'">';
+            $message.= __('Renew your key now', 'artist-image-generator');
+            $message.= '</a>.';
+            $notice = new Artist_Image_Generator_Notice($message, 'error', true, true, $hide_url);
+            $notice->display();
             return;
         }
-    
-        if (get_option($this->prefix . '_aig_license_expiring_soon') == 'display') {
+
+        if (get_option($this->prefix . '_aig_license_expiring_soon') === 'display') {
             $expire_date = date_i18n(get_option('date_format'), $this->sdk_license->valid_until());
-            $hide_url = add_query_arg($this->prefix . '_hide_notice', 'expiring_soon');
-            echo '<div class="notice aig-notice notice-warning is-dismissible">
-                <p>' . $icon . sprintf(__('Your <strong>Artist Image Generator</strong> license key is expiring on %s. <a target="_blank" href="%s">Renew your key now</a>.', 'artist-image-generator'), $expire_date, 'https://artist-image-generator.com/product/licence-key/') . '</p>
-                <p><a href="' . esc_url($hide_url) . '">' . __('Hide this notice', 'artist-image-generator') . '</a></p>
-            </div>';
+            $hide_url = esc_url(add_query_arg($this->prefix . '_hide_notice', 'expiring_soon'));
+            $message = __('Your Artist Image Generator license key is expiring on ') . esc_html($expire_date) . '.';
+            $message.= ' <a target="_blank" href="'.esc_url('https://artist-image-generator.com/product/licence-key/').'">';
+            $message.= __('Renew your key now', 'artist-image-generator');
+            $message.= '</a>.';
+            $notice = new Artist_Image_Generator_Notice($message, 'warning', true, true, $hide_url);
+            $notice->display();
         }
     }
-    
+
     public function hide_admin_notices() {
         if (isset($_GET[$this->prefix . '_hide_notice'])) {
             update_option($this->prefix . '_aig_license_' . sanitize_text_field($_GET[$this->prefix . '_hide_notice']), 'hidden');
@@ -377,7 +381,7 @@ class Artist_Image_Generator_Admin
 
         add_settings_section(
             $this->prefix . '_setting_section', // id
-            __('Settings', 'artist-image-generator'), // title
+            esc_html__('Settings', 'artist-image-generator'), // title
             array($this, 'section_info'), // callback
             $this->prefix . '-admin' // page
         );
@@ -426,7 +430,7 @@ class Artist_Image_Generator_Admin
                 add_settings_error(
                     $this->prefix . '_option_name',
                     'invalid_license',
-                    __("Invalid licence key", 'artist-image-generator'),
+                    esc_html__("Invalid licence key", 'artist-image-generator'),
                     'error'
                 );
 
@@ -452,7 +456,7 @@ class Artist_Image_Generator_Admin
                     add_settings_error(
                         $this->prefix . '_option_name',
                         'valid_license',
-                        __('License key is valid and was activated', 'artist-image-generator'),
+                        esc_html__('License key is valid and was activated', 'artist-image-generator'),
                         'updated'
                     );
                 }
@@ -480,10 +484,11 @@ class Artist_Image_Generator_Admin
      */
     public function openai_api_key_0_callback(): void
     {
-        printf(
-            '<input class="regular-text" type="text" name="' . $this->prefix . '_option_name[' . $this->prefix . '_openai_api_key_0]" id="' . $this->prefix . '_openai_api_key_0" value="%s">',
-            isset($this->options[$this->prefix . '_openai_api_key_0']) ? esc_attr($this->options[$this->prefix . '_openai_api_key_0']) : ''
-        );
+        $name = $this->prefix . '_option_name[' . $this->prefix . '_openai_api_key_0]';
+        $id = $this->prefix . '_openai_api_key_0';
+        $value = isset($this->options[$this->prefix . '_openai_api_key_0']) ? $this->options[$this->prefix . '_openai_api_key_0'] : '';
+
+        echo '<input class="regular-text" type="text" name="' . esc_attr($name) . '" id="' . esc_attr($id) . '" value="' . esc_attr($value) . '">';
     }
 
     /**
@@ -493,10 +498,11 @@ class Artist_Image_Generator_Admin
      */
     public function aig_licence_key_0_callback(): void
     {
-        printf(
-            '<input class="regular-text" type="text" name="' . $this->prefix . '_option_name[' . $this->prefix . '_aig_licence_key_0]" id="' . $this->prefix . '_aig_licence_key_0" value="%s">',
-            isset($this->options[$this->prefix . '_aig_licence_key_0']) ? esc_attr($this->options[$this->prefix . '_aig_licence_key_0']) : ''
-        );
+        $name = $this->prefix . '_option_name[' . $this->prefix . '_aig_licence_key_0]';
+        $id = $this->prefix . '_aig_licence_key_0';
+        $value = isset($this->options[$this->prefix . '_aig_licence_key_0']) ? $this->options[$this->prefix . '_aig_licence_key_0'] : '';
+
+        echo '<input class="regular-text" type="text" name="' . esc_attr($name) . '" id="' . esc_attr($id) . '" value="' . esc_attr($value) . '">';
     }
 
     /**
@@ -550,13 +556,13 @@ class Artist_Image_Generator_Admin
             if ($is_generation) {
                 if (empty($prompt_input)) {
                     $error = [
-                        'msg' => __('The Prompt input must be filled in order to generate an image.', 'artist-image-generator')
+                        'msg' => esc_html__('The Prompt input must be filled in order to generate an image.', 'artist-image-generator')
                     ];
                 } else {
                     $response = $this->generate($prompt_input, $n_input, $size_input, $model, $quality_input, $style_input);
                 }
             } elseif ($is_variation) {
-                $errorMsg = __('A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', 'artist-image-generator');
+                $errorMsg = esc_html__('A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', 'artist-image-generator');
                 $image_file = isset($_FILES['image']) && $_FILES['image']['size'] > 0 ? $_FILES['image'] : null;
 
                 if (empty($image_file)) {
@@ -574,7 +580,7 @@ class Artist_Image_Generator_Admin
                     }
                 }
             } elseif ($is_edit && $this->check_license_validity()) {
-                $errorMsg = __('A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', 'artist-image-generator');
+                $errorMsg = esc_html__('A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.', 'artist-image-generator');
                 $image_file = isset($_FILES['image']) && $_FILES['image']['size'] > 0 ? $_FILES['image'] : null;
                 $mask_file = isset($_FILES['mask']) && $_FILES['mask']['size'] > 0 ? $_FILES['mask'] : null;
 
@@ -679,7 +685,7 @@ class Artist_Image_Generator_Admin
         $open_ai = new OpenAi($this->options[$this->prefix . '_openai_api_key_0']);
         $tmp_file = $image_file['tmp_name'];
         $file_name = basename($image_file['name']);
-        $image = curl_file_create($tmp_file, $image_file['type'], $file_name);
+        $image = new CURLFile($tmp_file, $image_file['type'], $file_name);
         $result = $open_ai->createImageVariation([
             //"model" => self::DALL_E_MODEL_3,
             "image" => $image,
@@ -709,11 +715,11 @@ class Artist_Image_Generator_Admin
         $open_ai = new OpenAi($this->options[$this->prefix . '_openai_api_key_0']);
         $tmp_file = $image_file['tmp_name'];
         $file_name = basename($image_file['name']);
-        $image = curl_file_create($tmp_file, $image_file['type'], $file_name);
+        $image = new CURLFile($tmp_file, $image_file['type'], $file_name);
 
         $tmp_file_mask = $mask_file['tmp_name'];
         $file_name_mask = basename($mask_file['name']);
-        $mask = curl_file_create($tmp_file_mask, $mask_file['type'], $file_name_mask);
+        $mask = new CURLFile($tmp_file_mask, $mask_file['type'], $file_name_mask);
 
         $result = $open_ai->imageEdit([
             //"model" => self::DALL_E_MODEL_3,
@@ -768,8 +774,7 @@ class Artist_Image_Generator_Admin
             $extension = $mime_extensions[$mime] ?? false;
 
             if (!$extension) {
-                // Could not identify extension
-                @unlink($tmp);
+                wp_delete_file($tmp);
                 return false;
             }
         }
@@ -783,8 +788,7 @@ class Artist_Image_Generator_Admin
         // Do the upload
         $attachment_id = media_handle_sideload($args, 0, $alt);
 
-        // Cleanup temp file
-        @unlink($tmp);
+        wp_delete_file($tmp);
 
         // Error uploading
         if (is_wp_error($attachment_id)) {
@@ -836,8 +840,7 @@ class Artist_Image_Generator_Admin
             $extension = $mime_extensions[$mime] ?? false;
 
             if (!$extension) {
-                // Could not identify extension
-                @unlink($tmp);
+                wp_delete_file($tmp);
                 return false;
             }
         }
@@ -847,9 +850,7 @@ class Artist_Image_Generator_Admin
         $filesystem = new WP_Filesystem_Direct(true);
         $imageData = $filesystem->get_contents($tmp);
                 
-        // Cleanup temp file
-        @unlink($tmp);
-        
+        wp_delete_file($tmp);
         wp_send_json_success(['base_64' => base64_encode($imageData)]);
 
         if (defined('DOING_AJAX') && DOING_AJAX) {
@@ -951,16 +952,15 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-generate">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
-                <div class="notice notice-info aig-notice">
-                    <p>
-                        <img width="20px" src="<?php echo plugin_dir_url(__FILE__) . '/img/aig-icon.png'; ?>" alt="Artist Image Generator Icon" />
-                        <strong><?php esc_attr_e('Generate', 'artist-image-generator'); ?>:</strong> 
-                        <?php esc_attr_e('Create images from text-to-image.', 'artist-image-generator'); ?>
-                        <a target="_blank" href="https://youtu.be/msd81YXw5J8" title="Video demo">
-                            <?php esc_attr_e('Watch the demo', 'artist-image-generator'); ?>
-                        </a>
-                    </p>
-                </div>
+                <?php
+                $message = '<strong>' . esc_html__('Generate', 'artist-image-generator') . ':</strong> ' . 
+                        esc_html__('Create images from text-to-image.', 'artist-image-generator') . 
+                        ' <a target="_blank" href="https://youtu.be/msd81YXw5J8" title="Video demo">' . 
+                        esc_html__('Watch the demo', 'artist-image-generator') . '</a>';
+
+                $notice = new Artist_Image_Generator_Notice($message, 'info', false, true);
+                $notice->display();
+                ?>
                 <div class="aig-container aig-container-2">
                     <div class="aig-inner-left">
                         <table class="form-table" role="presentation">
@@ -982,16 +982,15 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-variate">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
-                <div class="notice notice-info aig-notice">
-                    <p>
-                        <img width="20px" src="<?php echo plugin_dir_url(__FILE__) . '/img/aig-icon.png'; ?>" alt="Artist Image Generator Icon" />
-                        <strong><?php esc_attr_e('Variate', 'artist-image-generator'); ?>:</strong> 
-                        <?php esc_attr_e('Make image variations from an existing one.', 'artist-image-generator'); ?>
-                        <a target="_blank" href="https://youtu.be/FtGFMsLTxYw" title="Video demo">
-                            <?php esc_attr_e('Watch the demo', 'artist-image-generator'); ?>
-                        </a>
-                    </p>
-                </div>
+                <?php
+                $message = '<strong>' . esc_html__('Variate', 'artist-image-generator') . ':</strong> ' . 
+                        esc_html__('Make image variations from an existing one.', 'artist-image-generator') . 
+                        ' <a target="_blank" href="https://youtu.be/FtGFMsLTxYw" title="Video demo">' . 
+                        esc_html__('Watch the demo', 'artist-image-generator') . '</a>';
+
+                $notice = new Artist_Image_Generator_Notice($message, 'info', true, true);
+                $notice->display();
+                ?>
                 <div class="history-container"></div>
                 <div class="aig-container aig-container-2">
                     <div class="aig-inner-left">
@@ -1014,16 +1013,15 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-edit">
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="notice-container"></div>
-                <div class="notice notice-info aig-notice">
-                    <p>
-                        <img width="20px" src="<?php echo plugin_dir_url(__FILE__) . '/img/aig-icon.png'; ?>" alt="Artist Image Generator Icon" />
-                        <strong><?php esc_attr_e('Edit', 'artist-image-generator'); ?>:</strong> 
-                        <?php esc_attr_e('Customize existing images and generate a full new one.', 'artist-image-generator'); ?>
-                        <a target="_blank" href="https://youtu.be/zfK1yJk9gRc" title="Video demo">
-                            <?php esc_attr_e('Watch the demo', 'artist-image-generator'); ?>
-                        </a>
-                    </p>
-                </div>
+                <?php
+                $message = '<strong>' . esc_html__('Edit', 'artist-image-generator') . ':</strong> ' . 
+                        esc_html__('Customize existing images and generate a full new one.', 'artist-image-generator') . 
+                        ' <a target="_blank" href="https://youtu.be/zfK1yJk9gRc" title="Video demo">' . 
+                        esc_html__('Watch the demo', 'artist-image-generator') . '</a>';
+
+                $notice = new Artist_Image_Generator_Notice($message, 'info', false, true);
+                $notice->display();
+                ?>
                 <div class="history-container"></div>
                 <div class="aig-container aig-container-2">
                     <div class="aig-inner-left">
@@ -1098,15 +1096,15 @@ class Artist_Image_Generator_Admin
                     <p><a href="https://github.com/Immolare/artist-image-generator" target="_blank" title="Visit Github">Feedback and donation</a> are welcome !</p>
                 </div>
                 <div class="card">
-                    <h2 class="title"><?php esc_attr_e('Exemple: Rendering the shortcode into a page', 'artist-image-generator'); ?></h2>
-                    <p><?php esc_attr_e('The shortcode:', 'artist-image-generator'); ?></p>
+                    <h2 class="title"><?php esc_html_e('Exemple: Rendering the shortcode into a page', 'artist-image-generator'); ?></h2>
+                    <p><?php esc_html_e('The shortcode:', 'artist-image-generator'); ?></p>
                     <div class="aig-code">
                         [aig prompt="Painting of {public_prompt}, including following criterias: {topics}"
                         topics="Impressionism, Surrealism, Portraits, Landscape Painting, Watercolor Techniques, Oil Painting, Street Art, Hyperrealism, Cat, Dog, Bird, Person"
                         download="manual" model="dall-e-3"]
                     </div>
-                    <p><?php esc_attr_e('The result:', 'artist-image-generator'); ?></p>
-                    <img style="width:100%" src="<?php echo plugin_dir_url(__FILE__) . '/img/aig-public-form.jpg'; ?>" alt="Exemple of form render" />
+                    <p><?php esc_html_e('The result:', 'artist-image-generator'); ?></p>
+                    <img style="width:100%" src="<?php echo esc_url(plugin_dir_url(__FILE__) . '/img/aig-public-form.jpg'); ?>" alt="Exemple of form render" />
                 </div>
 
             </div>
@@ -1120,21 +1118,21 @@ class Artist_Image_Generator_Admin
                 <div class="aig-container aig-container-3">
                     <div class="card">
                         <h2 class="title">
-                            <?php esc_attr_e('How to get your OpenAI API key ?', 'artist-image-generator'); ?>
+                            <?php esc_html_e('How to get your OpenAI API key ?', 'artist-image-generator'); ?>
                         </h2>
                         <p>
-                            1. <?php esc_attr_e('Log in into OpenAI developer portail', 'artist-image-generator'); ?> :
+                            1. <?php esc_html_e('Log in into OpenAI developer portail', 'artist-image-generator'); ?> :
                             <a target="_blank" title="OpenAI Developer Portail" href="https://openai.com/api/">https://openai.com/api/</a>
                         </p>
                         <p>
-                            2. <?php esc_attr_e('Create a new secret key', 'artist-image-generator'); ?> :
+                            2. <?php esc_html_e('Create a new secret key', 'artist-image-generator'); ?> :
                             <a target="_blank" title="OpenAI - API keys" href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a>
                         </p>
                         <p>
-                            3. <?php esc_attr_e('Copy/paste the secret key in the OPENAI_KEY field.', 'artist-image-generator'); ?>
+                            3. <?php esc_html_e('Copy/paste the secret key in the OPENAI_KEY field.', 'artist-image-generator'); ?>
                         </p>
                         <p>
-                            4. <?php esc_attr_e('Press "Save changes" and you are done.', 'artist-image-generator'); ?>
+                            4. <?php esc_html_e('Press "Save changes" and you are done.', 'artist-image-generator'); ?>
                         </p>
                         <hr/>
                         <?php settings_errors(); ?>
@@ -1171,14 +1169,14 @@ class Artist_Image_Generator_Admin
                 <div class="aig-container aig-container-3">
                     <div class="card">
                         <h2 class="title">
-                            <?php echo esc_attr($this->plugin_full_name); ?>
+                            <?php echo esc_html($this->plugin_full_name); ?>
                         </h2>
                         <p>
                             <strong>This plugin was created by me, <a href="https://www.pierrevieville.fr" title="Visit website" target="_blank">Pierre Viéville</a>.</strong>
                         </p>
                         <p>
                             I have been a freelance developer for 10 years.
-                            <strong><?php echo esc_attr($this->plugin_full_name); ?></strong> is my first Wordpress plugin. I want to help the Wordpress community to improve the creativity of their content.
+                            <strong><?php echo esc_html($this->plugin_full_name); ?></strong> is my first Wordpress plugin. I want to help the Wordpress community to improve the creativity of their content.
                         </p>
                         <p>
                             That's why I made a plugin allowing you to generate <u>royalty-free images</u> that you can use anywhere on your site: media library, blog posts, pages, etc.
@@ -1220,7 +1218,7 @@ class Artist_Image_Generator_Admin
                         <p>
                             Theses things can be done on the
                             <a href="https://github.com/Immolare/<?php echo esc_attr($this->plugin_name); ?>" title="Visit Github" target="_blank">
-                                <?php echo esc_attr($this->plugin_full_name); ?>'s Github page
+                                <?php echo esc_html($this->plugin_full_name); ?>'s Github page
                             </a>.
                         </p>
                         <p>
@@ -1237,7 +1235,7 @@ class Artist_Image_Generator_Admin
         <script type="text/html" id="tmpl-artist-image-generator-notice">
             <# if ( data.error && data.error.msg ) { #>
                 <div class="notice notice-error inline" style="margin-top:15px;">
-                    <p><?php echo esc_html('{{ data.error.msg }}'); ?></p>
+                    <p><?php esc_html_e('{{ data.error.msg }}'); ?></p>
                 </div>
                 <# } #>
         </script>
@@ -1364,8 +1362,8 @@ class Artist_Image_Generator_Admin
                 </th>
                 <td>
                     <select name="model" id="model">
-                        <option value="" {{ is_selected_dalle2 }}><?php echo self::DALL_E_MODEL_2; ?></option>
-                        <option value="dall-e-3" {{ is_selected_dalle3 }}><?php echo self::DALL_E_MODEL_3; ?></option>
+                        <option value="" {{ is_selected_dalle2 }}><?php echo esc_html(self::DALL_E_MODEL_2); ?></option>
+                        <option value="dall-e-3" {{ is_selected_dalle3 }}><?php echo esc_html(self::DALL_E_MODEL_3); ?></option>
                     </select>
                 </td>
             </tr>

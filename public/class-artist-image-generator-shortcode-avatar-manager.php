@@ -31,7 +31,7 @@ class Artist_Image_Generator_Shortcode_Avatar_Manager {
     public function change()
     {
         if (!is_user_logged_in()) {
-            wp_send_json_error('User not logged in.');
+            wp_send_json_error(esc_html__('User not logged in.'));
             return;
         }
 
@@ -44,7 +44,7 @@ class Artist_Image_Generator_Shortcode_Avatar_Manager {
             update_user_meta($current_user_id, '_aig_user_avatar', $attachment_id);
             $this->process($attachment_id, $current_user_id);
 
-            wp_send_json(array('success' => true, 'message' => __('Your profile picture changed successfully.', 'artist-image-generator')));
+            wp_send_json(array('success' => true, 'message' => esc_html__('Your profile picture changed successfully.', 'artist-image-generator')));
         } catch (Exception $e) {
             error_log('Exception: ' . $e->getMessage());
             wp_send_json_error($e->getMessage());
@@ -90,7 +90,7 @@ class Artist_Image_Generator_Shortcode_Avatar_Manager {
         $attachment_id = media_sideload_image($image_url, 0, null, 'id');
 
         if (!$attachment_id) {
-            throw new Exception(__('Error downloading the image.', 'artist-image-generator'));
+            throw new Exception(esc_html__('Error downloading the image.', 'artist-image-generator'));
         }
 
         return $attachment_id;

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-15 15:24+0100\n"
-"PO-Revision-Date: 2024-03-08 22:12+0000\n"
+"PO-Revision-Date: 2024-02-15 14:57+0000\n"
 "Last-Translator: \n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 #: admin/class-artist-image-generator-admin.php:1161
 msgid " / Alt text"
-msgstr "/ Texte alternatif"
+msgstr "/ Texte Alt"
 
 #: admin/class-artist-image-generator-admin.php:476
 #: admin/class-artist-image-generator-admin.php:494
