@@ -89,8 +89,15 @@ class Artist_Image_Generator {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-artist-image-generator-loader.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-artist-image-generator-i18n.php';
 
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-artist-image-generator-constant.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-artist-image-generator-license.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-artist-image-generator-setter.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-artist-image-generator-dalle.php';
+        
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-artist-image-generator-tab.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-artist-image-generator-notice.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-artist-image-generator-admin.php';
+        
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-artist-image-generator-public.php';
 
 		$this->loader = new Artist_Image_Generator_Loader();

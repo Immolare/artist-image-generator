@@ -15,13 +15,13 @@
 <div class="wrap">
     <h1><?php echo esc_html__( 'Artist Image Generator', 'artist-image-generator' ); ?></h1>
     <h2 class="nav-tab-wrapper">
-        <?php foreach ( $this->admin_actions as $action ) : ?>
+        <?php foreach ( Artist_Image_Generator_Constant::ADMIN_ACTIONS as $action ) : ?>
             <a id="menu-item-<?php echo esc_attr( $action ); ?>" href="<?php echo esc_url( $this->get_admin_tab_url( $action ) ); ?>" class="nav-tab <?php echo esc_attr( $this->is_tab_active( $action, true ) ); ?>">
-                <?php echo esc_html($this->admin_actions_labels[$action]); ?>
+                <?php echo esc_html(Artist_Image_Generator_Constant::ADMIN_ACTIONS_LABELS[$action]); ?>
             </a>
         <?php endforeach; ?>
     </h2>
-    <?php foreach ( $this->admin_actions as $action ) : ?>
+    <?php foreach ( Artist_Image_Generator_Constant::ADMIN_ACTIONS as $action ) : ?>
         <?php if ( $this->is_tab_active( $action ) ) : ?>
             <div id="tab-container-aig-<?php echo esc_attr( $action ); ?>" class="tab-container-aig-<?php echo esc_attr( $action ); ?>"></div>
         <?php endif; ?>

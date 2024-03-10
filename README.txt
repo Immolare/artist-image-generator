@@ -4,7 +4,7 @@ Tags: AI, openai, DALL·E, image, avatar
 Requires at least: 5.3
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://artist-image-generator.com/#donate
@@ -230,6 +230,9 @@ Yes, Artist Image Generator is perfect for creating visuals for your blog and ar
 While Artist Image Generator is primarily designed for digital content, you can use the generated images for print materials as well. However, please be aware that the image quality and resolution might not be optimal for high-quality print purposes. It is recommended to test the images before using them in print projects.
 
 == Changelog ==
+1.1.0 - 2024-03-10
+- Refacto
+
 1.1.0 - 2024-03-08
 - Update Translations
 - Code improvements
