@@ -1,4 +1,9 @@
 <?php
+
+use Artist_Image_Generator_License as License;
+use Artist_Image_Generator_Setter as Setter;
+use Artist_Image_Generator_Dalle as Dalle;
+
 /**
  * The public-facing functionality of the plugin.
  * 
@@ -16,7 +21,6 @@ class Artist_Image_Generator_Public
 {
     private $plugin_name;
     private $version;
-    private $plugin_admin;
     private $avatar_manager;
     private $data_validator;
 
@@ -46,7 +50,6 @@ class Artist_Image_Generator_Public
 
         $this->include_required_files();
 
-        $this->plugin_admin = new Artist_Image_Generator_Admin($this->plugin_name, $this->version);
         $this->avatar_manager = new Artist_Image_Generator_Shortcode_Avatar_Manager();
         $this->data_validator = new Artist_Image_Generator_Shortcode_Data_Validator();
     }
@@ -59,12 +62,31 @@ class Artist_Image_Generator_Public
 
     public function generate_image()
     {
-        $data = $this->plugin_admin->do_post_request();
+        $post_data = [];
+        $dalle = new Dalle();
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && Setter::is_setting_up()) {
+            $post_data = $dalle->sanitize_post_data();
+
+            if (isset($post_data['generate'])) {
+                $response = $dalle->handle_generation($post_data);
+            } elseif (isset($post_data['variate'])) {
+                $response = $dalle->handle_variation($post_data);
+            } elseif (isset($post_data['edit']) && License::license_check_validity()) {
+                $response = $dalle->handle_edit($post_data);
+            }
+
+            if (isset($response)) {
+                list($images, $error) = $dalle->handle_response($response);
+            }
+        }
+
+        $data = $dalle->prepare_data($images ?? [], $error ?? [], $post_data);
 
         if (wp_doing_ajax()) {
             wp_send_json($data);
             wp_die();
-        }
+        }    
     }
 
     public function enqueue_styles()
@@ -124,9 +146,9 @@ class Artist_Image_Generator_Public
         );
     }
 
-    private function generate_shortcode_html($atts, $plugin_admin)
+    private function generate_shortcode_html($atts)
     {
-        if (!$plugin_admin->check_license_validity() && esc_attr($atts['model']) === 'dall-e-3') {
+        if (!License::license_check_validity() && esc_attr($atts['model']) === 'dall-e-3') {
             $atts['n'] = 1;    
         }
 
@@ -203,6 +225,6 @@ class Artist_Image_Generator_Public
         // Validate attributs
         $this->validate_atts($atts);
 
-        return $this->generate_shortcode_html($atts, $this->plugin_admin);
+        return $this->generate_shortcode_html($atts);
     }
 }

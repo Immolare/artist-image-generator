@@ -39,6 +39,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 n: form.getAttribute("data-n"),
                 size: form.getAttribute("data-size"),
                 model: form.getAttribute("data-model"),
+                style: form.getAttribute("data-style"),
+                quality: form.getAttribute("data-quality"),
                 download: form.getAttribute("data-download"),
                 prompt: promptWithValues,
                 public_prompt: publicPrompt,
@@ -72,24 +74,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
             try {
                 const responses = await Promise.all(requests);
-                const errors = [];
+                // Merge all responses
                 const mergedResponse = responses.reduce((acc, response) => {
-                    if (response.error && response.error.msg) {
-                        errors.push(response.error.msg);
+                    if (response.error && response.error.message) {
+                        acc.errors.push(response.error.message);
                     }
                     if (response.images && response.images.length > 0) {
                         acc.images = acc.images.concat(response.images);
                     }
                     return acc;
-                }, { images: [] });
+                }, {images: [], errors: []});
         
                 overlay.style.display = "none";
                 document.querySelector(".aig-results-separator").style.display = 'block';
-
-                const errorContainer = document.querySelector(".aig-errors");
-                if (errors.length > 0) {
-                    errorContainer.innerHTML = errors.join('<br>');
-                }
 
                 const imageContainer = document.createElement("div");
                 imageContainer.className = "custom-row";
@@ -175,9 +172,15 @@ document.addEventListener("DOMContentLoaded", function () {
     
                     });
                 }
+
+                if (mergedResponse.errors && mergedResponse.errors.length > 0) {
+                    const errorContainer = document.querySelector(".aig-errors");
+                    errorContainer.innerHTML = mergedResponse.errors.join('<br>');
+                }
+
         
             } catch (error) {
-                console.error("Erreur lors de la requête API :", error);
+                console.error("API Request Error :", error);
             }
         });
     }

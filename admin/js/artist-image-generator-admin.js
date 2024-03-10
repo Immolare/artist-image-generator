@@ -25,7 +25,7 @@
         "": { sizes: ["256x256", "512x512", "1024x1024"], nValues: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], qualities:[], styles:[] },
         "dall-e-3": { 
             sizes: ["1024x1024", "1024x1792", "1792x1024"], 
-            nValues: aig_ajax_object.valid_licence ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] : [1], 
+            nValues: aig_ajax_object.valid_license ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] : [1], 
             qualities:['standard','hd'], 
             styles:['vivid','natural'] 
         },
@@ -160,7 +160,7 @@
                 this.content.set(view);
                         
                 let viewTemplate = TEMPLATES[view.action];
-                if(view.action === "edit" && !aig_ajax_object.valid_licence) {
+                if(view.action === "edit" && !aig_ajax_object.valid_license) {
                     viewTemplate = TEMPLATES.editDemo;
                 }
 
@@ -226,17 +226,16 @@
          // Wait for all requests to complete
          return Promise.all(requests)
              .then(responses => {
-                const errors = [];
-             // Merge all responses
-             const mergedResponse = responses.reduce((acc, response) => {
-                if (response.error && response.error.msg) {
-                    errors.push(response.error.msg);
+            // Merge all responses
+            const mergedResponse = responses.reduce((acc, response) => {
+                if (response.error && response.error.message) {
+                    acc.errors.push(response.error.message);
                 }
-                 if (response.images && response.images.length > 0) {
-                     acc.images = acc.images.concat(response.images);
-                 }
-                 return acc;
-             }, {images: []});
+                if (response.images && response.images.length > 0) {
+                    acc.images = acc.images.concat(response.images);
+                }
+                return acc;
+            }, {images: [], errors: []});
 
             $form.find('.spinner').remove();
                  
@@ -262,7 +261,7 @@
             
                 localStorage.setItem('aig-image-history', JSON.stringify(imageHistory));
             }
- 
+                  
             return mergedResponse;
          })
          .catch(function (jqXHR, textStatus, errorThrown) {
@@ -307,7 +306,7 @@
             if ($(TAB_SELECTORS[key]).length) {
                 let viewTemplate = TEMPLATES[key];
 
-                if (key === 'edit' && !aig_ajax_object.valid_licence) {
+                if (key === 'edit' && !aig_ajax_object.valid_license) {
                     viewTemplate = TEMPLATES.editDemo;
                 }
 
@@ -316,7 +315,7 @@
                             
                     if (key === 'generate' ||
                         key === 'variate' ||
-                        (key === 'edit' && aig_ajax_object.valid_licence)){
+                        (key === 'edit' && aig_ajax_object.valid_license)){
                         $(TAB_SELECTORS[key]).off('submit').on('submit', 'form', function (e) {
                             handleFormSubmit(e, this).then(function (data) {
                                 $(TAB_SELECTORS[key]).find('.notice-container').empty().append(TEMPLATES.notice(data));
@@ -397,7 +396,7 @@
             $tab.find('.notice-container').append(TEMPLATES.notice(data));
             $tab.find('.result-container').append(TEMPLATES.result(data));
     
-            if (tabClass === TAB_CONTAINERS.variate || (tabClass === TAB_CONTAINERS.edit && aig_ajax_object.valid_licence)) {
+            if (tabClass === TAB_CONTAINERS.variate || (tabClass === TAB_CONTAINERS.edit && aig_ajax_object.valid_license)) {
                 addInputFileCropperHandler();
             }
         }
@@ -1259,14 +1258,17 @@
     // Initialize ///////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    
     loadAsyncScript(aig_ajax_object.cropper_script_path, 'cropper', '1.6.1')
-        .then(() => loadAsyncScript(aig_ajax_object.drawing_tool_script_path, 'drawing', '5.3.0'))
+    .then(() => loadAsyncScript(aig_ajax_object.drawing_tool_script_path, 'drawing', '5.3.0'))
         .then(() => {
-            if (aig_ajax_object.is_media_editor) {
-                initAdminMediaModal();
-            } else {
-                initAdminPage();
-            }
-        })
-        .catch(error => console.error(error));
+        if (aig_ajax_object.is_media_editor) {
+            initAdminMediaModal();
+        } else {
+            initAdminPage();
+        }
+    })
+    .catch(error => console.error(error));
+
+
 })(jQuery);
