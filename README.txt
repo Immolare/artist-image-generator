@@ -1,19 +1,17 @@
 === Artist Image Generator: DALL·E AI-Driven Image & Avatar Creator ===
 Contributors: Immolare
-Tags: ai, dalle, image, avatar, featured image
+Tags: AI, openai, DALL·E, image, avatar
 Requires at least: 5.3
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://artist-image-generator.com/#donate
 
-AI Image Generator. Create blog featured images or product visual art. Try DALL-E, build tools like avatars generator, themed tattoo ideas.
-
 == Description ==
 
-Looking for a way to create unique and engaging visual content with AI? Try DALL-E right into WordPress with Artist Image Generator. Generate high-quality and distinctive visual content for your featured images, blog posts, page and so on. If you want to sell visual art or just add illustration to a product, the plugin use Artificial Intelligence technology to generate stunning royalty-free images and avatars based on text or through images variations.
+Looking for a way to create unique and engaging visual content for your website? Look no further than Artist Image Generator, a powerful WordPress plugin that harnesses the power of OpenAI's DALL·E technology to generate stunning, royalty-free images and avatars.
 
 With Artist Image Generator, you can easily **create custom illustrations for your posts, pages, and products, transforming any image from the internet into your own personalized creation**. Plus, with **AI-based image generator tools available through shortcodes, you can offer your visitors a fun and interactive way to generate their own images**, such as a [tattoo idea generator](https://artist-image-generator.com/tatoo-ai-generator-tool-wordpress/).
 
@@ -29,6 +27,7 @@ Thank you!
 ### New Features !!!
 - Generate up to 10 images using DALL·E 3 model in admin and public topic image generators (pro)
 - The latest generated images are saved for 1 hour and can be saved / used later for variation or edition
+- In shortcodes / topic-based forms, limit user requests number and limit duration - ex: 5 image generation per hour
 
 ### Key Features
 
@@ -36,12 +35,12 @@ Thank you!
 Create unique images from scratch based on text prompts using DALL·E technology. Output variations of existing images or compose your own (pro) to generate unique and royalty-free images.
 
 #### Topic-based AI Image Generator Tool
-Place a topic-based image generator tool on any page using shortcode, allowing visitors to generate images according to predefined topics.
+Place a topic-based image generator tool on any page using shortcode, allowing visitors to generate images according to predefined topics. Visitors can be limited by requests number and duration.
 
 #### Topic-based AI Avatar Generator Tool
-Same as the Image Generator Tool. Place a shortcode anywhere on your website and allow users to create and set their avatar. An alternative to Gravatar, compatible with One User Avatar, Simple Local Avatars.
+Same as the Image Generator Tool. Place a shortcode anywhere on your website and allow users to create and set their avatar. An alternative to Gravatar, compatible with One User Avatar, Simple Local Avatars. Users can be limited by requests number and duration.
 
-#### Topic-based AI Avatar Generator Tool
+#### Use DALL-E Everywhere
 Use the plugin anywhere inside your admin. It is accessible directly from the WordPress Media Manager. Enjoy compatibility with popular page builders, media plugins and Woocommerce.
 
 #### Generation History 
@@ -49,13 +48,10 @@ Latest generated images are stored in local storage for 1 hour, during which tim
 
 ### Premium Features
 
-#### Image Edit
-Edit and extend existing images by drawing a mask and asking DALL·E to generate a new image based on your modifications. This powerful feature allows you to fine-tune your images and create truly unique visuals.
-#### Image Composition
-Compose your main image by uploading other images into it, drawing masks, and asking DALL·E to generate a new image that combines the uploaded images with your original. This feature enables you to create complex and creative designs with ease.
-#### Generate more images with DALL·E 3
-Generate up to 10 images simultaneously instead of 1 using the DALL·E 3 model. This feature allows you to quickly produce multiple images based on a single prompt, saving you time and increasing your productivity. Depending of your server performances. **Available for shortcodes too.**
-
+- **Image Edit**: Edit and extend existing images by drawing a mask and asking DALL·E to generate a new image based on your modifications. This powerful feature allows you to fine-tune your images and create truly unique visuals.
+- **Image Composition**: Compose your main image by uploading other images into it, drawing masks, and asking DALL·E to generate a new image that combines the uploaded images with your original. This feature enables you to create complex and creative designs with ease.
+- **Multiple Image Generation with DALL·E 3**: Generate up to 10 images simultaneously using the DALL·E 3 model. This feature allows you to quickly produce multiple images based on a single prompt, saving you time and increasing your productivity. Available for shortcodes too.
+- **Credits Removal**: Remove Artist Image Generator credits from the shortcodes, giving you full control over the branding and appearance of your generated images and avatars.
 
 **Note:** By purchasing a one-time license for Artist Image Generator, you help maintain and grow the plugin. You'll also benefit from exclusive support and all the new features that will be available in the future. [Purchase a license key here](https://artist-image-generator.com/product/licence-key/)
 
@@ -235,7 +231,12 @@ Yes, Artist Image Generator is perfect for creating visuals for your blog and ar
 While Artist Image Generator is primarily designed for digital content, you can use the generated images for print materials as well. However, please be aware that the image quality and resolution might not be optimal for high-quality print purposes. It is recommended to test the images before using them in print projects.
 
 == Changelog ==
-1.1.0 - 2024-03-10
+1.1.2 - 2024-03-23
+- Update French Translations
+- Add public form param : user_limit
+- Add public form param : user_limit_duration
+
+1.1.1 - 2024-03-10
 - Refacto
 
 1.1.0 - 2024-03-08

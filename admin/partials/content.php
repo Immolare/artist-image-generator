@@ -131,7 +131,7 @@
             <h2 class="title"><?php esc_attr_e('Shortcode (Bêta)', 'artist-image-generator'); ?></h2>
             <p><?php esc_attr_e('To create a public AI image generation form in WordPress, you can use the following shortcode:', 'artist-image-generator'); ?></p>
             <div class="aig-code">
-                [aig prompt="Your custom description here with {topics} and {public_prompt}" topics="Comma-separated list of topics" n="3" size="1024x1024" model="dall-e-3" style="vivid" quality="hd" download="manual"]
+                [aig prompt="Your custom description here with {topics} and {public_prompt}" topics="Comma-separated list of topics" n="3" size="1024x1024" model="dall-e-3" style="vivid" quality="hd" download="manual" user_limit="5" user_limit_duration="3600"]
             </div>
             <p><?php esc_attr_e('Replace "Your custom description here" with your own description, and specify the topics you want to offer as a comma-separated list. You can use the following placeholders in your description:', 'artist-image-generator'); ?></p>
             <ul>
@@ -147,6 +147,11 @@
                 <li>- style : <?php esc_attr_e('Style of the image to generate (e.g., "natural", "vivid". Default is "vivid". Only with dall-e-3).', 'artist-image-generator'); ?></li>
                 <li>- download : <?php esc_attr_e('Download an image or use it as WP profile picture (e.g., "manual", "wp_avatar". Default is "manual").', 'artist-image-generator'); ?></li>
             </ul>
+            <p><?php esc_attr_e('To handle user limitation use the following optional attributes:', 'artist-image-generator'); ?></p>
+            <ul>
+                <li>- user_limit : <?php esc_attr_e('Number of images a user can generate (default is 0, unlimited).', 'artist-image-generator'); ?></li>
+                <li>- user_limit_duration : <?php esc_attr_e('Duration of the user limit in seconds (default is 0, lifetime).', 'artist-image-generator'); ?></li>
+            </ul>
             <p><?php esc_attr_e('Once you have the shortcode ready, you can add it to any page or post in WordPress to display the public AI image generation form.', 'artist-image-generator'); ?></p>
             <p><a href="https://github.com/Immolare/artist-image-generator" target="_blank" title="Visit Github">Feedback and donation</a> are welcome !</p>
         </div>
@@ -154,7 +159,7 @@
             <h2 class="title"><?php esc_html_e('Exemple: Rendering the shortcode into a page', 'artist-image-generator'); ?></h2>
             <p><?php esc_html_e('The shortcode:', 'artist-image-generator'); ?></p>
             <div class="aig-code">
-                [aig prompt="Painting of {public_prompt}, including following criterias: {topics}"
+                [aig prompt="Painting of {public_prompt}, including following criterias: {topics}" user_limit="5" user_limit_duration="86400"
                 topics="Impressionism, Surrealism, Portraits, Landscape Painting, Watercolor Techniques, Oil Painting, Street Art, Hyperrealism, Cat, Dog, Bird, Person"
                 download="manual" model="dall-e-3"]
             </div>

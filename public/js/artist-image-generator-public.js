@@ -34,8 +34,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = {
                 action: form.getAttribute("data-action"),
-                nonce: form.querySelector("input[name='_wpnonce']").value,
+                _ajax_nonce: form.querySelector("input[name='_ajax_nonce']").value,
                 generate: 1,
+                user_limit: form.querySelector("input[name='user_limit']").value,
+                user_limit_duration: form.querySelector("input[name='user_limit_duration']").value,
                 n: form.getAttribute("data-n"),
                 size: form.getAttribute("data-size"),
                 model: form.getAttribute("data-model"),

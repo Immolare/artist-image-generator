@@ -16,7 +16,7 @@
  * Plugin Name:       Artist Image Generator
  * Plugin URI:        https://artist-image-generator.com/
  * Description:       Illustrate posts with Ai images (DALL·E). Text-to-Image, variation, editing. Public image generator & Ai avatars by topics.
- * Version:           1.1.1
+ * Version:           1.1.2
  * Author:            Pierre Viéville
  * Author URI:        https://www.pierrevieville.fr
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'ARTIST_IMAGE_GENERATOR_VERSION', '1.1.1' );
+define( 'ARTIST_IMAGE_GENERATOR_VERSION', '1.1.2' );
 
 /**
  * The code that runs during plugin activation.

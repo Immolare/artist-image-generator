@@ -1,0 +1,297 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Artist Image Generator\n"
+"POT-Creation-Date: 2024-02-15 14:57+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: \n"
+"Language-Team: https://artist-image-generator.com\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;esc_attr_e\n"
+"X-Poedit-SearchPath-0: .\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;"
+
+#: admin/class-artist-image-generator-admin.php:1161
+msgid " / Alt text"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:476
+#: admin/class-artist-image-generator-admin.php:494
+msgid ""
+"A .png square (1:1) image of maximum 4MB needs to be uploaded in order to "
+"generate a variation of this image."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:76
+msgid "About"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1105
+msgid "Add to media library"
+msgstr ""
+
+#. Name of the plugin
+#: admin/partials/main.php:16
+msgid "Artist Image Generator"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:124
+msgid "Cancel"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:123
+msgid "Cancel the zoom"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:981
+msgid "Copy/paste the secret key in the OPENAI_KEY field."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:977
+msgid "Create a new secret key"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:820
+msgid "Create images from text-to-image."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:125
+msgid "Create mask"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:122
+msgid "Crop this zone"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:874
+msgid "Customize existing images and generate a full new one."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1139
+#: admin/class-artist-image-generator-admin.php:1198
+msgid "Depends of the model used."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1163
+msgid "Describe the full new image you want to generate with DALL·E."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:942
+msgid ""
+"Download an image or use it as WP profile picture (e.g., \"manual\", "
+"\"wp_avatar\". Default is \"manual\")."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:873
+msgid "Edit"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:73
+#: admin/class-artist-image-generator-admin.php:119
+msgid "Edit (Pro)"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:126
+msgid "Edit image"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1166
+msgid "Ex: a sunlit indoor lounge area with a pool containing a flamingo"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:948
+msgid "Exemple: Rendering the shortcode into a page"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1118
+msgid "File (.png, .jpg)"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:71
+#: admin/class-artist-image-generator-admin.php:121
+#: admin/class-artist-image-generator-admin.php:819
+msgid "Generate"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:831
+#: admin/class-artist-image-generator-admin.php:858
+#: admin/class-artist-image-generator-admin.php:885
+msgid "Generate Image(s)"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:212
+msgid "GitHub"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:970
+msgid "How to get your OpenAI API key ?"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://github.com/Immolare/artist-image-generator"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://www.pierrevieville.fr"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Illustrate posts with Ai images (DALL·E). Text-to-Image, variation, editing. "
+"Public image generator & Ai avatars by topics."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:248
+msgid "Image Generator"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1099
+msgid "Image N°"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:291
+msgid "Invalid license key. Please enter a valid license key."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:306
+msgid "License activation failed."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:973
+msgid "Log in into OpenAI developer portail"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:847
+msgid "Make image variations from an existing one."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1178
+msgid "Model to use"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1180
+msgid "More about DALL·E 3 model."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1138
+msgid "Number of images"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:939
+msgid "Number of images to generate (default is 3, maximum 10)."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:944
+msgid ""
+"Once you have the shortcode ready, you can add it to any page or post in "
+"WordPress to display the public AI image generation form."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:941
+msgid ""
+"OpenAi model to use (e.g., \"dall-e-2\", \"dall-e-3\". Default is \"dall-e-"
+"2\")."
+msgstr ""
+
+#. Author of the plugin
+msgid "Pierre Viéville"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:984
+msgid "Press \"Save changes\" and you are done."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1160
+msgid "Prompt"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:932
+msgid ""
+"Replace \"Your custom description here\" with your own description, and "
+"specify the topics you want to offer as a comma-separated list. You can use "
+"the following placeholders in your description:"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:211
+msgid "Review"
+msgstr ""
+
+#. id
+#: admin/class-artist-image-generator-admin.php:75
+#: admin/class-artist-image-generator-admin.php:328
+msgid "Settings"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:927
+msgid "Shortcode (Bêta)"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:74
+#: admin/class-artist-image-generator-admin.php:120
+msgid "Shortcodes"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1197
+msgid "Size in pixels"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:210
+msgid "Support"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:470
+msgid "The Prompt input must be filled in order to generate an image."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:955
+msgid "The result:"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:949
+msgid "The shortcode:"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:940
+msgid ""
+"The size of the images to generate (e.g., \"256x256\", \"512x512\", "
+"\"1024x1024\". Default is 1024x1024)."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:928
+msgid ""
+"To create a public AI image generation form in WordPress, you can use the "
+"following shortcode:"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:934
+msgid "To include a list of topics that users can select."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:935
+msgid "To include a prompt for users."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:1119
+msgid "Upload a file and crop it."
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:72
+#: admin/class-artist-image-generator-admin.php:118
+#: admin/class-artist-image-generator-admin.php:846
+msgid "Variate"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:822
+#: admin/class-artist-image-generator-admin.php:849
+#: admin/class-artist-image-generator-admin.php:876
+msgid "Watch the demo"
+msgstr ""
+
+#: admin/class-artist-image-generator-admin.php:937
+msgid "You can also use the following optional attributes in the shortcode:"
+msgstr ""

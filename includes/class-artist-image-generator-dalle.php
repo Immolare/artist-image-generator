@@ -6,7 +6,19 @@ use Artist_Image_Generator_Setter as Setter;
 
 class Artist_Image_Generator_Dalle
 {
-    private const AUTHORIZED_DALLE_FIELDS = ['generate', 'variate', 'edit', 'prompt', 'size', 'n', 'model', 'quality', 'style'];
+    private const AUTHORIZED_DALLE_FIELDS = [
+        'generate', 
+        'variate', 
+        'edit', 
+        'prompt', 
+        'size', 
+        'n', 
+        'model', 
+        'quality', 
+        'style',
+        'user_limit',
+        'user_limit_duration'
+    ];
     private const ERROR_MSG_PROMPT = 'The Prompt input must be filled in order to generate an image.';
     private const ERROR_MSG_IMAGE = 'A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.';
     private const ERROR_TYPE_INVALID_FORM = 'invalid_form_error';
