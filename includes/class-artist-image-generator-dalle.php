@@ -129,25 +129,34 @@ class Artist_Image_Generator_Dalle
         ];
     }
 
-    public function download_image_and_get_extension(string $url): array
+    public function download_image_and_get_extension($urlOrFilePath): array
     {
-        $tmp = download_url($url);
-        if (is_wp_error($tmp)) {
-            return [false, null];
+        $isUrl = filter_var($urlOrFilePath, FILTER_VALIDATE_URL);
+
+        if ($isUrl) {
+            $tmp = download_url($urlOrFilePath);
+            if (is_wp_error($tmp)) {
+                return array(false, null, null);
+            }
+            $filename = pathinfo($urlOrFilePath, PATHINFO_FILENAME);
+        }else {
+            // Assume it's a $_FILES object
+            $tmp = $urlOrFilePath['tmp_name'];
+            $filename = $urlOrFilePath['name'];
         }
 
-        // Remove query parameters from the URL
-        $url = strtok($url, '?');
-
-        $filename = pathinfo($url, PATHINFO_FILENAME);
-        $extension = pathinfo($url, PATHINFO_EXTENSION) ?? $this->get_extension_from_mime($tmp);
+        // Get file type from file content
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($tmp);
+        $extension = $this->get_extension_from_mime($mime);
+        $filename = $isUrl ? pathinfo($urlOrFilePath, PATHINFO_FILENAME) : "mask_".uniqid(); // Generate a unique filename for uploaded files
 
         if (!$extension) {
             wp_delete_file($tmp);
-            return [false, null];
+            return array(false, null, null);
         }
 
-        return [$tmp, $extension, $filename];
+        return array($tmp, $extension, $filename);
     }
     
     private function handle_error(string $message): array
@@ -249,7 +258,7 @@ class Artist_Image_Generator_Dalle
             'image/png'  => 'png'
         );
 
-        return $mime_extensions[$mime] ?? null;
+        return $mime_extensions[$mime] ?? 'png';
     }
 
     public function include_wordpress_files(): void

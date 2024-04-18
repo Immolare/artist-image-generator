@@ -85,12 +85,12 @@ class Artist_Image_Generator_Public
             if ((int)$post_data['user_limit'] < $requests) {
                 $duration_msg = $duration > 0 ? sprintf(__(' Please try again in %d seconds.', 'artist-image-generator'), $expiration - time()) : '';
                 $error_message = esc_html__('You have reached the limit of requests.', 'artist-image-generator') . $duration_msg;
-                wp_send_json([
-                    'error' => [
+                wp_send_json(array(
+                    'error' => array(
                         'type' => self::ERROR_TYPE_LIMIT_EXCEEDED, 
                         'message' => $error_message
-                    ]
-                ]);
+                    )
+                ));
                 wp_die();
             }
 
@@ -107,12 +107,12 @@ class Artist_Image_Generator_Public
             $post_data = $dalle->sanitize_post_data();
 
             if (!check_ajax_referer('generate_image', '_ajax_nonce', false)) {
-                wp_send_json([
-                    'error' => [
+                wp_send_json(array(
+                    'error' => array(
                         'type' => self::ERROR_TYPE_INVALID_FORM, 
                         'message' => esc_html__('Invalid nonce.', 'artist-image-generator')
-                    ]
-                ]);
+                    )
+                ));
                 wp_die();
             }
 
@@ -128,6 +128,9 @@ class Artist_Image_Generator_Public
 
             $data = $dalle->prepare_data($images ?? [], $error ?? [], $post_data);
 
+            //$data = '{"error":[],"images":[{"url":"https://artist-image-generator.com/wp-content/uploads/img-rck1GT0eGIYLu4oAXFEMqsPT.png"}],"model_input":"dall-e-2","prompt_input":"Painting of a bird, including following criterias:","size_input":"1024x1024","n_input":"1","quality_input":"","style_input":""}';
+
+            //$array = json_decode($data, true);
             wp_send_json($data);
             wp_die();
         }
@@ -192,6 +195,8 @@ class Artist_Image_Generator_Public
                 'style' => self::DEFAULT_STYLE,
                 'user_limit' => self::DEFAULT_LIMIT_PER_USER,
                 'user_limit_duration' => self::DEFAULT_LIMIT_PER_USER_REFRESH_DURATION,
+                'mask_url' => '',
+                'origin_url' => '',
             ),
             $atts
         );
@@ -226,11 +231,17 @@ class Artist_Image_Generator_Public
                 data-style="<?php echo esc_attr($atts['style']); ?>"
                 data-model="<?php echo esc_attr($atts['model']); ?>" 
                 data-download="<?php echo esc_attr($atts['download']); ?>"
-                action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>">
+                action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>"
+                <?php if (!empty($atts['mask_url']) && !empty($atts['origin_url'])) { ?>
+                    data-origin-url="<?php echo esc_url($atts['origin_url']); ?>"
+                    data-mask-url="<?php echo esc_url($atts['mask_url']); ?>"
+                <?php } ?>
+            >
                 <input type="hidden" name="aig_prompt" value="<?php echo esc_attr($atts['prompt']); ?>" />
                 <input type="hidden" name="action" value="<?php echo esc_attr($atts['action']); ?>" />
                 <input type="hidden" name="user_limit" value="<?php echo esc_attr($atts['user_limit']); ?>" />
                 <input type="hidden" name="user_limit_duration" value="<?php echo esc_attr($atts['user_limit_duration']); ?>" />
+
                 <?php echo wp_kses($nonce_field, $allowed_html); ?>
                 <div class="form-group">
                     <fieldset class="aig-topic-buttons">

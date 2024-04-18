@@ -449,13 +449,21 @@
 
     function handlePathCreated(path, canvas, maskContext, maskCanvas, originalCanvas) {
         path.globalCompositeOperation = 'destination-out';
-        canvas.renderAll();
 
         if (canvas.width > 0 && canvas.height > 0) {
             maskContext.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
             maskContext.fillStyle = 'rgba(0, 0, 0, 0)';
             maskContext.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
 
+            let activeObject = canvas.getActiveObject();
+            if (activeObject) {
+                activeObject.hasControls = false;
+                activeObject.hasBorders = false;
+                canvas.discardActiveObject().renderAll();
+            }
+
+            // Change the fill color of the mask context to transparent before drawing the activeObject
+            maskContext.fillStyle = 'rgba(0, 0, 0, 0)';
             maskContext.drawImage(canvas.getElement(), 0, 0, canvas.width, canvas.height);
             const maskImageData = maskContext.getImageData(0, 0, canvas.width, canvas.height);
 
@@ -467,7 +475,6 @@
 
             maskContext.putImageData(maskImageData, 0, 0);
 
-        
             // s'il y a déjà un canvas, on le supprime
             if ($('#canvas-mask-result').length) {
                 $('#canvas-mask-result').remove();
@@ -490,7 +497,32 @@
 
                 const maskInput = $('#mask')[0];
                 maskInput.files = container.files;
+
+                // Remove existing download link
+                $('#downloadLink').remove();
+
+                // Create new download link
+                let url = URL.createObjectURL(blob);
+                let downloadLink = $('<a>')
+                    .attr('id', 'downloadLink')
+                    .attr('href', url)
+                    .attr('download', 'mask.png')
+                    .css({ 'display': 'block', 'margin-top': '10px', 'color': '#0073aa', 'text-decoration': 'underline' })
+                    .text(aig_ajax_object.maskLabelDownload);
+
+                // Add new download link to the page
+                $('label[for="image"]').parent().find('.description').after(downloadLink);
+                addMaskHandler(downloadLink);
+
             }, 'image/png', 1);
+
+            // Réactivez les contrôles de l'objet actif
+            if (activeObject) {
+                activeObject.hasControls = true;
+                activeObject.hasBorders = true;
+                canvas.setActiveObject(activeObject).renderAll();
+ 
+            }
         }
     }
 
@@ -528,8 +560,10 @@
 
         maskFabricCanvas.isDrawingMode = true;
         let isMagicWandMode = false;
+        let isRectWandMode = false;
         let mouseX;
         let mouseY;
+        let isDown, origX, origY;
         let brushSize = 50;
         maskFabricCanvas.freeDrawingBrush.width = brushSize;
         maskFabricCanvas.freeDrawingBrush.color = 'rgba(0, 0, 0, 1)';
@@ -573,7 +607,10 @@
             maskFabricCanvas.historyRedo = [];
         });
 
+        let rectangles = [];
+
         maskFabricCanvas.on('mouse:down', function (options) {
+            isDown = true;
             const event = options.e;
             if (isMagicWandMode) {
                 mouseX = event.offsetX;
@@ -583,7 +620,60 @@
                 const pixelColor = maskFabricCanvas.contextContainer.getImageData(x, y, 1, 1).data;
                 selectSimilarPixels(pixelColor, 50);
             }
+            else if (isRectWandMode) {
+                var pointer = maskFabricCanvas.getPointer(event);
+                origX = pointer.x;
+                origY = pointer.y;
+                let activeObject = maskFabricCanvas.getActiveObject();
+                if (!activeObject) {
+                    let rect = new fabric.Rect({
+                        left: origX,
+                        top: origY,
+                        originX: 'left',
+                        originY: 'top',
+                        width: 0,
+                        height: 0,
+                        angle: 0,
+                        fill: 'rgba(0, 0, 0, 1)',
+                        transparentCorners: false
+                    });
+                    maskFabricCanvas.add(rect);
+                    rectangles.push(rect);
+                }
+            }
         });
+
+        maskFabricCanvas.on('object:moving', function (options) {
+            isDown = true;
+            let index = rectangles.indexOf(options.target);
+            if (index !== -1) {
+                rectangles[index].setCoords();
+            }
+        });
+
+        maskFabricCanvas.on('mouse:up', function (options) {
+            isDown = false;
+            if (isRectWandMode) {
+                let rect = rectangles[rectangles.length - 1];
+                handlePathCreated(rect, maskFabricCanvas, maskContext, maskCanvas[0], originalCanvas);
+                maskFabricCanvas.historyRedo = [];
+            }
+        });
+
+        maskFabricCanvas.on('mouse:move', function (options) {
+            if (isRectWandMode && isDown) {
+                const event = options.e;
+                var pointer = maskFabricCanvas.getPointer(event);
+                let rect = rectangles[rectangles.length - 1];
+                let activeObject = maskFabricCanvas.getActiveObject();
+                if (!activeObject) {
+                    rect.set({ width: Math.abs(origX - pointer.x) });
+                    rect.set({ height: Math.abs(origY - pointer.y) });
+                    maskFabricCanvas.renderAll();
+                }
+            }
+        });
+
 
         function selectSimilarPixels(targetColor, tolerance) {
             const imageData = maskFabricCanvas.contextContainer.getImageData(0, 0, maskFabricCanvas.width, maskFabricCanvas.height);
@@ -655,13 +745,27 @@
         const magicWandButton = $('<button>', { type: 'button', class: 'button' }).html('<span class="dashicons dashicons-admin-customizer"></span>').click(function (e) {
             e.preventDefault();
             isMagicWandMode = !isMagicWandMode;
+            if (isMagicWandMode) {
+                isRectWandMode = false;
+                rectWandButton.removeClass("active");
+            }
             $(this).toggleClass("active", isMagicWandMode);
-            maskFabricCanvas.isDrawingMode = !isMagicWandMode;
+            maskFabricCanvas.isDrawingMode = !isMagicWandMode && !isRectWandMode;
         });
 
+        const rectWandButton = $('<button>', { type: 'button', class: 'button' }).html('<span class="dashicons dashicons-image-crop"></span>').click(function (e) {
+            e.preventDefault();
+            isRectWandMode = !isRectWandMode;
+            if (isRectWandMode) {
+                isMagicWandMode = false;
+                magicWandButton.removeClass("active");
+            }
+            $(this).toggleClass("active", isRectWandMode);
+            maskFabricCanvas.isDrawingMode = !isMagicWandMode && !isRectWandMode;
+        });
         $('.button-container').remove();
 
-        const buttonContainer = $('<div>', { class: 'button-container' }).append(brushSizeInput, magicWandButton, undoButton, redoButton);
+        const buttonContainer = $('<div>', { class: 'button-container' }).append(brushSizeInput, magicWandButton, rectWandButton, undoButton, redoButton);
 
         $('#aig_cropper_preview').css('position', 'relative').append(buttonContainer);
     }
@@ -717,11 +821,12 @@
 
         function deleteActiveObject(e) {
             if (e.keyCode == 46 || e.key == 'Delete' || e.code == 'Delete' || e.key == 'Backspace') {
-                if (editFabricCanvas.getActiveObject()) {
-                    if (editFabricCanvas.getActiveObject().isEditing) {
+                let activeObject = editFabricCanvas.getActiveObject();
+                if (activeObject) {
+                    if (activeObject.isEditing) {
                         return;
                     }
-                    editFabricCanvas.remove(editFabricCanvas.getActiveObject());
+                    editFabricCanvas.remove(activeObject);
                     editFabricCanvas.renderAll();
                 }
             }
@@ -1011,6 +1116,67 @@
                     needMediaListRefresh = true;
                 }
             });
+
+            return false;
+        });
+    }
+
+    function addMaskHandler($el) {
+        $el.off('click').on('click', function (e) {
+            e.preventDefault();
+
+            const $button = $(this);
+            let url = $button.attr('href');
+            const data = {
+                action: 'add_to_media',
+                description: 'Mask ' + new Date().getTime()
+            };
+
+            // Replace button text with loading icon
+            $button.html('<i class="dashicons dashicons-update"></i>');
+
+            // Check if URL is a blob URL
+            if (url.startsWith('blob:')) {
+                // Convert blob URL to file
+                fetch(url)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        let file = new File([blob], 'filename', { type: 'image/png' });
+                        let formData = new FormData();
+
+                        formData.append('file', file);
+                        formData.append('action', data.action);
+                        formData.append('description', data.description);
+
+                        // Send file to server
+                        return jQuery.ajax({
+                            url: aig_ajax_object.ajax_url,
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false
+                        });
+                    })
+                    .then(handleResponse)
+                    .catch(error => console.error(error));
+            } else {
+                data.url = url;
+                jQuery.post(aig_ajax_object.ajax_url, data, handleResponse);
+            }
+
+            function handleResponse(response) {
+                if (response.success) {
+                    // Replace loading icon with check icon
+                    $button.html('<i class="dashicons dashicons-yes"></i>');
+
+                    // Remove button after 3 seconds
+                    setTimeout(function() {
+                        $button.remove();
+                    }, 3000);
+
+                    needMediaListRefresh = true;
+                }
+            }
 
             return false;
         });

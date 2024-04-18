@@ -140,3 +140,23 @@
 .aig-button:hover {
     background-color: var(--aig-secondary-color);
 }
+
+
+
+.summary .aig-form-container {
+    margin: 0;
+    margin-bottom: 20px;
+    background-color: transparent;
+}
+.summary .aig-form-container .aig-image {
+    margin: 0;
+}
+.summary .aig-form-container .aig-download-button {
+    width: 100%;
+}
+button.aig-download-button.active {
+    background-color: green;
+}
+.aig-image {
+    cursor: pointer;
+}
