@@ -1,77 +1,73 @@
-=== Artist Image Generator: DALL·E AI-Driven Image & Avatar Creator ===
+=== Artist Image Generator: DALL·E AI-Driven Image Creator ===
 Contributors: Immolare
-Tags: ai, dalle, image, avatar, featured image
+Tags: ai, dalle, image, avatar, product
 Requires at least: 5.3
-Tested up to: 6.4
+Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.4.2
 License: GPLv3
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Donate link: https://artist-image-generator.com/#donate
 
-AI Image Generator. Create blog featured images or product visual art. Try DALL-E, build tools like avatars generator, themed tattoo ideas.
+Try DALL-E to create images and visual art. Build AI generators for images, avatars and WooCommerce personalized product customization.
 
 == Description ==
 
-Looking for a way to create unique and engaging visual content with AI? Try DALL-E right into WordPress with Artist Image Generator. Generate high-quality and distinctive visual content for your featured images, blog posts, page and so on. If you want to sell visual art or just add illustration to a product, the plugin use Artificial Intelligence technology to generate stunning royalty-free images and avatars based on text or through images variations.
+Want to create unique and engaging visual content with AI in WordPress? Try Artist Image Generator. Generate high-quality images, illustrations, and avatars for your posts, pages, and products using AI technology.
 
-With Artist Image Generator, you can easily **create custom illustrations for your posts, pages, and products, transforming any image from the internet into your own personalized creation**. Plus, with **AI-based image generator tools available through shortcodes, you can offer your visitors a fun and interactive way to generate their own images**, such as a [tattoo idea generator](https://artist-image-generator.com/tatoo-ai-generator-tool-wordpress/).
+With Artist Image Generator, you can easily customize images and offer interactive image generator tools to your visitors through shortcodes. Plus, the plugin includes an AI-based avatar generator for users to create and set their own avatars on WordPress.
 
-But that's not all - Artist Image Generator also offers **AI-based avatar generator tools, allowing your users to create and set their own avatars on WordPress**. This feature is compatible with One User Avatar and Simple Local Avatar, and the light interface is directly accessible through the WP Media Library.
+Compatible with popular page builders like Gutenberg, Elementor, and Woocommerce, Artist Image Generator is perfect for bloggers, designers, and anyone looking to add a creative touch to their website.
 
-The plugin is also compatible with the most popular page builders such as **Gutenberg, Elementor, FL Builder, WP Bakery, and Woocommerce**, making it easy to integrate into your existing site. Artist Image Generator is the perfect tool for **bloggers, designers, and anyone looking to add a creative touch to their website**. So why wait? Try it out today and see the difference it can make for your online presence.
+Visit the [official website](https://artist-image-generator.com) for more information, tutorials, and support. Try it out today and create unique AI-generated visuals for your content.
 
-For more information, tutorials, and support, visit the official website at [Artist Image Generator](https://artist-image-generator.com) We're here to help you every step of the way.
+### WooCommerce Product AI Image Customizer: sell basic products and let customers personalize them.
 
-Thank you!
+If you want to sell customizable WooCommerce products and allow customers to personalize images with their own unique digital art, check out **Artist Image Generator - Product AI Image Customizer**. This plugin uses artificial intelligence to provide image customization for your WooCommerce products. Customers can create personalized image designs by topic or freehand, and developers can create a unique shopping process. [Take a look here](https://artist-image-generator.com/product/woo-product-ai-image-customizer-to-sell-personalized-products/).
 
+In the background, it uses Artist Image Generator shortcodes to create independent, topic-based image generators for each of your products.
 
-### New Features !!!
-- Generate up to 10 images using DALL·E 3 model in admin and public topic image generators (pro)
-- The latest generated images are saved for 1 hour and can be saved / used later for variation or edition
+You can add your custom AIG shortcodes to create independent, topic-based image generators for each of your products. The customer visits the product page, generates an AI image from a prompt and/or topic, and buys the product. You can view the personalized image on the admin order page. Additionally, you can control how many images a user can generate and set a refresh time if desired.
 
-### Key Features
+You can also generate a live basic preview of the personalized product using a mask image. The mask can be created through AIG or using external tools.
+
+**Watch the demo**
+
+https://youtu.be/K8ooo2kle0Q
+
+### Artist Image Generator's Key Features
 
 #### AI-Powered Image Generation through DALL·E
 Create unique images from scratch based on text prompts using DALL·E technology. Output variations of existing images or compose your own (pro) to generate unique and royalty-free images.
 
 #### Topic-based AI Image Generator Tool
-Place a topic-based image generator tool on any page using shortcode, allowing visitors to generate images according to predefined topics.
+Place a topic-based image generator tool on any page using shortcode, allowing visitors to generate images according to predefined topics. Visitors can be limited by requests number and duration.
 
 #### Topic-based AI Avatar Generator Tool
-Same as the Image Generator Tool. Place a shortcode anywhere on your website and allow users to create and set their avatar. An alternative to Gravatar, compatible with One User Avatar, Simple Local Avatars.
+Same as the Image Generator Tool. Place a shortcode anywhere on your website and allow users to create and set their avatar. An alternative to Gravatar, compatible with One User Avatar, Simple Local Avatars. Users can be limited by requests number and duration.
 
-#### Topic-based AI Avatar Generator Tool
+#### Use DALL-E Everywhere
 Use the plugin anywhere inside your admin. It is accessible directly from the WordPress Media Manager. Enjoy compatibility with popular page builders, media plugins and Woocommerce.
 
 #### Generation History 
 Latest generated images are stored in local storage for 1 hour, during which time you have the option to save them for later use or to utilize them as a basis for creating variations or edits.
 
-### Premium Features
+#### User limitations
+Public image generators can be limited for the number of images the users create. Limit per user with refresh time (or not).
 
-#### Image Edit
-Edit and extend existing images by drawing a mask and asking DALL·E to generate a new image based on your modifications. This powerful feature allows you to fine-tune your images and create truly unique visuals.
-#### Image Composition
-Compose your main image by uploading other images into it, drawing masks, and asking DALL·E to generate a new image that combines the uploaded images with your original. This feature enables you to create complex and creative designs with ease.
-#### Generate more images with DALL·E 3
-Generate up to 10 images simultaneously instead of 1 using the DALL·E 3 model. This feature allows you to quickly produce multiple images based on a single prompt, saving you time and increasing your productivity. Depending of your server performances. **Available for shortcodes too.**
+### Artist Image Generator's Premium Features
 
+- **Image Edit**: Edit, compose and extend existing images by drawing a mask and asking DALL·E to generate a new image based on your modifications.
+- **Multiple Image Generation with DALL·E 3**: Generate up to 10 images simultaneously using the DALL·E 3 model. Available for shortcodes too.
+- **Easy live preview**: Coupled with AIG - Product AI Image Customizer, you can build a live preview without quitting your WordPress website.
 
-**Note:** By purchasing a one-time license for Artist Image Generator, you help maintain and grow the plugin. You'll also benefit from exclusive support and all the new features that will be available in the future. [Purchase a license key here](https://artist-image-generator.com/product/licence-key/)
+[Purchase a license key here](https://artist-image-generator.com/product/licence-key/)
 
-### Compatibility
+**Note**: Product AI Image Customizer is not included in the licence key.
 
-Artist Image Generator is compatible with:
+### Use DALLE everywhere
 
-- Gutenberg
-- Elementor
-- WP Bakery
-- Beaver Builder (FL Builder)
-- Woocommerce products
-- Simple Local Avatars
-- One User Avatar
-- And many other block builders/plugins
-
+You can use Artist Image Generator anywhere with mosts of page builders : **Gutenberg, Elementor, WP Bakery, Beaver Builder (FL Builder)**. For avatars generators, it is compatible with **Simple Local Avatars** and **One User Avatar**. **WooCommerce products** are supported to generate images and/or coupled with AI Image Customizer to let customers personnalize their products.
 
 ### Advantages
 
@@ -235,7 +231,20 @@ Yes, Artist Image Generator is perfect for creating visuals for your blog and ar
 While Artist Image Generator is primarily designed for digital content, you can use the generated images for print materials as well. However, please be aware that the image quality and resolution might not be optimal for high-quality print purposes. It is recommended to test the images before using them in print projects.
 
 == Changelog ==
-1.1.0 - 2024-03-10
+
+1.1.4 - 2024-04-13
+- Update shortcode doc
+- Update about tab
+
+1.1.3 - 2024-03-29
+- Add Mask download feature
+
+1.1.2 - 2024-03-23
+- Update French Translations
+- Add public form param : user_limit
+- Add public form param : user_limit_duration
+
+1.1.1 - 2024-03-10
 - Refacto
 
 1.1.0 - 2024-03-08

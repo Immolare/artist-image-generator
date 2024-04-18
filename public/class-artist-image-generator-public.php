@@ -33,6 +33,8 @@ class Artist_Image_Generator_Public
     const DEFAULT_DOWNLOAD = 'manual';
     const DEFAULT_QUALITY = 'standard';
     const DEFAULT_STYLE = 'vivid';
+    const DEFAULT_LIMIT_PER_USER = 0; // no limit
+    const DEFAULT_LIMIT_PER_USER_REFRESH_DURATION = 0; // no refresh; in seconds
 
     const POSSIBLE_SIZES_DALLE_2 = ['256x256', '512x512', '1024x1024'];
     const POSSIBLE_SIZES_DALLE_3 = ['1024x1024', '1024x1792', '1792x1024'];
@@ -40,6 +42,9 @@ class Artist_Image_Generator_Public
     const POSSIBLE_STYLES_DALLE_3 = ['vivid', 'natural'];
     const POSSIBLE_MODELS = ['dall-e-2', 'dall-e-3'];
     const POSSIBLE_ACTIONS = ['generate_image', 'variate_image'];
+
+    private const ERROR_TYPE_LIMIT_EXCEEDED = 'limit_exceeded_error';
+    private const ERROR_TYPE_INVALID_FORM = 'invalid_form_error';
 
     public function __construct($plugin_name, $version)
     {
@@ -60,33 +65,77 @@ class Artist_Image_Generator_Public
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-artist-image-generator-shortcode-data-validator.php';
     }
 
+    private function check_and_update_user_limit($post_data)
+    {
+        if (isset($post_data['user_limit'])) {
+            $user_id = get_current_user_id();
+            $user_ip = $_SERVER['REMOTE_ADDR'];
+            $user_identifier = $user_id ? 'artist_image_generator_user_' . $user_id : 'artist_image_generator_ip_' . $user_ip;
+            $requests = get_transient($user_identifier);
+            $duration = isset($post_data['user_limit_duration']) && $post_data['user_limit_duration'] > 0 ? (int)$post_data['user_limit_duration'] : 0;
+            $expiration = get_option('_transient_timeout_' . $user_identifier);
+
+            if ($requests === false || ($duration > 0 && time() > $expiration)) {
+                $requests = 0;
+                set_transient($user_identifier, $requests, $duration);
+            }
+
+            $requests++;
+
+            if ((int)$post_data['user_limit'] < $requests) {
+                $duration_msg = $duration > 0 ? sprintf(__(' Please try again in %d seconds.', 'artist-image-generator'), $expiration - time()) : '';
+                $error_message = esc_html__('You have reached the limit of requests.', 'artist-image-generator') . $duration_msg;
+                wp_send_json(array(
+                    'error' => array(
+                        'type' => self::ERROR_TYPE_LIMIT_EXCEEDED, 
+                        'message' => $error_message
+                    )
+                ));
+                wp_die();
+            }
+
+            set_transient($user_identifier, $requests, $duration);
+        }
+    }
+
     public function generate_image()
     {
         $post_data = [];
         $dalle = new Dalle();
         
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && Setter::is_setting_up()) {
+        if(wp_doing_ajax() && Setter::is_setting_up()) {
             $post_data = $dalle->sanitize_post_data();
+
+            if (!check_ajax_referer('generate_image', '_ajax_nonce', false)) {
+                wp_send_json(array(
+                    'error' => array(
+                        'type' => self::ERROR_TYPE_INVALID_FORM, 
+                        'message' => esc_html__('Invalid nonce.', 'artist-image-generator')
+                    )
+                ));
+                wp_die();
+            }
+
+            $this->check_and_update_user_limit($post_data);
 
             if (isset($post_data['generate'])) {
                 $response = $dalle->handle_generation($post_data);
-            } elseif (isset($post_data['variate'])) {
-                $response = $dalle->handle_variation($post_data);
-            } elseif (isset($post_data['edit']) && License::license_check_validity()) {
-                $response = $dalle->handle_edit($post_data);
             }
 
             if (isset($response)) {
                 list($images, $error) = $dalle->handle_response($response);
             }
-        }
 
-        $data = $dalle->prepare_data($images ?? [], $error ?? [], $post_data);
+            $data = $dalle->prepare_data($images ?? [], $error ?? [], $post_data);
 
-        if (wp_doing_ajax()) {
+            //$data = '{"error":[],"images":[{"url":"https://artist-image-generator.com/wp-content/uploads/img-rck1GT0eGIYLu4oAXFEMqsPT.png"}],"model_input":"dall-e-2","prompt_input":"Painting of a bird, including following criterias:","size_input":"1024x1024","n_input":"1","quality_input":"","style_input":""}';
+
+            //$array = json_decode($data, true);
             wp_send_json($data);
             wp_die();
-        }    
+        }
+
+        wp_die("Should not be reached. Check configuration.");       
     }
 
     public function enqueue_styles()
@@ -126,6 +175,9 @@ class Artist_Image_Generator_Public
             $atts['quality'] = null;
             $atts['style'] = null;
         }
+
+        $atts['user_limit'] = $this->data_validator->validateInt($atts['user_limit'], 0, PHP_INT_MAX, self::DEFAULT_LIMIT_PER_USER);
+        $atts['user_limit_duration'] = $this->data_validator->validateInt($atts['user_limit_duration'], 0, PHP_INT_MAX, self::DEFAULT_LIMIT_PER_USER_REFRESH_DURATION);
     }
 
     private function get_default_atts($atts)
@@ -140,7 +192,11 @@ class Artist_Image_Generator_Public
                 'model' => self::DEFAULT_MODEL,
                 'download' => self::DEFAULT_DOWNLOAD,
                 'quality' => self::DEFAULT_QUALITY,
-                'style' => self::DEFAULT_STYLE
+                'style' => self::DEFAULT_STYLE,
+                'user_limit' => self::DEFAULT_LIMIT_PER_USER,
+                'user_limit_duration' => self::DEFAULT_LIMIT_PER_USER_REFRESH_DURATION,
+                'mask_url' => '',
+                'origin_url' => '',
             ),
             $atts
         );
@@ -152,7 +208,7 @@ class Artist_Image_Generator_Public
             $atts['n'] = 1;    
         }
 
-        $nonce_field = wp_nonce_field(esc_attr($atts['action']), '_wpnonce', true, false);
+        $nonce_field = wp_nonce_field(esc_attr($atts['action']), '_ajax_nonce', true, false);
 
         $allowed_html = array(
             'input' => array(
@@ -174,10 +230,18 @@ class Artist_Image_Generator_Public
                 data-quality="<?php echo esc_attr($atts['quality']); ?>"
                 data-style="<?php echo esc_attr($atts['style']); ?>"
                 data-model="<?php echo esc_attr($atts['model']); ?>" 
-                data-download="<?php echo esc_attr($atts['download']); ?>" 
-                action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>">
+                data-download="<?php echo esc_attr($atts['download']); ?>"
+                action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>"
+                <?php if (!empty($atts['mask_url']) && !empty($atts['origin_url'])) { ?>
+                    data-origin-url="<?php echo esc_url($atts['origin_url']); ?>"
+                    data-mask-url="<?php echo esc_url($atts['mask_url']); ?>"
+                <?php } ?>
+            >
                 <input type="hidden" name="aig_prompt" value="<?php echo esc_attr($atts['prompt']); ?>" />
                 <input type="hidden" name="action" value="<?php echo esc_attr($atts['action']); ?>" />
+                <input type="hidden" name="user_limit" value="<?php echo esc_attr($atts['user_limit']); ?>" />
+                <input type="hidden" name="user_limit_duration" value="<?php echo esc_attr($atts['user_limit_duration']); ?>" />
+
                 <?php echo wp_kses($nonce_field, $allowed_html); ?>
                 <div class="form-group">
                     <fieldset class="aig-topic-buttons">

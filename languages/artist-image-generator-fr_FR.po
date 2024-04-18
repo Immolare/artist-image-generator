@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-15 15:24+0100\n"
-"PO-Revision-Date: 2024-03-08 22:12+0000\n"
+"PO-Revision-Date: 2024-03-23 20:55+0000\n"
 "Last-Translator: \n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -15,24 +15,23 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "X-Loco-Version: 2.6.6; wp-6.4.3"
 
-#: admin/class-artist-image-generator-admin.php:1161
+#: admin/partials/form.php:104
 msgid " / Alt text"
 msgstr "/ Texte alternatif"
 
-#: admin/class-artist-image-generator-admin.php:476
-#: admin/class-artist-image-generator-admin.php:494
-msgid ""
-"A .png square (1:1) image of maximum 4MB needs to be uploaded in order to "
-"generate a variation of this image."
-msgstr ""
-"Une image .png carrée (1:1) de 4 Mo maximum doit être téléchargée afin de "
-"générer une variation de cette image."
+#: includes/class-artist-image-generator-dalle.php:54
+msgid " [OpenAi Error]"
+msgstr "[Erreur OpenAi]"
 
-#: admin/class-artist-image-generator-admin.php:76
-msgid "About"
-msgstr "À propos"
+#: public/class-artist-image-generator-public.php:86
+msgid " Please try again in %d seconds."
+msgstr " Veuillez réessayer dans %d secondes."
 
-#: admin/class-artist-image-generator-admin.php:1105
+#: libraries/license-sdk/License.php:267
+msgid "A license has not been submitted"
+msgstr "Une licence n'a pas été soumise"
+
+#: admin/partials/form.php:27 admin/partials/form.php:46
 msgid "Add to media library"
 msgstr "Ajouter à la médiathèque"
 
@@ -41,49 +40,56 @@ msgstr "Ajouter à la médiathèque"
 msgid "Artist Image Generator"
 msgstr "Artist Image Generator"
 
-#: admin/class-artist-image-generator-admin.php:124
+#: admin/partials/form.php:81
+msgid "Be aware of server / api limits."
+msgstr "Soyez conscient des limites du serveur/API."
+
+#: admin/class-artist-image-generator-admin.php:85
 msgid "Cancel"
 msgstr "Annuler"
 
-#: admin/class-artist-image-generator-admin.php:123
+#: admin/class-artist-image-generator-admin.php:84
 msgid "Cancel the zoom"
 msgstr "Annuler le zoom"
 
-#: admin/class-artist-image-generator-admin.php:981
+#: admin/partials/content.php:193
 msgid "Copy/paste the secret key in the OPENAI_KEY field."
 msgstr "Copiez/collez la clé secrète dans le champ OPENAI_KEY."
 
-#: admin/class-artist-image-generator-admin.php:977
+#: admin/partials/content.php:189
 msgid "Create a new secret key"
 msgstr "Créer une nouvelle clé secrète"
 
-#: admin/class-artist-image-generator-admin.php:820
+#: admin/partials/content.php:8
 msgid "Create images from text-to-image."
 msgstr "Créez des images du texte à l'image."
 
-#: admin/class-artist-image-generator-admin.php:125
+#: admin/class-artist-image-generator-admin.php:86
 msgid "Create mask"
 msgstr "Créer un masque"
 
-#: admin/class-artist-image-generator-admin.php:122
+#: admin/class-artist-image-generator-admin.php:83
 msgid "Crop this zone"
 msgstr "Recadrer cette zone"
 
-#: admin/class-artist-image-generator-admin.php:874
+#: admin/partials/content.php:71
 msgid "Customize existing images and generate a full new one."
 msgstr "Personnaliser des images existantes et en générer une toute nouvelle."
 
-#: admin/class-artist-image-generator-admin.php:1139
-#: admin/class-artist-image-generator-admin.php:1198
+#: admin/partials/form.php:144
 msgid "Depends of the model used."
 msgstr "Cela dépend du modèle utilisé."
 
-#: admin/class-artist-image-generator-admin.php:1163
+#: admin/partials/form.php:106
 msgid "Describe the full new image you want to generate with DALL·E."
 msgstr ""
 "Décrivez la nouvelle image complète que vous souhaitez générer avec DALL·E."
 
-#: admin/class-artist-image-generator-admin.php:942
+#: public/class-artist-image-generator-public.php:258
+msgid "Description:"
+msgstr "Description:"
+
+#: admin/partials/content.php:148
 msgid ""
 "Download an image or use it as WP profile picture (e.g., \"manual\", "
 "\"wp_avatar\". Default is \"manual\")."
@@ -91,56 +97,80 @@ msgstr ""
 "Téléchargez une image ou utilisez-la comme photo de profil WP (par exemple, "
 "\"manuel\", \"wp_avatar\". La valeur par défaut est \"manuel\")."
 
-#: admin/class-artist-image-generator-admin.php:873
+#: admin/partials/content.php:153
+msgid "Duration of the user limit in seconds (default is 0, lifetime)."
+msgstr ""
+"Durée de la limite d'utilisateurs en secondes (la valeur par défaut est 0, "
+"durée de vie)."
+
+#: admin/partials/content.php:70
 msgid "Edit"
 msgstr "Éditer"
 
-#: admin/class-artist-image-generator-admin.php:73
-#: admin/class-artist-image-generator-admin.php:119
+#: admin/class-artist-image-generator-admin.php:80
 msgid "Edit (Pro)"
 msgstr "Éditer (Pro)"
 
-#: admin/class-artist-image-generator-admin.php:126
+#: admin/class-artist-image-generator-admin.php:87
 msgid "Edit image"
 msgstr "Éditer l'image"
 
-#: admin/class-artist-image-generator-admin.php:1166
+#: public/class-artist-image-generator-public.php:260
+msgid "Enter a brief description for the image generation."
+msgstr "Entrez une brève description pour la génération d'image."
+
+#: public/class-artist-image-generator-public.php:259
+msgid "Enter a description for the image generation (e.g., 'A beautiful cat')."
+msgstr ""
+"Saisissez une description pour la génération d'image (par exemple, « Un beau "
+"chat »)."
+
+#: public/class-artist-image-generator-shortcode-avatar-manager.php:93
+msgid "Error downloading the image."
+msgstr "Erreur lors du téléchargement de l'image."
+
+#: admin/partials/form.php:109
 msgid "Ex: a sunlit indoor lounge area with a pool containing a flamingo"
 msgstr ""
 "Ex : un coin salon intérieur ensoleillé avec une piscine contenant un "
 "flamant rose"
 
-#: admin/class-artist-image-generator-admin.php:948
+#: admin/partials/content.php:159
 msgid "Exemple: Rendering the shortcode into a page"
 msgstr "Exemple : Rendu du code court dans une page"
 
-#: admin/class-artist-image-generator-admin.php:1118
+#: admin/partials/form.php:59
 msgid "File (.png, .jpg)"
 msgstr "Fichier (.png, .jpg)"
 
-#: admin/class-artist-image-generator-admin.php:71
-#: admin/class-artist-image-generator-admin.php:121
-#: admin/class-artist-image-generator-admin.php:819
+#: admin/class-artist-image-generator-admin.php:82 admin/partials/content.php:7
 msgid "Generate"
 msgstr "Générer"
 
-#: admin/class-artist-image-generator-admin.php:831
-#: admin/class-artist-image-generator-admin.php:858
-#: admin/class-artist-image-generator-admin.php:885
+#: admin/partials/content.php:22 admin/partials/content.php:54
+#: admin/partials/content.php:86
 msgid "Generate Image(s)"
 msgstr "Générer des images"
 
-#: admin/class-artist-image-generator-admin.php:212
+#: includes/class-artist-image-generator-setter.php:84
 msgid "GitHub"
 msgstr "GitHub"
 
-#: admin/class-artist-image-generator-admin.php:970
+#: admin/partials/form.php:164
+msgid "HD creates images with finer details."
+msgstr "La HD crée des images avec des détails plus fins."
+
+#: admin/class-artist-image-generator-notice.php:34
+msgid "Hide this notice"
+msgstr "Masquer cet avis"
+
+#: admin/partials/content.php:182
 msgid "How to get your OpenAI API key ?"
 msgstr "Comment obtenir votre clé API OpenAI ?"
 
 #. URI of the plugin
-msgid "https://github.com/Immolare/artist-image-generator"
-msgstr "https://github.com/Immolare/artist-image-generator"
+msgid "https://artist-image-generator.com/"
+msgstr "https://artist-image-generator.com/"
 
 #. Author URI of the plugin
 msgid "https://www.pierrevieville.fr"
@@ -154,48 +184,52 @@ msgstr ""
 "Illustrez les articles avec des images Ai (DALL·E). Text-to-Image, variation,"
 " édition. Générateur d'images publiques et avatars Ai par sujets."
 
-#: admin/class-artist-image-generator-admin.php:248
-msgid "Image Generator"
-msgstr "Générateur d'image"
-
-#: admin/class-artist-image-generator-admin.php:1099
+#: admin/partials/form.php:21
 msgid "Image N°"
 msgstr "Image N°"
 
-#: admin/class-artist-image-generator-admin.php:291
-msgid "Invalid license key. Please enter a valid license key."
-msgstr ""
-"Clé de licence invalide. S'il vous plait, entrez une clé de licence valide."
+#: includes/class-artist-image-generator-setter.php:202
+msgid "Invalid licence key"
+msgstr "Clé de licence invalide"
 
-#: admin/class-artist-image-generator-admin.php:306
-msgid "License activation failed."
-msgstr "Echec de l'activation de la licence"
+#: public/class-artist-image-generator-public.php:113
+msgid "Invalid nonce."
+msgstr "Nonce invalide."
 
-#: admin/class-artist-image-generator-admin.php:973
+#: includes/class-artist-image-generator-setter.php:213
+msgid "License key is valid and was activated"
+msgstr "La clé de licence est valide et a été activée"
+
+#: admin/partials/content.php:185
 msgid "Log in into OpenAI developer portail"
 msgstr "Connectez-vous au portail dev OpenAI"
 
-#: admin/class-artist-image-generator-admin.php:847
+#: admin/partials/content.php:39
 msgid "Make image variations from an existing one."
 msgstr "Réaliser des variantes d'une image existante."
 
-#: admin/class-artist-image-generator-admin.php:1178
+#: admin/partials/form.php:124
 msgid "Model to use"
 msgstr "Modèle à utiliser"
 
-#: admin/class-artist-image-generator-admin.php:1180
+#: admin/partials/form.php:126
 msgid "More about DALL·E 3 model."
 msgstr "En savoir plus sur le modèle DALL·E 3."
 
-#: admin/class-artist-image-generator-admin.php:1138
+#: admin/partials/form.php:79
 msgid "Number of images"
 msgstr "Nombre d'images"
 
-#: admin/class-artist-image-generator-admin.php:939
+#: admin/partials/content.php:152
+msgid "Number of images a user can generate (default is 0, unlimited)."
+msgstr ""
+"Nombre d'images qu'un utilisateur peut générer (par défaut est 0, illimité)."
+
+#: admin/partials/content.php:143
 msgid "Number of images to generate (default is 3, maximum 10)."
 msgstr "Nombre d'images à générer (3 par défaut, 10 maximum)."
 
-#: admin/class-artist-image-generator-admin.php:944
+#: admin/partials/content.php:155
 msgid ""
 "Once you have the shortcode ready, you can add it to any page or post in "
 "WordPress to display the public AI image generation form."
@@ -204,7 +238,7 @@ msgstr ""
 "publication dans WordPress pour afficher le formulaire public de génération "
 "d’images IA."
 
-#: admin/class-artist-image-generator-admin.php:941
+#: admin/partials/content.php:145
 msgid ""
 "OpenAi model to use (e.g., \"dall-e-2\", \"dall-e-3\". Default is \"dall-e-"
 "2\")."
@@ -216,15 +250,31 @@ msgstr ""
 msgid "Pierre Viéville"
 msgstr "Pierre Viéville"
 
-#: admin/class-artist-image-generator-admin.php:984
+#: admin/partials/content.php:196
 msgid "Press \"Save changes\" and you are done."
 msgstr "Appuyez sur \"Enregistrer les modifications\" et vous avez terminé."
 
-#: admin/class-artist-image-generator-admin.php:1160
+#: admin/partials/form.php:103
 msgid "Prompt"
 msgstr "Saisie"
 
-#: admin/class-artist-image-generator-admin.php:932
+#: admin/partials/form.php:162
+msgid "Quality"
+msgstr "Qualité"
+
+#: admin/partials/content.php:146
+msgid ""
+"Quality of the image to generate (e.g., \"standard\", \"hd\". Default is "
+"\"standard\". Only with dall-e-3)."
+msgstr ""
+"Qualité de l'image à générer (par exemple, \"standard\", \"HD\". La défaut "
+"est \"standard\". Uniquement avec Dall-E-3)."
+
+#: includes/class-artist-image-generator-license.php:141
+msgid "Renew your key now"
+msgstr "Renouvelez votre clé maintenant"
+
+#: admin/partials/content.php:136
 msgid ""
 "Replace \"Your custom description here\" with your own description, and "
 "specify the topics you want to offer as a comma-separated list. You can use "
@@ -235,54 +285,83 @@ msgstr ""
 "de liste séparée par des virgules. Vous pouvez utiliser les espaces réservés "
 "suivants dans votre description :"
 
-#: admin/class-artist-image-generator-admin.php:211
+#: includes/class-artist-image-generator-setter.php:83
 msgid "Review"
 msgstr "Avis"
 
+#: public/class-artist-image-generator-public.php:254
+msgid "Select one or more topics for image generation."
+msgstr "Sélectionnez un ou plusieurs sujets pour la génération d'images."
+
 #. id
-#: admin/class-artist-image-generator-admin.php:75
-#: admin/class-artist-image-generator-admin.php:328
+#: includes/class-artist-image-generator-setter.php:98
+#: includes/class-artist-image-generator-setter.php:140
 msgid "Settings"
 msgstr "Paramètres"
 
-#: admin/class-artist-image-generator-admin.php:927
+#: admin/partials/content.php:131
 msgid "Shortcode (Bêta)"
 msgstr "Code court (Bêta)"
 
-#: admin/class-artist-image-generator-admin.php:74
-#: admin/class-artist-image-generator-admin.php:120
+#: admin/class-artist-image-generator-admin.php:81
 msgid "Shortcodes"
 msgstr "Codes courts"
 
-#: admin/class-artist-image-generator-admin.php:1197
+#: admin/partials/form.php:143
 msgid "Size in pixels"
 msgstr "Taille en pixels"
 
-#: admin/class-artist-image-generator-admin.php:210
+#: admin/partials/form.php:165 admin/partials/form.php:187
+msgid "Specs DALL·E 3 model."
+msgstr "Spécifications modèle DALL·E 3."
+
+#: admin/partials/form.php:184
+msgid "Style"
+msgstr "Style"
+
+#: admin/partials/content.php:147
+msgid ""
+"Style of the image to generate (e.g., \"natural\", \"vivid\". Default is "
+"\"vivid\". Only with dall-e-3)."
+msgstr ""
+"Style de l'image à générer (par exemple, \"naturel\", \"vivant\". La valeur "
+"par défaut est \"vivant\". Uniquement avec dall-e-3)."
+
+#: includes/class-artist-image-generator-setter.php:82
 msgid "Support"
 msgstr "Support"
 
-#: admin/class-artist-image-generator-admin.php:470
-msgid "The Prompt input must be filled in order to generate an image."
-msgstr "La Saisie doit être remplie afin de générer une image."
+#: libraries/license-sdk/License.php:280
+msgid "The license entered does not belong to this plugin"
+msgstr "La licence saisie n'appartient pas à ce plugin"
 
-#: admin/class-artist-image-generator-admin.php:955
+#: libraries/license-sdk/License.php:285
+msgid "The license expired"
+msgstr "La licence a expiré"
+
+#: libraries/license-sdk/License.php:244
+msgid "The license has not been activated yet"
+msgstr "La licence n'a pas encore été activée"
+
+#: admin/partials/content.php:166
 msgid "The result:"
 msgstr "Le résultat:"
 
-#: admin/class-artist-image-generator-admin.php:949
+#: admin/partials/content.php:160
 msgid "The shortcode:"
 msgstr "Le code court:"
 
-#: admin/class-artist-image-generator-admin.php:940
+#: admin/partials/content.php:144
 msgid ""
 "The size of the images to generate (e.g., \"256x256\", \"512x512\", "
-"\"1024x1024\". Default is 1024x1024)."
+"\"1024x1024\" for dall-e-2, \"1024x1024\", \"1024x1792\", \"1792x1024\" for "
+"dall-e-3. Default is 1024x1024)."
 msgstr ""
 "La taille des images à générer (par exemple, \"256x256\", \"512x512\", "
-"\"1024x1024\". La valeur par défaut est 1024x1024)."
+"\"1024x1024\" pour dall-e-2, \"1024x1024\", \"1024x1792\", \"1792x1024\" "
+"pour dall-e-3. La valeur par défaut est 1024x1024) ."
 
-#: admin/class-artist-image-generator-admin.php:928
+#: admin/partials/content.php:132
 msgid ""
 "To create a public AI image generation form in WordPress, you can use the "
 "following shortcode:"
@@ -290,33 +369,61 @@ msgstr ""
 "Pour créer un formulaire public de génération d’images IA dans WordPress, "
 "vous pouvez utiliser le shortcode suivant :"
 
-#: admin/class-artist-image-generator-admin.php:934
+#: admin/partials/content.php:150
+msgid "To handle user limitation use the following optional attributes:"
+msgstr ""
+"Pour gérer les limitations des utilisateurs, utilisez les attributs "
+"facultatifs suivants :"
+
+#: admin/partials/content.php:138
 msgid "To include a list of topics that users can select."
 msgstr ""
 "Pour inclure une liste de sujets que les utilisateurs peuvent sélectionner."
 
-#: admin/class-artist-image-generator-admin.php:935
+#: admin/partials/content.php:139
 msgid "To include a prompt for users."
 msgstr "Pour inclure une description (invite) pour les utilisateurs."
 
-#: admin/class-artist-image-generator-admin.php:1119
+#: admin/partials/form.php:38
+msgid "Toggle history"
+msgstr "Basculer l'historique"
+
+#: public/class-artist-image-generator-public.php:237
+msgid "Topics:"
+msgstr "Sujets:"
+
+#: admin/partials/form.php:60
 msgid "Upload a file and crop it."
 msgstr "Téléchargez un fichier et recadrez-le."
 
-#: admin/class-artist-image-generator-admin.php:72
-#: admin/class-artist-image-generator-admin.php:118
-#: admin/class-artist-image-generator-admin.php:846
+#: admin/class-artist-image-generator-admin.php:79
+#: admin/partials/content.php:38
 msgid "Variate"
 msgstr "Moduler"
 
-#: admin/class-artist-image-generator-admin.php:822
-#: admin/class-artist-image-generator-admin.php:849
-#: admin/class-artist-image-generator-admin.php:876
+#: admin/partials/form.php:186
+msgid "Vivid for hyper-real and dramatic images."
+msgstr "Vivid pour des images hyper-réelles et dramatiques."
+
+#: admin/partials/content.php:10 admin/partials/content.php:41
+#: admin/partials/content.php:73
 msgid "Watch the demo"
 msgstr "Voir la démo"
 
-#: admin/class-artist-image-generator-admin.php:937
+#: includes/class-artist-image-generator-setter.php:81
+msgid "Website"
+msgstr "Site web"
+
+#: admin/partials/content.php:141
 msgid "You can also use the following optional attributes in the shortcode:"
 msgstr ""
 "Vous pouvez également utiliser les attributs facultatifs suivants dans le "
 "shortcode"
+
+#: public/class-artist-image-generator-public.php:87
+msgid "You have reached the limit of requests."
+msgstr "Vous avez atteint la limite de demandes."
+
+#: public/class-artist-image-generator-shortcode-avatar-manager.php:47
+msgid "Your profile picture changed successfully."
+msgstr "Votre photo de profil a été modifiée avec succès."

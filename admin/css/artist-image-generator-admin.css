@@ -34,11 +34,11 @@
 
 #aig_cropper_preview .button-container {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: repeat(4, 1fr);
     grid-template-rows: auto auto;
     grid-template-areas: 
-        "input input input"
-        "button1 . button2-3";
+        "input input input input"
+        "button1 button2 button3 button4";
     gap: 10px;
     align-items: center;
     margin-top: 15px;
@@ -48,18 +48,27 @@
     grid-area: input;
 }
 
-#aig_cropper_preview .button:nth-child(2) {
+#aig_cropper_preview .button:nth-child(1) {
     grid-area: button1;
     justify-self: start;
     width: 100%;
 }
 
-#aig_cropper_preview .button-link:nth-child(3),
-#aig_cropper_preview .button-link:nth-child(4) {
-    grid-area: button2-3;
+#aig_cropper_preview .button:nth-child(2) {
+    grid-area: button2;
+    justify-self: start;
+    width: 100%;
+}
+
+#aig_cropper_preview .button-link:nth-child(3) {
+    grid-area: button3;
     justify-self: end;
 }
 
+#aig_cropper_preview .button-link:nth-child(4) {
+    grid-area: button4;
+    justify-self: end;
+}
 #aig_cropper_preview .button-container .button .dashicons {
     line-height: 26px;
 }

@@ -84,6 +84,7 @@ class Artist_Image_Generator_Admin
             'cropperCancelLabel' => esc_attr__('Cancel the zoom', 'artist-image-generator'),
             'cancelLabel' => esc_attr__('Cancel', 'artist-image-generator'),
             'maskLabel' => esc_attr__('Create mask', 'artist-image-generator'),
+            'maskLabelDownload' => esc_attr__('Download mask', 'artist-image-generator'),
             'editLabel' => esc_attr__('Edit image', 'artist-image-generator'),
             'valid_license' => License::license_check_validity(),
         );
@@ -215,10 +216,17 @@ class Artist_Image_Generator_Admin
         $dalle = new Dalle();
         $dalle->include_wordpress_files();
 
-        $url = sanitize_url($_POST['url']);
         $alt = sanitize_text_field($_POST['description']);
 
-        [$tmp, $extension, $filename] = $dalle->download_image_and_get_extension($url);
+        if (isset($_POST['url'])) {
+            $url = sanitize_url($_POST['url']);
+            [$tmp, $extension, $filename] = $dalle->download_image_and_get_extension($url);
+        } elseif (isset($_FILES['file'])) {
+            $file = $_FILES['file'];
+            [$tmp, $extension, $filename] = $dalle->download_image_and_get_extension($file);
+        } else {
+            return;
+        }
 
         if (!$tmp) {
             return;
