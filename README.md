@@ -187,6 +187,22 @@ Read the rates limits on the official documentation: [OpenAi Rate Limits Overvie
 
 We take your privacy seriously at Artist Image Generator. Rest assured that we don't collect any data from you when you use our plugin. Your file or description is only sent to the DALL·E 2 API for generating images, and we don't store or share any of that information. The API responds with the generated images, which are then used by the plugin to fill in image metadata and rename files in a way that's optimized for SEO. We value your privacy and aim to provide a safe and secure experience for all our users.
 
+
+## WooCommerce Product AI Image Customizer: sell basic products and let customers personalize them.
+
+[YouTube Video](https://youtu.be/LiwKbuzT3RA?si=9btCordVblTBTy0e)
+
+![Sans-titre-1-jpg](https://github.com/Immolare/artist-image-generator/assets/11742929/6b74d3eb-dd54-4ead-ba3d-7467422b0f56)
+
+If you want to sell customizable WooCommerce products and allow customers to personalize images with their own unique digital art, check out Artist Image Generator – Product AI Image Customizer. This plugin uses artificial intelligence to provide image customization for your WooCommerce products. Customers can create personalized image designs by topic or freehand, and developers can create a unique shopping process. Take a look [here](https://artist-image-generator.com/product/woo-product-ai-image-customizer-to-sell-personalized-products/).
+
+In the background, it uses Artist Image Generator shortcodes to create independent, topic-based image generators for each of your products.
+
+You can add your custom AIG shortcodes to create independent, topic-based image generators for each of your products. The customer visits the product page, generates an AI image from a prompt and/or topic, and buys the product. You can view the personalized image on the admin order page. Additionally, you can control how many images a user can generate and set a refresh time if desired.
+
+You can also generate a live basic preview of the personalized product using a mask image. The mask can be created through AIG or using external tools.
+
+
 ## Make a Donation to Support This Plugin's Development
 
 This plugin is free and made available to the Wordpress community. To allow me to effectively maintain this plugin, feel free to make a donation. To be credited as a donator, you can email me at **contact@pierrevieville.fr**.
