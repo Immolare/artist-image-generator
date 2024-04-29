@@ -1,3 +1,4 @@
+
 :root {
     --aig-primary-color: #0073e6;
     --aig-secondary-color: #005bac;
@@ -46,12 +47,12 @@
 }
 
 .aig-results {
-    margin-bottom: 25px;
-}
-.custom-row {
     display: flex;
     flex-wrap: wrap;
     margin: 0 -15px;
+    padding-bottom: 30px;
+    overflow: hidden;
+    position: relative;
 }
 
 .custom-col {
@@ -59,11 +60,25 @@
     max-width: 33.3333%;
     padding: 0 15px;
     box-sizing: border-box;
+    margin-bottom: 15px;
 }
 
 .custom-col .aig-image {
     max-width: 100%;
     height: auto;
+}
+
+.custom-col a {
+    display: block;
+    position: relative;
+}
+  
+.custom-col a::before {
+    content: "\f177"; /* Code Unicode "dashicons-visibility" */
+    font-family: 'dashicons';
+    speak: none;
+    position: absolute;
+    left: 5px;
 }
 
 @media (max-width: 767px) {

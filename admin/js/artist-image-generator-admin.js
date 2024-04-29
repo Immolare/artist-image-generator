@@ -12,11 +12,11 @@
 
     // aig_data is the default data
     const SCRIPT_CACHE = {}; // cache librairies
-    const MAX_CANVAS = { width: 450, height: 450 };
+    const MAX_CANVAS = { width: 512, height: 512 };
     const IS_IN_IFRAME = window.self !== window.top;
     const SCOPE = IS_IN_IFRAME ? window.parent.document : document;
-    const MIN_DIMENSIONS = 450;
-    const CROPPED_DIMENSIONS = 210;
+    const MIN_DIMENSIONS = 512;
+    const CROPPED_DIMENSIONS = 512;
     const CROPPED_FILE_NAME = 'cropped.png';
     const CROPPED_FILE_TYPE = 'image/png';
     const IMAGE_QUALITY = 1;

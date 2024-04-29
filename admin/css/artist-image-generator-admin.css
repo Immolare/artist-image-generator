@@ -267,7 +267,7 @@
 .fl-builder-edit .tab-container-aig-generate textarea,
 .fl-builder-edit .tab-container-aig-variate textarea,
 .fl-builder-edit .tab-container-aig-edit textarea {
-    max-width: 450px;
+    max-width: 512px;
     width: 100% !important;
     margin-top: 15px;
 }
