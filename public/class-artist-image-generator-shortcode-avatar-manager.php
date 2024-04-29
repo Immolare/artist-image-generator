@@ -97,7 +97,7 @@ class Artist_Image_Generator_Shortcode_Avatar_Manager {
     }
 
     private function processSimpleLocalAvatar($attachment_id, $current_user_id)
-    {
+    {        
         $simple_local_avatars = new Simple_Local_Avatars();
         $simple_local_avatars->assign_new_user_avatar($attachment_id, $current_user_id);
     }

@@ -67,7 +67,7 @@ class Artist_Image_Generator_Public
 
     private function check_and_update_user_limit($post_data)
     {
-        if (isset($post_data['user_limit'])) {
+        if (isset($post_data['user_limit']) && (int)$post_data['user_limit'] > 0) {
             $user_id = get_current_user_id();
             $user_ip = $_SERVER['REMOTE_ADDR'];
             $user_identifier = $user_id ? 'artist_image_generator_user_' . $user_id : 'artist_image_generator_ip_' . $user_ip;
@@ -128,7 +128,7 @@ class Artist_Image_Generator_Public
 
             $data = $dalle->prepare_data($images ?? [], $error ?? [], $post_data);
 
-            //$data = '{"error":[],"images":[{"url":"https://artist-image-generator.com/wp-content/uploads/img-rck1GT0eGIYLu4oAXFEMqsPT.png"}],"model_input":"dall-e-2","prompt_input":"Painting of a bird, including following criterias:","size_input":"1024x1024","n_input":"1","quality_input":"","style_input":""}';
+            //$data = '{"error":[],"images":[{"url":"https://artist-image-generator.com/wp-content/uploads/img-rck1GT0eGIYLu4oAXFEMqsPT.png"},{"url":"https://artist-image-generator.com/wp-content/uploads/img-rck1GT0eGIYLu4oAXFEMqsPT.png"},{"url":"https://artist-image-generator.com/wp-content/uploads/img-rck1GT0eGIYLu4oAXFEMqsPT.png"}],"model_input":"dall-e-2","prompt_input":"Painting of a bird, including following criterias:","size_input":"1024x1024","n_input":"1","quality_input":"","style_input":""}';
 
             //$array = json_decode($data, true);
             wp_send_json($data);
@@ -140,12 +140,14 @@ class Artist_Image_Generator_Public
 
     public function enqueue_styles()
     {
-        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/artist-image-generator-public.css', array(), $this->version, 'all');
+        wp_enqueue_style($this->plugin_name.'-swiper', plugin_dir_url(__FILE__) . 'css/artist-image-generator-public-swiper.css', array(), $this->version, 'all');
+        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/artist-image-generator-public.css', array(), $this->version, 'all'); 
     }
 
     public function enqueue_scripts()
     {
-        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/artist-image-generator-public.js', array('jquery'), $this->version, false);
+        wp_enqueue_script($this->plugin_name.'-swiper', plugin_dir_url(__FILE__) . 'js/artist-image-generator-public-swiper.js', array(), $this->version, true);
+        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/artist-image-generator-public.js', array('jquery', $this->plugin_name.'-swiper'), $this->version, false);
     }
 
     public function get_avatar_filter($avatar, $id_or_email, $size, $default, $alt)

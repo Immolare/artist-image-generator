@@ -1,5 +1,7 @@
+
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector(".aig-form");
+    let swiper;
 
     if (form) {
         form.addEventListener("submit", async function (e) {
@@ -16,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const container = document.querySelector(".aig-form-container");
             const containerResults = document.querySelector(".aig-results");
-            containerResults.innerHTML = '';
+            //containerResults.innerHTML = '';
 
             // remove previous overlay
             const previousOverlay = document.querySelector(".aig-overlay");
@@ -90,9 +92,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 overlay.style.display = "none";
                 document.querySelector(".aig-results-separator").style.display = 'block';
 
-                const imageContainer = document.createElement("div");
-                imageContainer.className = "custom-row";
-                containerResults.appendChild(imageContainer);
+                //const imageContainer = document.createElement("div");
+                //imageContainer.className = "custom-row";
+                //containerResults.appendChild(imageContainer);
 
                 if (mergedResponse.images && mergedResponse.images.length > 0) {
                     mergedResponse.images.forEach((image, index) => {
@@ -115,11 +117,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         figCaption.appendChild(downloadButton);
     
                         figure.appendChild(figCaption);
-                        imageContainer.appendChild(figure);
+                        containerResults.appendChild(figure);
     
                         // Image download management
                         downloadButton.addEventListener("click", function () {
-                            if (form.getAttribute("data-download") === "manual") {
+                            if (form.getAttribute("data-download") !== "wp_avatar") {
                                 const link = document.createElement("a");
                                 link.href = image.url;
                                 link.target = '_blank';
@@ -129,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 document.body.appendChild(link);
                                 link.click();
                                 document.body.removeChild(link);
-                            } else if (form.getAttribute("data-download") === "wp_avatar") {
+                            } else {
                                 fetch(ajaxurl, {
                                     method: "POST",
                                     body: new URLSearchParams({
@@ -150,28 +152,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                     .catch((error) => {
                                         console.error("Error API request :", error);
                                     });
-                            } else if (form.getAttribute("data-download") === "wc_avatar") {
-                                fetch(ajaxurl, {
-                                    method: "POST",
-                                    body: new URLSearchParams({
-                                        action: "change_wc_avatar",
-                                        image_url: image.url,
-                                    }),
-                                    headers: {
-                                        "Content-Type": "application/x-www-form-urlencoded",
-                                        "Cache-Control": "no-cache",
-                                    },
-                                })
-                                    .then((response) => response.json())
-                                    .then((result) => {
-                                        console.log("Photo de profil WooCommerce changée avec succès.");
-                                    })
-                                    .catch((error) => {
-                                        console.error("Erreur lors de la requête API :", error);
-                                    });
                             }
-                        });
-    
+                        });                      
                     });
                 }
 
@@ -180,6 +162,41 @@ document.addEventListener("DOMContentLoaded", function () {
                     errorContainer.innerHTML = mergedResponse.errors.join('<br>');
                 }
 
+                let $figures = document.querySelectorAll('.aig-results figure');
+
+                if ($figures.length > 0) {
+                    const aigResults = document.querySelector('.aig-results');
+                    const swiperWrapper = document.createElement('div');
+                    swiperWrapper.className = 'swiper-wrapper';
+
+                    $figures.forEach(figure => {
+                        figure.classList.add('swiper-slide');
+                        swiperWrapper.appendChild(figure);
+                    });
+
+                    aigResults.innerHTML = '';
+                    aigResults.appendChild(swiperWrapper);
+
+                    const swiperPagination = document.createElement('div');
+                    swiperPagination.className = 'swiper-pagination';
+                    aigResults.appendChild(swiperPagination);
+
+                    if (swiper && aigResults.hasClass == 'swiper-initialized') {
+                        swiper.update();
+                    }
+                    else {
+                        swiper = new Swiper('.aig-results', {
+                            direction: 'horizontal',
+                            slidesPerView: 'auto',
+                            autoWidth: true,
+                            spaceBetween: 0,
+                            loop: false,
+                            pagination: {
+                                el: '.swiper-pagination',
+                            },
+                        });
+                    }
+                }
         
             } catch (error) {
                 console.error("API Request Error :", error);

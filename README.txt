@@ -1,10 +1,10 @@
 === Artist Image Generator: DALL·E AI-Driven Image Creator ===
 Contributors: Immolare
-Tags: ai, dalle, image, avatar, product
+Tags: ai, dalle, image, woocommerce, shop
 Requires at least: 5.3
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.1.4.2
+Stable tag: 1.1.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Donate link: https://artist-image-generator.com/#donate
@@ -33,7 +33,7 @@ You can also generate a live basic preview of the personalized product using a m
 
 **Watch the demo**
 
-https://youtu.be/K8ooo2kle0Q
+https://youtu.be/LiwKbuzT3RA
 
 ### Artist Image Generator's Key Features
 
@@ -231,6 +231,11 @@ Yes, Artist Image Generator is perfect for creating visuals for your blog and ar
 While Artist Image Generator is primarily designed for digital content, you can use the generated images for print materials as well. However, please be aware that the image quality and resolution might not be optimal for high-quality print purposes. It is recommended to test the images before using them in print projects.
 
 == Changelog ==
+
+1.1.5 - 2024-04-21
+- Update shortcode doc
+- Update about tab
+
 
 1.1.4 - 2024-04-13
 - Update shortcode doc
