@@ -58,6 +58,14 @@ class Artist_Image_Generator_License {
         return $valid_result['is_valid'];
     }
 
+    public static function license_check_product_ai_image_customizer_presence(): bool {
+        if ( ! function_exists( 'is_plugin_active' ) ) {
+            include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+        }
+
+        return is_plugin_active('artist-image-generator-product-ai-image-customizer/artist-image-generator-product-ai-image-customizer.php');
+    }
+
     /**
      * Checks the validity of the license for the cron job.
      *

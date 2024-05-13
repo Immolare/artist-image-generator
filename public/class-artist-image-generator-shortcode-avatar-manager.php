@@ -73,6 +73,11 @@ class Artist_Image_Generator_Shortcode_Avatar_Manager {
     {
         $custom_avatar_id = get_user_meta($user_id, '_aig_user_avatar', true);
 
+        if (!is_int($custom_avatar_id)) {
+            update_user_meta($user_id, '_aig_user_avatar', null);
+            return null;
+        }
+
         if ($custom_avatar_id) {
             return wp_get_attachment_url($custom_avatar_id);
         }
