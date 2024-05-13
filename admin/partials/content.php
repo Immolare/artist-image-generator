@@ -277,7 +277,7 @@ if (Artist_Image_Generator_Setter::is_artist_image_generator_page()) :
                     <p>By purchasing a unique license, you unlock this powerful functionality along with new pro features, remove credits, <strong>and help me to maintain this plugin</strong>.</p>
                     <p style="margin: 10px 0;">
                         <a href="https://artist-image-generator.com/product/licence-key/" title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button button-primary" style="width :100%; text-align:center;">
-                            Buy Artist Image Generator (Pro) - Licence Key
+                            Buy Artist Image Generator - Licence Key
                         </a>
                     </p>
                     <p>Compatible width Block Builders like <strong>Elementor, Beaver Builder, WP Bakery.</strong></p>
@@ -286,6 +286,23 @@ if (Artist_Image_Generator_Setter::is_artist_image_generator_page()) :
                         - <a href="https://labs.openai.com/editor" target="_blank" title="OpenAI DALL·E Editor">Try OpenAI DALL·E Editor</a>
                     </p>
                     <iframe width="100%" height="315" src="https://www.youtube.com/embed/zfK1yJk9gRc" title="Artist Image Generator - Image Edition feature" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            <?php endif; ?>
+            <?php if (!Artist_Image_Generator_License::license_check_product_ai_image_customizer_presence()) : ?>
+                <div class="card">
+                    <h2 class="title">Wanna sell AI customized products on WooCommerce?</h2>
+                    <p>Turn shoppers into designers! Add this AIG plugin to let customers personalize their products with AI generated unique digital art.</p>
+                    <p>Check out <strong>Artist Image Generator – Product AI Image Customizer</strong>.</p>
+                    <p style="margin: 10px 0;">
+                        <a href="https://artist-image-generator.com/product/woo-product-ai-image-customizer-to-sell-personalized-products/" title="Purchase Artist Image Generator Pro Licence key" target="_blank" class="button button-primary" style="width :100%; text-align:center;">
+                            Buy Artist Image Generator - Licence Key + Product AI Image Customizer
+                        </a>
+                    </p>
+                    <p>Customers can create <strong>personalized image designs by topic or freehand</strong>.</p>
+                    <p>
+                        Read official <a href="https://artist-image-generator.com/woocommerce-product-ai-image-customizer-plugin/" target="_blank" title="Product AI Image Customizer">blog post</a>
+                    </p>
+                    <iframe width="100%" height="315" src="https://www.youtube.com/embed/LiwKbuzT3RA?si=5nmzYSLfNmbH14xt" title="Artist Image Generator - Product AI Image Customizer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
             <?php endif; ?>
     </script>

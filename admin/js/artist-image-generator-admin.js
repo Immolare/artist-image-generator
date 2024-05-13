@@ -201,6 +201,7 @@
 
         const spinner = '<div class="spinner is-active" style="margin-top: 0; margin-left:15px; float:none;"></div>';
         $(spinner).insertAfter($form.find('input[type="submit"]'));
+        $form.find('#submit').attr('disabled', true);
 
         let requests = [];
         if (formData.get('model') === 'dall-e-3' && formData.get('n') > 1) {
@@ -238,6 +239,7 @@
             }, {images: [], errors: []});
 
             $form.find('.spinner').remove();
+            $form.find('#submit').attr('disabled', false);
                  
             if (mergedResponse.images && mergedResponse.images.length > 0) {
                 cleanImageHistory();
@@ -265,6 +267,8 @@
             return mergedResponse;
          })
          .catch(function (jqXHR, textStatus, errorThrown) {
+             $form.find('.spinner').remove();
+             $form.find('#submit').attr('disabled', false);
              console.error('Error: ' + textStatus, errorThrown);
              throw errorThrown;
          });
