@@ -32,6 +32,20 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+.aig-form-title {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.aig-form-title:hover {
+    cursor: pointer;
+}
+.aig-form {
+    margin: 10px 0;
+}
+
+.aig-topic-buttons label {
+    display: inline-block;
+}
 
 .aig-image-container {
     display: flex;
@@ -39,6 +53,7 @@
     justify-content: center;
     align-items: flex-start;
 }
+
 
 .aig-image {
     max-width: 100%;
@@ -53,6 +68,10 @@
     padding-bottom: 30px;
     overflow: hidden;
     position: relative;
+}
+
+textarea[name="aig_public_prompt"] {
+    min-height: 100px;
 }
 
 .custom-col {

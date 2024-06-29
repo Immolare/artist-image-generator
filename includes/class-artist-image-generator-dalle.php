@@ -17,7 +17,8 @@ class Artist_Image_Generator_Dalle
         'quality', 
         'style',
         'user_limit',
-        'user_limit_duration'
+        'user_limit_duration',
+        'id'
     ];
     private const ERROR_MSG_PROMPT = 'The Prompt input must be filled in order to generate an image.';
     private const ERROR_MSG_IMAGE = 'A .png square (1:1) image of maximum 4MB needs to be uploaded in order to generate a variation of this image.';

@@ -68,9 +68,10 @@ class Artist_Image_Generator_Public
     private function check_and_update_user_limit($post_data)
     {
         if (isset($post_data['user_limit']) && (int)$post_data['user_limit'] > 0) {
+            $form_id = $post_data['id'];
             $user_id = get_current_user_id();
             $user_ip = $_SERVER['REMOTE_ADDR'];
-            $user_identifier = $user_id ? 'artist_image_generator_user_' . $user_id : 'artist_image_generator_ip_' . $user_ip;
+            $user_identifier = $user_id ? 'artist_image_generator_user_' . $form_id . '_' . $user_id : 'artist_image_generator_ip_' . $form_id . '_' . $user_ip;
             $requests = get_transient($user_identifier);
             $duration = isset($post_data['user_limit_duration']) && $post_data['user_limit_duration'] > 0 ? (int)$post_data['user_limit_duration'] : 0;
             $expiration = get_option('_transient_timeout_' . $user_identifier);
@@ -128,7 +129,7 @@ class Artist_Image_Generator_Public
 
             $data = $dalle->prepare_data($images ?? [], $error ?? [], $post_data);
 
-            //$data = '{"error":[],"images":[{"url":"https://artist-image-generator.com/wp-content/uploads/img-rck1GT0eGIYLu4oAXFEMqsPT.png"},{"url":"https://artist-image-generator.com/wp-content/uploads/img-rck1GT0eGIYLu4oAXFEMqsPT.png"},{"url":"https://artist-image-generator.com/wp-content/uploads/img-rck1GT0eGIYLu4oAXFEMqsPT.png"}],"model_input":"dall-e-2","prompt_input":"Painting of a bird, including following criterias:","size_input":"1024x1024","n_input":"1","quality_input":"","style_input":""}';
+            //$data = '{"error":[],"images":[{"url":"https://artist-image-generator.com/wp-content/uploads/2024/02/img-IVzRVsywZyjaPiTbTnKfNbq6.png"},{"url":"https://artist-image-generator.com/wp-content/uploads/2024/03/screenshot-6-jpg"},{"url":"https://artist-image-generator.com/wp-content/uploads/img-rck1GT0eGIYLu4oAXFEMqsPT.png"}],"model_input":"dall-e-2","prompt_input":"Painting of a bird, including following criterias:","size_input":"1024x1024","n_input":"1","quality_input":"","style_input":""}';
 
             //$array = json_decode($data, true);
             wp_send_json($data);
@@ -199,6 +200,7 @@ class Artist_Image_Generator_Public
                 'user_limit_duration' => self::DEFAULT_LIMIT_PER_USER_REFRESH_DURATION,
                 'mask_url' => '',
                 'origin_url' => '',
+                'uniqid' => uniqid()
             ),
             $atts
         );
@@ -221,11 +223,13 @@ class Artist_Image_Generator_Public
             )
         );
 
+        $toggle_label = esc_html('Image N°', 'artist-image-generator');
+
         ob_start();
 
         ?>
         <div class="aig-form-container">
-            <form method="post" class="aig-form" 
+            <form method="post" class="aig-form" data-id="<?php echo esc_attr($atts['uniqid']); ?>"
                 data-action="<?php echo esc_attr($atts['action']); ?>" 
                 data-n="<?php echo esc_attr($atts['n']); ?>" 
                 data-size="<?php echo esc_attr($atts['size']); ?>" 
@@ -233,6 +237,7 @@ class Artist_Image_Generator_Public
                 data-style="<?php echo esc_attr($atts['style']); ?>"
                 data-model="<?php echo esc_attr($atts['model']); ?>" 
                 data-download="<?php echo esc_attr($atts['download']); ?>"
+                data-toggle-label="<?php echo esc_attr($toggle_label); ?>"
                 action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>"
                 <?php if (!empty($atts['mask_url']) && !empty($atts['origin_url'])) { ?>
                     data-origin-url="<?php echo esc_url($atts['origin_url']); ?>"
@@ -241,6 +246,7 @@ class Artist_Image_Generator_Public
             >
                 <input type="hidden" name="aig_prompt" value="<?php echo esc_attr($atts['prompt']); ?>" />
                 <input type="hidden" name="action" value="<?php echo esc_attr($atts['action']); ?>" />
+                <input type="hidden" name="id" value="<?php echo esc_attr($atts['uniqid']); ?>" />
                 <input type="hidden" name="user_limit" value="<?php echo esc_attr($atts['user_limit']); ?>" />
                 <input type="hidden" name="user_limit_duration" value="<?php echo esc_attr($atts['user_limit_duration']); ?>" />
 

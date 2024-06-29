@@ -43,8 +43,8 @@ class Artist_Image_Generator_Constant {
     public const DEFAULT_SIZE = '1024x1024';
     public const PLUGIN_NAME = "artist-image-generator";
     public const LICENSE_SERVER = 'https://artist-image-generator.com';
-    public const CUSTOMER_KEY = '';
-    public const CUSTOMER_SECRET = '';
+    public const CUSTOMER_KEY = 'ck_204741c9c2c41edb13767f951284d6c57360e0d7';
+    public const CUSTOMER_SECRET = 'cs_3f2d6cf0fb6e046e69ef629923a3866716cbad17';
     public const PRODUCT_IDS = [21, 1282, 27158, 27224];
     public const DAYS = 5;
 
